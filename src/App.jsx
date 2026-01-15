@@ -1,4 +1,4 @@
-//import Scss
+import React from "react";
 import "./assets/scss/themes.scss";
 
 //imoprt Route
