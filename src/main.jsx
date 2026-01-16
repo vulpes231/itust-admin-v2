@@ -6,19 +6,23 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import rootReducer from "./slices";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const store = configureStore({ reducer: rootReducer, devTools: true });
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+const queryClient = new QueryClient();
 // //basename={import.meta.env.PUBLIC_URL}
 root.render(
-  <Provider store={store}>
-    <React.Fragment>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </React.Fragment>
-  </Provider>
+  <QueryClientProvider client={queryClient}>
+    <Provider store={store}>
+      <React.Fragment>
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      </React.Fragment>
+    </Provider>
+  </QueryClientProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

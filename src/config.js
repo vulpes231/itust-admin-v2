@@ -13,4 +13,7 @@
 // };
 const api = "https://api-node.themesbrand.website";
 
-export { api };
+const devServer = "http://localhost:5000";
+const liveServer = "https://trustserver.cloud";
+
+export { api, devServer, liveServer };

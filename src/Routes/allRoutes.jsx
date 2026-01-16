@@ -7,9 +7,6 @@ import CoverSignIn from "../pages/AuthenticationInner/Login/CoverSignIn";
 import BasicSignUp from "../pages/AuthenticationInner/Register/BasicSignUp";
 import CoverSignUp from "../pages/AuthenticationInner/Register/CoverSignUp";
 
-import Maintenance from "../pages/Pages/Maintenance/Maintenance";
-import ComingSoon from "../pages/Pages/ComingSoon/ComingSoon";
-
 import BasicLogout from "../pages/AuthenticationInner/Logout/BasicLogout";
 import CoverLogout from "../pages/AuthenticationInner/Logout/CoverLogout";
 import Basic404 from "../pages/AuthenticationInner/Errors/Basic404";
@@ -27,11 +24,11 @@ import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
 import Register from "../pages/Authentication/Register";
 
-// User Profile
 import UserProfile from "../pages/Authentication/user-profile";
+import DashboardAnalytics from "../pages/DashboardAnalytics";
 
 const authProtectedRoutes = [
-  // { path: "/dashboard-analytics", component: <DashboardAnalytics /> },
+  { path: "/dashboard", component: <DashboardAnalytics /> },
 
   //User Profile
   { path: "/profile", component: <UserProfile /> },
@@ -66,8 +63,6 @@ const publicRoutes = [
   { path: "/auth-404-cover", component: <Cover404 /> },
   { path: "/auth-404-alt", component: <Alt404 /> },
   { path: "/auth-500", component: <Error500 /> },
-  { path: "/pages-maintenance", component: <Maintenance /> },
-  { path: "/pages-coming-soon", component: <ComingSoon /> },
 
   { path: "/auth-pass-change-basic", component: <BasicPasswCreate /> },
   { path: "/auth-pass-change-cover", component: <CoverPasswCreate /> },

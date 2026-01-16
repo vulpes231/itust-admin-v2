@@ -1,8 +1,9 @@
 import axios from "axios";
-import { api } from "../config";
+
+import { liveServer, devServer } from "../config";
 
 // default
-axios.defaults.baseURL = api;
+axios.defaults.baseURL = devServer;
 // content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
