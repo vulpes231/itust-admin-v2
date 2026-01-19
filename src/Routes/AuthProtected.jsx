@@ -1,28 +1,32 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Navigate, Route } from "react-router-dom";
 import { setAuthorization } from "../helpers/api_helper";
-import { useDispatch } from "react-redux";
-
 import { useProfile } from "../Components/Hooks/UserHooks";
-
-import { logoutUser } from "../slices/auth/login/thunk";
+import { useMutation } from "@tanstack/react-query";
+import { logoutAdmin } from "../services/auth";
 
 const AuthProtected = (props) => {
-  const dispatch = useDispatch();
-  const { userProfile, loading, token } = useProfile();
+  const { token } = useProfile();
+  const [error, setError] = useState("");
+
+  const mutation = useMutation({
+    mutationFn: logoutAdmin,
+    onError: (err) => setError(err.message),
+  });
+
   useEffect(() => {
-    if (userProfile && !loading && token) {
+    if (token) {
       setAuthorization(token);
-    } else if (!userProfile && loading && !token) {
-      dispatch(logoutUser());
+    } else if (!token) {
+      mutation.mutate();
     }
-  }, [token, userProfile, loading, dispatch]);
+  }, [token]);
 
   /*
     Navigate is un-auth access protected routes via url
     */
 
-  if (!userProfile && loading && !token) {
+  if (!token) {
     return (
       <Navigate to={{ pathname: "/login", state: { from: props.location } }} />
     );
@@ -35,8 +39,13 @@ const AccessRoute = ({ component: Component, ...rest }) => {
   return (
     <Route
       {...rest}
-      render={props => {
-        return (<> <Component {...props} /> </>);
+      render={(props) => {
+        return (
+          <>
+            {" "}
+            <Component {...props} />{" "}
+          </>
+        );
       }}
     />
   );

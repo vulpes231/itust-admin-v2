@@ -12,14 +12,11 @@ import { useDispatch } from "react-redux";
 import { AudiencesSessionsCharts } from "./DashboardAnalyticsCharts";
 
 const AudiencesSessions = () => {
-  const dispatch = useDispatch();
-
   const [chartData, setchartData] = useState([]);
 
   const [seletedMonth, setSeletedMonth] = useState("today");
   const onChangeChartPeriod = (pType) => {
     setSeletedMonth(pType);
-    // dispatch(getAudiencesSessionsChartsData(pType));
   };
 
   return (

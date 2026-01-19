@@ -15,6 +15,9 @@ const Navdata = () => {
   const [isSuccessMessage, setIsSuccessMessage] = useState(false);
   const [isVerification, setIsVerification] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isApps, setIsApps] = useState(false);
+  const [isAuth, setIsAuth] = useState(false);
+  const [isPages, setIsPages] = useState(false);
 
   const [isProfile, setIsProfile] = useState(false);
 
@@ -165,22 +168,7 @@ const Navdata = () => {
             { id: 2, label: "Cover", link: "/auth-pass-change-cover" },
           ],
         },
-        {
-          id: "lockScreen",
-          label: "Lock Screen",
-          link: "/#",
-          isChildItem: true,
-          click: function (e) {
-            e.preventDefault();
-            setIsLockScreen(!isLockScreen);
-          },
-          parentId: "authentication",
-          stateVariables: isLockScreen,
-          childItems: [
-            { id: 1, label: "Basic", link: "/auth-lockscreen-basic" },
-            { id: 2, label: "Cover", link: "/auth-lockscreen-cover" },
-          ],
-        },
+
         {
           id: "logout",
           label: "Logout",

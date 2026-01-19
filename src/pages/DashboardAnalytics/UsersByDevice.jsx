@@ -26,7 +26,6 @@ const UsersByDevice = () => {
   const [seletedMonth, setSeletedMonth] = useState("today");
   const onChangeChartPeriod = (pType) => {
     setSeletedMonth(pType);
-    // dispatch(getUserDeviceChartsData(pType));
   };
 
   return (

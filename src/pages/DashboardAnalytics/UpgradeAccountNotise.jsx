@@ -16,6 +16,7 @@ const UpgradeAccountNotise = () => {
           <Card>
             <CardBody className="p-0">
               <Alert
+                fade={false}
                 className="alert alert-warning border-0 rounded-0 m-0 d-flex align-items-center"
                 role="alert"
               >
