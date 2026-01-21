@@ -10,7 +10,7 @@ const Navdata = () => {
   const [isUsers, setIsUsers] = useState(false);
   const [isTransactions, setIsTransactions] = useState(false);
   const [isTrades, setIsTrades] = useState(false);
-  // const [isUsers, setIsUsers] = useState(false);
+  const [isAdmins, setIsAdmins] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -45,6 +45,9 @@ const Navdata = () => {
     if (iscurrentState !== "Trades") {
       setIsTrades(false);
     }
+    if (iscurrentState !== "Admins") {
+      setIsAdmins(false);
+    }
   }, [
     iscurrentState,
     isDashboard,
@@ -52,6 +55,7 @@ const Navdata = () => {
     isTrades,
     isTransactions,
     isUsers,
+    isAdmins,
   ]);
 
   const menuItems = [
@@ -108,6 +112,19 @@ const Navdata = () => {
         e.preventDefault();
         setIsTrades(!isTrades);
         setIscurrentState("Trades");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "admin",
+      label: "Admins",
+      icon: "ri-shield-user-line",
+      link: "/admins",
+      stateVariables: isAdmins,
+      click: function (e) {
+        e.preventDefault();
+        setIsAdmins(!isAdmins);
+        setIscurrentState("Admins");
         updateIconSidebar(e);
       },
     },

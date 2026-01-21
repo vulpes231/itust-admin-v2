@@ -8,10 +8,15 @@ import Register from "../pages/Authentication/Register";
 
 import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
+import { Admins, Trades, Transactions, Users } from "../pages";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardAnalytics /> },
   { path: "/profile", component: <UserProfile /> },
+  { path: "/users", component: <Users /> },
+  { path: "/trades", component: <Trades /> },
+  { path: "/transactions", component: <Transactions /> },
+  { path: "/admins", component: <Admins /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name
