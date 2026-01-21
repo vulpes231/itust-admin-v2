@@ -10,15 +10,16 @@ import {
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getAdminInfo } from "../../services/admin";
 import { getAccessToken } from "../../helpers/api_helper";
+import { getAdminInfo } from "../../services/settings";
+import { capitalize } from "lodash";
 
 const ProfileDropdown = () => {
   const token = getAccessToken();
 
   const [userName, setUserName] = useState("Admin");
 
-  const { data: user } = useQuery({
+  const { data: admin } = useQuery({
     queryKey: ["adminInfo"],
     queryFn: getAdminInfo,
     enabled: !!token,
@@ -45,16 +46,18 @@ const ProfileDropdown = () => {
             />
             <span className="text-start ms-xl-2">
               <span className="d-none d-xl-inline-block ms-1 fw-medium user-name-text">
-                {userName}
+                {capitalize(admin?.username) || userName}
               </span>
               <span className="d-none d-xl-block ms-1 fs-13 text-muted user-name-sub-text">
-                Founder
+                {admin?.role?.includes("0001") ? "Super User" : "Moderator"}
               </span>
             </span>
           </span>
         </DropdownToggle>
         <DropdownMenu className="dropdown-menu-end">
-          <h6 className="dropdown-header">Welcome {userName}!</h6>
+          <h6 className="dropdown-header">
+            Welcome {capitalize(admin?.username) || userName}
+          </h6>
           <DropdownItem className="p-0">
             <Link to="/profile" className="dropdown-item">
               <i className="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i>
@@ -67,27 +70,9 @@ const ProfileDropdown = () => {
               <span className="align-middle">Messages</span>
             </Link>
           </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="#" className="dropdown-item">
-              <i className="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Taskboard</span>
-            </Link>
-          </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/pages-faqs" className="dropdown-item">
-              <i className="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Help</span>
-            </Link>
-          </DropdownItem>
+
           <div className="dropdown-divider"></div>
-          <DropdownItem className="p-0">
-            <Link to="/pages-profile" className="dropdown-item">
-              <i className="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">
-                Balance : <b>$5971.67</b>
-              </span>
-            </Link>
-          </DropdownItem>
+
           <DropdownItem className="p-0">
             <Link to="/pages-profile-settings" className="dropdown-item">
               <span className="badge bg-success-subtle text-success mt-1 float-end">
@@ -97,12 +82,7 @@ const ProfileDropdown = () => {
               <span className="align-middle">Settings</span>
             </Link>
           </DropdownItem>
-          <DropdownItem className="p-0">
-            <Link to="/auth-lockscreen-basic" className="dropdown-item">
-              <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle">Lock screen</span>
-            </Link>
-          </DropdownItem>
+
           <DropdownItem className="p-0">
             <Link to="/logout" className="dropdown-item">
               <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}

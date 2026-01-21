@@ -1,90 +1,116 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import { Type, Quantity, OrderValue, AvgPrice, Price, Status } from "./UserCol";
+import { Email, Status, Experience, Kyc, Phone, Nationality } from "./UserCol";
 import TableContainer from "../../Components/Common/TableContainer";
 
+import { format } from "date-fns";
+import { capitalize } from "lodash";
+
 const AllUsers = ({ userList }) => {
+  const [action, setAction] = useState("");
+  const [rowId, setRowId] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const handleAction = (e, id) => {
+    setRowId(id);
+    setAction(e.target.value);
+  };
+
+  useEffect(() => {
+    if (action && rowId) {
+      console.log(action, rowId);
+    }
+  }, [action, rowId]);
+
   const columns = useMemo(
     () => [
       {
         header: "Date",
-        accessorKey: "date",
+        accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => (
-          <>
-            {cell.getValue()}{" "}
-            <small className="text-muted">{cell.row.original.time}</small>
-          </>
-        ),
+        cell: (cell) => <>{format(cell.getValue(), "MMM-dd-yyyy")} </>,
       },
       {
         header: "Name",
-        accessorKey: "coinName",
+        accessorKey: "credentials.username",
         enableColumnFilter: false,
         cell: (cell) => (
           <>
             <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
-                <img
-                  src={cell.row.original.img}
-                  alt=""
-                  className="avatar-xxs"
-                />
-              </div>
               <Link to="#" className="currency_name flex-grow-1 ms-2">
-                {cell.getValue()}
+                {capitalize(cell.getValue())}
               </Link>
             </div>
           </>
         ),
       },
       {
-        header: "Type",
-        accessorKey: "type",
+        header: "Experience",
+        accessorKey: "professionalInfo.experience",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Type {...cell} />;
+          return <Experience {...cell} />;
         },
       },
       {
-        header: "Quantity",
-        accessorKey: "quantity",
+        header: "KYC",
+        accessorKey: "identityVerification.kycStatus",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Quantity {...cell} />;
+          return <Kyc {...cell} />;
         },
       },
       {
-        header: "Order Value",
-        accessorKey: "orderValue",
+        header: "Email",
+        accessorKey: "credentials.email",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <OrderValue {...cell} />;
+          return <Email {...cell} />;
         },
       },
       {
-        header: "Avg Price",
-        accessorKey: "avgPrice",
+        header: "Phone",
+        accessorKey: "contactInfo.phone",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <AvgPrice {...cell} />;
+          return <Phone {...cell} />;
         },
       },
       {
-        header: "Price",
-        accessorKey: "price",
+        header: "Nationality",
+        accessorKey: "locationDetails.nationality.name",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Price {...cell} />;
+          return <Nationality {...cell} />;
         },
       },
       {
         header: "Status",
-        accessorKey: "status",
+        accessorKey: "accountStatus.status",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Status {...cell} />;
+        },
+      },
+      {
+        header: "Action",
+        accessorKey: "_id",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return (
+            <div>
+              <select
+                name="action"
+                onChange={(e) => handleAction(e, cell.getValue())}
+              >
+                <option value="">Select Option</option>
+                <option value="edit">Edit</option>
+                <option value="delete">Delete</option>
+                <option value="ban">Ban</option>
+              </select>
+            </div>
+          );
         },
       },
     ],

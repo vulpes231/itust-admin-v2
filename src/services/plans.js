@@ -2,9 +2,9 @@ import { APIClient } from "../helpers/api_helper";
 
 const api = new APIClient();
 
-export async function getAllAdmins() {
+export async function getAutoPlans() {
   try {
-    const res = await api.get("/manageadmin/all");
+    const res = await api.get("/manageplans");
     console.log(res.data);
     return res.data;
   } catch (error) {

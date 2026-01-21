@@ -1,50 +1,30 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import {
-  Type,
-  Quantity,
-  OrderValue,
-  AvgPrice,
-  Price,
-  Status,
-} from "./TransactionCol";
+import { Type, Account, Email, Memo, Price, Status } from "./TransactionCol";
 import TableContainer from "../../Components/Common/TableContainer";
+import { format } from "date-fns";
+import TransactionModal from "./TransactionModal";
+import { upperCase } from "lodash";
 
-const AllTransactions = ({ userList }) => {
+const AllTransactions = ({ transactionList }) => {
+  const [action, setAction] = useState("");
+  const [rowId, setRowId] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const handleAction = (e, id) => {
+    setRowId(id);
+    setAction(e.target.value);
+    setShowModal(true);
+  };
+
   const columns = useMemo(
     () => [
       {
         header: "Date",
-        accessorKey: "date",
+        accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => (
-          <>
-            {cell.getValue()}{" "}
-            <small className="text-muted">{cell.row.original.time}</small>
-          </>
-        ),
-      },
-      {
-        header: "Name",
-        accessorKey: "coinName",
-        enableColumnFilter: false,
-        cell: (cell) => (
-          <>
-            <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
-                <img
-                  src={cell.row.original.img}
-                  alt=""
-                  className="avatar-xxs"
-                />
-              </div>
-              <Link to="#" className="currency_name flex-grow-1 ms-2">
-                {cell.getValue()}
-              </Link>
-            </div>
-          </>
-        ),
+        cell: (cell) => <>{format(cell.getValue(), "MMM-dd-yyyy")}</>,
       },
       {
         header: "Type",
@@ -55,32 +35,47 @@ const AllTransactions = ({ userList }) => {
         },
       },
       {
-        header: "Quantity",
-        accessorKey: "quantity",
+        header: "Method",
+        accessorKey: "method.mode",
+        enableColumnFilter: false,
+        cell: (cell) => (
+          <>
+            <div className="d-flex align-items-center">
+              <Link to="#" className="currency_name flex-grow-1 ms-2">
+                {upperCase(cell.getValue())}
+              </Link>
+            </div>
+          </>
+        ),
+      },
+      {
+        header: "Account",
+        accessorKey: "account",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Quantity {...cell} />;
+          return <Account {...cell} />;
+        },
+      },
+
+      {
+        header: "Email",
+        accessorKey: "email",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <Email {...cell} />;
         },
       },
       {
-        header: "Order Value",
-        accessorKey: "orderValue",
+        header: "Memo",
+        accessorKey: "memo",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <OrderValue {...cell} />;
+          return <Memo {...cell} />;
         },
       },
       {
-        header: "Avg Price",
-        accessorKey: "avgPrice",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <AvgPrice {...cell} />;
-        },
-      },
-      {
-        header: "Price",
-        accessorKey: "price",
+        header: "Amount",
+        accessorKey: "amount",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Price {...cell} />;
@@ -92,6 +87,25 @@ const AllTransactions = ({ userList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           return <Status {...cell} />;
+        },
+      },
+      {
+        header: "Action",
+        accessorKey: "_id",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return (
+            <div>
+              <select
+                name="action"
+                onChange={(e) => handleAction(e, cell.getValue())}
+              >
+                <option value="">Select Option</option>
+                <option value="approve">Approve</option>
+                <option value="reject">Reject</option>
+              </select>
+            </div>
+          );
         },
       },
     ],
@@ -113,7 +127,7 @@ const AllTransactions = ({ userList }) => {
           <CardBody>
             <TableContainer
               columns={columns}
-              data={userList || []}
+              data={transactionList || []}
               isGlobalFilter={true}
               isAddUserList={false}
               customPageSize={8}
@@ -127,6 +141,18 @@ const AllTransactions = ({ userList }) => {
           </CardBody>
         </Card>
       </Col>
+      {action && showModal && (
+        <TransactionModal
+          dataId={rowId}
+          action={action}
+          isOpen={showModal}
+          onClose={() => {
+            setAction("");
+            setRowId("");
+            setShowModal(false);
+          }}
+        />
+      )}
     </React.Fragment>
   );
 };

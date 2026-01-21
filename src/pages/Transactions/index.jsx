@@ -1,12 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Container, Row } from "reactstrap";
 import AllTransactions from "./AllTransactions";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
+import { getAllTransactions } from "../../services/transactions";
+import { getAccessToken } from "../../helpers/api_helper";
+import { useQuery } from "@tanstack/react-query";
 
 const Transactions = () => {
   document.title = "Transactions | Itrust Investment";
 
-  const transactionlist = [];
+  const token = getAccessToken();
+
+  const [transactionList, setTransactionList] = useState([]);
+
+  const { data: transactions } = useQuery({
+    queryFn: getAllTransactions,
+    queryKey: ["AllTransactions"],
+    enabled: !!token,
+  });
+
+  useEffect(() => {
+    if (transactions && transactions.length > 0) {
+      // console.log(transactions);
+      setTransactionList(transactions);
+    }
+  }, [transactions]);
 
   return (
     <React.Fragment>
@@ -14,7 +32,7 @@ const Transactions = () => {
         <Container fluid>
           <BreadCrumb title="Transactions" pageTitle="Manage Transactions" />
           <Row>
-            <AllTransactions transactionlist={transactionlist} />
+            <AllTransactions transactionList={transactionList} />
           </Row>
         </Container>
       </div>
