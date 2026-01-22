@@ -5,7 +5,7 @@ const ErrorToast = ({ errMsg, onClose, isOpen }) => {
   return (
     <React.Fragment>
       <Toast
-        style={{ position: "fixed", top: "50px", right: "30px" }}
+        style={{ position: "fixed", top: "50px", right: "30px", zIndex: "10" }}
         className="text-danger"
         isOpen={isOpen}
         fade={false}
