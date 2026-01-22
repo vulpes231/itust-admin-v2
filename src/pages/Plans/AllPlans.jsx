@@ -19,7 +19,13 @@ const AllPlans = ({ planList }) => {
         header: "Date",
         accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")}</>,
+        cell: (cell) => (
+          <>
+            {cell.getValue() !== undefined
+              ? format(cell.getValue(), "MMM dd, yyyy")
+              : cell.getValue()}
+          </>
+        ),
       },
       {
         header: "Name",

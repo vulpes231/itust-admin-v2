@@ -3,7 +3,7 @@ import React from "react";
 const Role = (cell) => {
   return (
     <React.Fragment>
-      {cell.getValue().includes("0001") ? (
+      {cell.getValue()?.includes("0001") ? (
         <span className="type text-danger">Super User</span>
       ) : (
         <span className="type text-warning">Moderator</span>

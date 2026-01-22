@@ -21,7 +21,7 @@ const Plans = () => {
 
   useEffect(() => {
     if (plans && plans.length > 0) {
-      // console.log(plans);
+      console.log(plans);
       setPlanList(plans);
     }
   }, [plans]);
