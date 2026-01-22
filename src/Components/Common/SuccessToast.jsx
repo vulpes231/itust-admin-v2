@@ -5,7 +5,7 @@ const SuccessToast = ({ msg, onClose, isOpen }) => {
   return (
     <React.Fragment>
       <Toast
-        style={{ position: "fixed", top: "50px", right: "30px" }}
+        style={{ position: "fixed", top: "50px", right: "30px", zIndex: 9999 }}
         className="text-success"
         isOpen={isOpen}
         fade={false}
