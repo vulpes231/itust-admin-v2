@@ -1,37 +1,33 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import { Type, Quantity, OrderValue, AvgPrice, Price, Status } from "./PlanCol";
+import {
+  Type,
+  Status,
+  Winrate,
+  Duration,
+  Minimum,
+  TotalReturn,
+} from "./PlanCol";
 import TableContainer from "../../Components/Common/TableContainer";
+import { format } from "date-fns";
 
 const AllPlans = ({ planList }) => {
   const columns = useMemo(
     () => [
       {
         header: "Date",
-        accessorKey: "date",
+        accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => (
-          <>
-            {cell.getValue()}{" "}
-            <small className="text-muted">{cell.row.original.time}</small>
-          </>
-        ),
+        cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")}</>,
       },
       {
         header: "Name",
-        accessorKey: "coinName",
+        accessorKey: "name",
         enableColumnFilter: false,
         cell: (cell) => (
           <>
             <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
-                <img
-                  src={cell.row.original.img}
-                  alt=""
-                  className="avatar-xxs"
-                />
-              </div>
               <Link to="#" className="currency_name flex-grow-1 ms-2">
                 {cell.getValue()}
               </Link>
@@ -41,42 +37,42 @@ const AllPlans = ({ planList }) => {
       },
       {
         header: "Type",
-        accessorKey: "type",
+        accessorKey: "planType",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Type {...cell} />;
         },
       },
       {
-        header: "Quantity",
-        accessorKey: "quantity",
+        header: "Winrate (%)",
+        accessorKey: "performance.winRate",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Quantity {...cell} />;
+          return <Winrate {...cell} />;
         },
       },
       {
-        header: "Order Value",
-        accessorKey: "orderValue",
+        header: "Duration",
+        accessorKey: "formattedDuration",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <OrderValue {...cell} />;
+          return <Duration {...cell} />;
         },
       },
       {
-        header: "Avg Price",
-        accessorKey: "avgPrice",
+        header: "Minimum Investment",
+        accessorKey: "minInvestment",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <AvgPrice {...cell} />;
+          return <Minimum {...cell} />;
         },
       },
       {
-        header: "Price",
-        accessorKey: "price",
+        header: "Total return (%)",
+        accessorKey: "performance.expectedReturnPercent",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Price {...cell} />;
+          return <TotalReturn {...cell} />;
         },
       },
       {

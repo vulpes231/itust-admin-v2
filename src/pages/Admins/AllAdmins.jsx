@@ -1,22 +1,26 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import {
-  Type,
-  Quantity,
-  OrderValue,
-  AvgPrice,
-  Price,
-  Status,
-} from "./AdminCol";
+import { Status, Role, Email } from "./AdminCol";
 import TableContainer from "../../Components/Common/TableContainer";
+import { capitalize } from "lodash";
 
 const AllAdmins = ({ adminList }) => {
+  const [action, setAction] = useState("");
+  const [rowId, setRowId] = useState("");
+  const [showModal, setShowModal] = useState(false);
+
+  const handleAction = (e, id) => {
+    setRowId(id);
+    setAction(e.target.value);
+    setShowModal(true);
+  };
+
   const columns = useMemo(
     () => [
       {
-        header: "Date",
-        accessorKey: "date",
+        header: "ID",
+        accessorKey: "__v",
         enableColumnFilter: false,
         cell: (cell) => (
           <>
@@ -26,72 +30,53 @@ const AllAdmins = ({ adminList }) => {
         ),
       },
       {
-        header: "Name",
-        accessorKey: "coinName",
+        header: "Username",
+        accessorKey: "username",
         enableColumnFilter: false,
         cell: (cell) => (
           <>
             <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
-                <img
-                  src={cell.row.original.img}
-                  alt=""
-                  className="avatar-xxs"
-                />
-              </div>
               <Link to="#" className="currency_name flex-grow-1 ms-2">
-                {cell.getValue()}
+                {capitalize(cell.getValue())}
               </Link>
             </div>
           </>
         ),
       },
       {
-        header: "Type",
-        accessorKey: "type",
+        header: "Role",
+        accessorKey: "role",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Type {...cell} />;
+          return <Role {...cell} />;
         },
       },
       {
-        header: "Quantity",
-        accessorKey: "quantity",
+        header: "Email",
+        accessorKey: "email",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Quantity {...cell} />;
+          return <Email {...cell} />;
         },
       },
+
       {
-        header: "Order Value",
-        accessorKey: "orderValue",
+        header: "Action",
+        accessorKey: "_id",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <OrderValue {...cell} />;
-        },
-      },
-      {
-        header: "Avg Price",
-        accessorKey: "avgPrice",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <AvgPrice {...cell} />;
-        },
-      },
-      {
-        header: "Price",
-        accessorKey: "price",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Price {...cell} />;
-        },
-      },
-      {
-        header: "Status",
-        accessorKey: "status",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Status {...cell} />;
+          return (
+            <div>
+              <select
+                name="action"
+                onChange={(e) => handleAction(e, cell.getValue())}
+              >
+                <option value="">Select Action</option>
+                <option value="edit">Edit</option>
+                <option value="delete">Delete</option>
+              </select>
+            </div>
+          );
         },
       },
     ],

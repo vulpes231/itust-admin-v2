@@ -5,7 +5,7 @@ const api = new APIClient();
 export async function getAutoPlans() {
   try {
     const res = await api.get("/manageplans");
-    console.log(res.data);
+    // console.log(res.data);
     return res.data;
   } catch (error) {
     const errMsg = error.response?.data?.message || error?.message;
