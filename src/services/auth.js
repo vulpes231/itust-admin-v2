@@ -8,7 +8,7 @@ export async function loginAdmin(formData) {
     // console.log(res.token);
     return { token: res.token, user: res.data || null };
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error || error?.message;
     throw Error(errMsg);
   }
 }
@@ -19,7 +19,7 @@ export async function logoutAdmin() {
     console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error || error?.message;
     throw Error(errMsg);
   }
 }

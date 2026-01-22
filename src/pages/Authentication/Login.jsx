@@ -23,6 +23,7 @@ import { useMutation } from "@tanstack/react-query";
 
 import logoLight from "../../assets/images/logo-light.png";
 import { loginAdmin } from "../../services/auth";
+import ErrorToast from "../../Components/Common/ErrorToast";
 
 const Login = () => {
   const [passwordShow, setPasswordShow] = useState(false);
@@ -110,9 +111,7 @@ const Login = () => {
                         Sign in to continue to Dashboard.
                       </p>
                     </div>
-                    {error && error ? (
-                      <Alert color="danger"> {error} </Alert>
-                    ) : null}
+
                     <div className="p-2 mt-4">
                       <Form
                         onSubmit={(e) => {
@@ -248,6 +247,13 @@ const Login = () => {
           </Container>
         </div>
       </ParticlesAuth>
+      {error && (
+        <ErrorToast
+          isOpen={error !== undefined}
+          errMsg={error}
+          onClose={() => setError("")}
+        />
+      )}
     </React.Fragment>
   );
 };

@@ -4,9 +4,14 @@ import { Toast, ToastBody, ToastHeader } from "reactstrap";
 const ErrorToast = ({ errMsg, onClose, isOpen }) => {
   return (
     <React.Fragment>
-      <Toast className="text-danger" isOpen={isOpen} fade={false}>
+      <Toast
+        style={{ position: "fixed", top: "50px", right: "30px" }}
+        className="text-danger"
+        isOpen={isOpen}
+        fade={false}
+      >
         <ToastHeader toggle={onClose}>
-          <span className="fs-20">Error</span>
+          <span className="fs-20 text-danger">Error</span>
         </ToastHeader>
         <ToastBody>{errMsg}</ToastBody>
       </Toast>

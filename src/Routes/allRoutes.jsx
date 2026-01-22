@@ -10,6 +10,7 @@ import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
 import {
   Admins,
+  EditUser,
   Plans,
   SavingsAccount,
   Trades,
@@ -26,6 +27,7 @@ const authProtectedRoutes = [
   { path: "/savings-accounts", component: <SavingsAccount /> },
   { path: "/investment-plans", component: <Plans /> },
   { path: "/admins", component: <Admins /> },
+  { path: "/edituser/:userId", component: <EditUser /> },
 
   // this route should be at the end of all other routes
   // eslint-disable-next-line react/display-name

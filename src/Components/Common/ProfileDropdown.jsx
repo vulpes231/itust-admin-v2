@@ -9,15 +9,17 @@ import {
 //import images
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
 import { Link } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getAdminInfo } from "../../services/settings";
 import { capitalize } from "lodash";
+import { logoutAdmin } from "../../services/auth";
 
 const ProfileDropdown = () => {
   const token = getAccessToken();
 
   const [userName, setUserName] = useState("Admin");
+  const [error, setError] = useState("");
 
   const { data: admin } = useQuery({
     queryKey: ["adminInfo"],
@@ -25,11 +27,34 @@ const ProfileDropdown = () => {
     enabled: !!token,
   });
 
+  const mutation = useMutation({
+    mutationFn: logoutAdmin,
+    onError: (err) => setError(err.message),
+  });
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    console.log("clicked logout");
+    mutation.mutate();
+  };
+
   //Dropdown Toggle
   const [isProfileDropdown, setIsProfileDropdown] = useState(false);
   const toggleProfileDropdown = () => {
     setIsProfileDropdown(!isProfileDropdown);
   };
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      const tmt = setTimeout(() => {
+        sessionStorage.removeItem("token");
+        sessionStorage.clear();
+        window.location.href = "/login";
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [mutation.isSuccess]);
+
   return (
     <React.Fragment>
       <Dropdown
@@ -84,12 +109,17 @@ const ProfileDropdown = () => {
           </DropdownItem>
 
           <DropdownItem className="p-0">
-            <Link to="/logout" className="dropdown-item">
+            <button
+              onClick={handleLogout}
+              type="button"
+              className="dropdown-item"
+              disabled={mutation.isPending}
+            >
               <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle" data-key="t-logout">
-                Logout
+                {mutation.isPending ? "Wait..." : "Logout"}
               </span>
-            </Link>
+            </button>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>

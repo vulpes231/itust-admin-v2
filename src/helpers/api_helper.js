@@ -11,6 +11,7 @@ axios.defaults.headers.post["Content-Type"] = "application/json";
 const token = JSON.parse(sessionStorage.getItem("authUser"))
   ? JSON.parse(sessionStorage.getItem("authUser")).token
   : null;
+
 if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 
 // intercepting to capture errors
@@ -32,7 +33,7 @@ axios.interceptors.response.use(
         message = "Sorry! the data you are looking for could not be found";
         break;
       default:
-        message = error.message || error;
+        message = error.response?.data?.message || error;
     }
     return Promise.reject(message);
   }

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import { Email, Status, Experience, Kyc, Phone, Nationality } from "./UserCol";
 import TableContainer from "../../Components/Common/TableContainer";
@@ -8,9 +8,11 @@ import { format } from "date-fns";
 import { capitalize } from "lodash";
 
 const AllUsers = ({ userList }) => {
+  const history = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showBanModal, setShowBanModal] = useState(false);
 
   const handleAction = (e, id) => {
     setRowId(id);
@@ -18,7 +20,12 @@ const AllUsers = ({ userList }) => {
   };
 
   useEffect(() => {
-    if (action && rowId) {
+    if (action === "edit" && rowId) {
+      const userId = rowId;
+      window.location.href = `edituser/${userId}`;
+    } else if (action === "delete" && rowId) {
+      console.log(action, rowId);
+    } else if (action === "ban" && rowId) {
       console.log(action, rowId);
     }
   }, [action, rowId]);
