@@ -11,6 +11,8 @@ const Navdata = () => {
   const [isTransactions, setIsTransactions] = useState(false);
   const [isTrades, setIsTrades] = useState(false);
   const [isAdmins, setIsAdmins] = useState(false);
+  const [isPlan, setIsPlan] = useState(false);
+  const [isSavings, setIsSavings] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -48,6 +50,12 @@ const Navdata = () => {
     if (iscurrentState !== "Admins") {
       setIsAdmins(false);
     }
+    if (iscurrentState !== "Savings") {
+      setIsSavings(false);
+    }
+    if (iscurrentState !== "Investments") {
+      setIsPlan(false);
+    }
   }, [
     iscurrentState,
     isDashboard,
@@ -56,6 +64,8 @@ const Navdata = () => {
     isTransactions,
     isUsers,
     isAdmins,
+    isSavings,
+    isPlan,
   ]);
 
   const menuItems = [
@@ -112,6 +122,32 @@ const Navdata = () => {
         e.preventDefault();
         setIsTrades(!isTrades);
         setIscurrentState("Trades");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "savings",
+      label: "Savings Accounts",
+      icon: "ri-hand-coin-line",
+      link: "/savings-accounts",
+      stateVariables: isSavings,
+      click: function (e) {
+        e.preventDefault();
+        setIsSavings(!isSavings);
+        setIscurrentState("Savings");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "plans",
+      label: "Investment Plans",
+      icon: "ri-cash-line",
+      link: "/investment-plans",
+      stateVariables: isPlan,
+      click: function (e) {
+        e.preventDefault();
+        setIsPlan(!isPlan);
+        setIscurrentState("Investments");
         updateIconSidebar(e);
       },
     },

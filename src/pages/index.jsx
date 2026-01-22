@@ -1,6 +1,8 @@
 import Admins from "./Admins";
+import Plans from "./Plans";
+import SavingsAccount from "./Savings";
 import Trades from "./Trades";
 import Transactions from "./Transactions";
 import Users from "./Users";
 
-export { Trades, Transactions, Users, Admins };
+export { Trades, Transactions, Users, Admins, Plans, SavingsAccount };

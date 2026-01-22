@@ -5,7 +5,7 @@ const api = new APIClient();
 export async function getSavingsAccounts() {
   try {
     const res = await api.get("/managesavings");
-    console.log(res.data);
+    // console.log(res.data);
     return res.data;
   } catch (error) {
     const errMsg = error.response?.data?.message || error?.message;

@@ -29,7 +29,7 @@ const AllUsers = ({ userList }) => {
         header: "Date",
         accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => <>{format(cell.getValue(), "MMM-dd-yyyy")} </>,
+        cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")} </>,
       },
       {
         header: "Name",

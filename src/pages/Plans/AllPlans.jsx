@@ -1,30 +1,26 @@
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import {
-  Type,
-  Quantity,
-  OrderValue,
-  Roi,
-  Price,
-  Status,
-  Amount,
-} from "./TradeCol";
+import { Type, Quantity, OrderValue, AvgPrice, Price, Status } from "./PlanCol";
 import TableContainer from "../../Components/Common/TableContainer";
-import { format } from "date-fns";
 
-const AllTrades = ({ tradeList }) => {
+const AllPlans = ({ planList }) => {
   const columns = useMemo(
     () => [
       {
         header: "Date",
-        accessorKey: "createdAt",
+        accessorKey: "date",
         enableColumnFilter: false,
-        cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")}</>,
+        cell: (cell) => (
+          <>
+            {cell.getValue()}{" "}
+            <small className="text-muted">{cell.row.original.time}</small>
+          </>
+        ),
       },
       {
-        header: "Asset",
-        accessorKey: "asset.name",
+        header: "Name",
+        accessorKey: "coinName",
         enableColumnFilter: false,
         cell: (cell) => (
           <>
@@ -45,23 +41,15 @@ const AllTrades = ({ tradeList }) => {
       },
       {
         header: "Type",
-        accessorKey: "orderType",
+        accessorKey: "type",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Type {...cell} />;
         },
       },
       {
-        header: "Cost",
-        accessorKey: "execution.amount",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Amount {...cell} />;
-        },
-      },
-      {
         header: "Quantity",
-        accessorKey: "execution.quantity",
+        accessorKey: "quantity",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Quantity {...cell} />;
@@ -69,23 +57,23 @@ const AllTrades = ({ tradeList }) => {
       },
       {
         header: "Order Value",
-        accessorKey: "performance.currentValue",
+        accessorKey: "orderValue",
         enableColumnFilter: false,
         cell: (cell) => {
           return <OrderValue {...cell} />;
         },
       },
       {
-        header: "ROI(%)",
-        accessorKey: "performance.todayReturnPercent",
+        header: "Avg Price",
+        accessorKey: "avgPrice",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Roi {...cell} />;
+          return <AvgPrice {...cell} />;
         },
       },
       {
         header: "Price",
-        accessorKey: "execution.price",
+        accessorKey: "price",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Price {...cell} />;
@@ -107,10 +95,10 @@ const AllTrades = ({ tradeList }) => {
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
-            <h5 className="card-title mb-0 flex-grow-1">All Trades</h5>
+            <h5 className="card-title mb-0 flex-grow-1">All Plans</h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                <button className="btn btn-primary">Create Trade</button>
+                <button className="btn btn-primary">Create Plan</button>
                 {/* <button className="btn btn-soft-info">Past Orders</button> */}
               </div>
             </div>
@@ -118,7 +106,7 @@ const AllTrades = ({ tradeList }) => {
           <CardBody>
             <TableContainer
               columns={columns}
-              data={tradeList || []}
+              data={planList || []}
               isGlobalFilter={true}
               isAddUserList={false}
               customPageSize={8}
@@ -127,7 +115,7 @@ const AllTrades = ({ tradeList }) => {
               tableClass="align-middle table-nowrap"
               theadClass="table-light text-muted"
               isCryptoOrdersFilter={true}
-              SearchPlaceholder="Search Trades..."
+              SearchPlaceholder="Search Plans..."
             />
           </CardBody>
         </Card>
@@ -136,4 +124,4 @@ const AllTrades = ({ tradeList }) => {
   );
 };
 
-export default AllTrades;
+export default AllPlans;

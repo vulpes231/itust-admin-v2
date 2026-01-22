@@ -8,7 +8,14 @@ import Register from "../pages/Authentication/Register";
 
 import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
-import { Admins, Trades, Transactions, Users } from "../pages";
+import {
+  Admins,
+  Plans,
+  SavingsAccount,
+  Trades,
+  Transactions,
+  Users,
+} from "../pages";
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardAnalytics /> },
@@ -16,6 +23,8 @@ const authProtectedRoutes = [
   { path: "/users", component: <Users /> },
   { path: "/trades", component: <Trades /> },
   { path: "/transactions", component: <Transactions /> },
+  { path: "/savings-accounts", component: <SavingsAccount /> },
+  { path: "/investment-plans", component: <Plans /> },
   { path: "/admins", component: <Admins /> },
 
   // this route should be at the end of all other routes
