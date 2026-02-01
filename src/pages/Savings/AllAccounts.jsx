@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import {
@@ -11,8 +11,17 @@ import {
 } from "./AccountCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
+import CreateSavings from "./CreateSavings";
 
 const AllAccounts = ({ accountList }) => {
+  const [createSavingsModal, setCreateSavingsModal] = useState(false);
+
+  const openCreateSavingsModal = () => {
+    setCreateSavingsModal(true);
+  };
+  const closeCreateSavingsModal = () => {
+    setCreateSavingsModal(false);
+  };
   const columns = useMemo(
     () => [
       {
@@ -94,7 +103,13 @@ const AllAccounts = ({ accountList }) => {
             <h5 className="card-title mb-0 flex-grow-1">All Accounts</h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                <button className="btn btn-primary">Create Account</button>
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={openCreateSavingsModal}
+                >
+                  Create Account
+                </button>
                 {/* <button className="btn btn-soft-info">Past Orders</button> */}
               </div>
             </div>
@@ -116,6 +131,12 @@ const AllAccounts = ({ accountList }) => {
           </CardBody>
         </Card>
       </Col>
+      {createSavingsModal && (
+        <CreateSavings
+          isOpen={createSavingsModal}
+          onClose={closeCreateSavingsModal}
+        />
+      )}
     </React.Fragment>
   );
 };
