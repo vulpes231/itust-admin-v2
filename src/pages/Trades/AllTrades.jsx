@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import {
@@ -12,8 +12,18 @@ import {
 } from "./TradeCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
+import CreateTrade from "./CreateTrade";
 
 const AllTrades = ({ tradeList }) => {
+  const [createTradeModal, setCreateTradeModal] = useState(false);
+
+  const openCreateTradeModal = () => {
+    setCreateTradeModal(true);
+  };
+  const closeCreateTradeModal = () => {
+    setCreateTradeModal(false);
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -110,7 +120,13 @@ const AllTrades = ({ tradeList }) => {
             <h5 className="card-title mb-0 flex-grow-1">All Trades</h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                <button className="btn btn-primary">Create Trade</button>
+                <button
+                  type="button"
+                  onClick={openCreateTradeModal}
+                  className="btn btn-primary"
+                >
+                  Create Trade
+                </button>
                 {/* <button className="btn btn-soft-info">Past Orders</button> */}
               </div>
             </div>
@@ -132,6 +148,12 @@ const AllTrades = ({ tradeList }) => {
           </CardBody>
         </Card>
       </Col>
+      {createTradeModal && (
+        <CreateTrade
+          isOpen={createTradeModal}
+          onClose={closeCreateTradeModal}
+        />
+      )}
     </React.Fragment>
   );
 };

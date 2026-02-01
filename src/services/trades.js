@@ -8,7 +8,18 @@ export async function getAllTrades() {
     // console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
+export async function addNewTrade(formData) {
+  try {
+    const res = await api.create("/managetrade", formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
     throw Error(errMsg);
   }
 }
