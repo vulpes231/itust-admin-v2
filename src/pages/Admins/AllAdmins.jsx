@@ -4,8 +4,11 @@ import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import { Status, Role, Email } from "./AdminCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { capitalize } from "lodash";
+import CreateAdmin from "./CreateAdmin";
 
 const AllAdmins = ({ adminList }) => {
+  const [createAdminModal, setCreateAdminModal] = useState(false);
+
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -14,6 +17,13 @@ const AllAdmins = ({ adminList }) => {
     setRowId(id);
     setAction(e.target.value);
     setShowModal(true);
+  };
+
+  const openCreateAdminModal = () => {
+    setCreateAdminModal(true);
+  };
+  const closeCreateAdminModal = () => {
+    setCreateAdminModal(false);
   };
 
   const columns = useMemo(
@@ -90,8 +100,13 @@ const AllAdmins = ({ adminList }) => {
             <h5 className="card-title mb-0 flex-grow-1">All Admins</h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                <button className="btn btn-primary">Add Admin</button>
-                {/* <button className="btn btn-soft-info">Past Orders</button> */}
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={openCreateAdminModal}
+                >
+                  Add Admin
+                </button>
               </div>
             </div>
           </CardHeader>
@@ -112,6 +127,12 @@ const AllAdmins = ({ adminList }) => {
           </CardBody>
         </Card>
       </Col>
+      {createAdminModal && (
+        <CreateAdmin
+          isOpen={createAdminModal}
+          onClose={closeCreateAdminModal}
+        />
+      )}
     </React.Fragment>
   );
 };

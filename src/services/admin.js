@@ -12,3 +12,14 @@ export async function getAllAdmins() {
     throw Error(errMsg);
   }
 }
+
+export async function addNewAdmin(formData) {
+  try {
+    const res = await api.create("/register", formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}
