@@ -11,8 +11,6 @@ const AllUsers = ({ userList }) => {
   const history = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showBanModal, setShowBanModal] = useState(false);
 
   const handleAction = (e, id) => {
     setRowId(id);
@@ -23,10 +21,6 @@ const AllUsers = ({ userList }) => {
     if (action === "edit" && rowId) {
       const userId = rowId;
       window.location.href = `edituser/${userId}`;
-    } else if (action === "delete" && rowId) {
-      console.log(action, rowId);
-    } else if (action === "ban" && rowId) {
-      console.log(action, rowId);
     }
   }, [action, rowId]);
 
@@ -113,8 +107,6 @@ const AllUsers = ({ userList }) => {
               >
                 <option value="">Select Option</option>
                 <option value="edit">Edit</option>
-                <option value="delete">Delete</option>
-                <option value="ban">Ban</option>
               </select>
             </div>
           );

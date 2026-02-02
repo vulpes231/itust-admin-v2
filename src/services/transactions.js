@@ -8,7 +8,7 @@ export async function getAllTransactions() {
     // console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error;
     throw Error(errMsg);
   }
 }
@@ -20,7 +20,18 @@ export async function updateTransaction(transactionData) {
     // console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
+export async function createTransaction(formData) {
+  try {
+    const res = await api.create(`/managetrans`, formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
     throw Error(errMsg);
   }
 }

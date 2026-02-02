@@ -6,11 +6,21 @@ import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import TransactionModal from "./TransactionModal";
 import { upperCase } from "lodash";
+import CreateTransaction from "./CreateTransaction";
 
 const AllTransactions = ({ transactionList }) => {
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [showModal, setShowModal] = useState(false);
+
+  const [createTransactionModal, setCreateTransactionModal] = useState(false);
+
+  const openCreateTransactionModal = () => {
+    setCreateTransactionModal(true);
+  };
+  const closeCreateTransactionModal = () => {
+    setCreateTransactionModal(false);
+  };
 
   const handleAction = (e, id) => {
     setRowId(id);
@@ -119,7 +129,13 @@ const AllTransactions = ({ transactionList }) => {
             <h5 className="card-title mb-0 flex-grow-1">All Transactions</h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                {/* <button className="btn btn-primary">Today's Orders</button> */}
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={openCreateTransactionModal}
+                >
+                  Create Transaction
+                </button>
                 {/* <button className="btn btn-soft-info">Past Orders</button> */}
               </div>
             </div>
@@ -151,6 +167,12 @@ const AllTransactions = ({ transactionList }) => {
             setRowId("");
             setShowModal(false);
           }}
+        />
+      )}
+      {createTransactionModal && (
+        <CreateTransaction
+          isOpen={createTransactionModal}
+          onClose={closeCreateTransactionModal}
         />
       )}
     </React.Fragment>
