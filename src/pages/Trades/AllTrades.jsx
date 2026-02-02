@@ -13,8 +13,8 @@ import {
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import CreateTrade from "./CreateTrade";
-import TradeModal from "./Trademodal";
 import CloseTradeModal from "./CloseTradeModal";
+import TradeModal from "./TradeModal";
 
 const AllTrades = ({ tradeList }) => {
   const [action, setAction] = useState("");
