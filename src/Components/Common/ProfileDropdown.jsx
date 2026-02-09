@@ -90,7 +90,7 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
           <DropdownItem className="p-0">
-            <Link to="/apps-chat" className="dropdown-item">
+            <Link to="/#" className="dropdown-item">
               <i className="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle">Messages</span>
             </Link>
@@ -99,7 +99,7 @@ const ProfileDropdown = () => {
           <div className="dropdown-divider"></div>
 
           <DropdownItem className="p-0">
-            <Link to="/pages-profile-settings" className="dropdown-item">
+            <Link to="/settings" className="dropdown-item">
               <span className="badge bg-success-subtle text-success mt-1 float-end">
                 New
               </span>

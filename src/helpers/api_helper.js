@@ -32,6 +32,11 @@ axios.interceptors.response.use(
       case 404:
         message = "Sorry! the data you are looking for could not be found";
         break;
+      case 403:
+        message = "Sorry! the data you are looking for could not be found";
+        sessionStorage.clear();
+        window.location.href = "/";
+        break;
       default:
         message = error.response?.data?.message || error;
     }

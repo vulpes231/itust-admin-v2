@@ -13,8 +13,10 @@ import * as Yup from "yup";
 import { devServer, liveServer } from "../../config";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import SuccessToast from "../../Components/Common/SuccessToast";
+import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 
 const Verification = ({ user }) => {
+  const [showVerifyInfo, setShowVerifyInfo] = useState(false);
   const tk = getAccessToken();
   const userId = user?._id;
 
@@ -83,122 +85,140 @@ const Verification = ({ user }) => {
     <React.Fragment>
       {user?.identityVerification?.kycStatus !== "not verified" && (
         <div>
-          <h5 className="fs-20 mb-4 mt-4">Verification Information</h5>
-          <div className="mb-3">
-            <Row>
-              <Col md={6}>
-                <Label htmlFor="idType">ID Type</Label>
-                <Input
-                  value={validation.values.idType}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  readOnly
-                  name="idType"
-                />
-              </Col>
-              <Col md={6}>
-                <Label htmlFor="idNumber">ID Number</Label>
-                <Input
-                  value={validation.values.idNumber}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  readOnly
-                  name="idNumber"
-                />
-              </Col>
-            </Row>
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => setShowVerifyInfo(!showVerifyInfo)}
+            className="d-flex align-items-center justify-content-between w-100 bg-light px-4 py-2"
+          >
+            <h5 className="fs-20">Verification </h5>
+            <span>
+              {" "}
+              {showVerifyInfo ? (
+                <SlArrowUp className="fw-bold" size={20} />
+              ) : (
+                <SlArrowDown className="fw-bold" size={20} />
+              )}
+            </span>
           </div>
-          <div className="mb-3">
-            <Row>
-              <Col md={6}>
-                <Label htmlFor="idType">Full Name</Label>
-                <Input
-                  value={validation.values.fullName}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  readOnly
-                  name="fullname"
-                />
-              </Col>
-              <Col md={6}>
-                <Label htmlFor="status">Status</Label>
-                <Input
-                  value={validation.values.status}
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  readOnly
-                  name="status"
-                />
-              </Col>
-            </Row>
-          </div>
-          <div className="mb-3 mt-4 ">
+          {showVerifyInfo && (
             <Col>
-              <Col className="d-flex align-items-center justify-content-between gap-2 p-2">
-                <Label htmlFor="idType">Front ID</Label>
-                <figure
-                  style={{ width: "100px", height: "60px" }}
-                  className="bg-info-subtle d-flex align-items-center justify-content-center"
-                >
-                  <img
-                    src={`${liveServer}${verifyInfo?.frontId}`}
-                    alt="front-id"
-                    width={40}
-                    height={40}
-                  />
-                </figure>
-              </Col>
-              <Col className="d-flex align-items-center justify-content-between gap-2 p-2">
-                <Label htmlFor="status">Back ID</Label>
+              <div className="mb-3">
+                <Row>
+                  <Col md={6}>
+                    <Label htmlFor="idType">ID Type</Label>
+                    <Input
+                      value={validation.values.idType}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      readOnly
+                      name="idType"
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <Label htmlFor="idNumber">ID Number</Label>
+                    <Input
+                      value={validation.values.idNumber}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      readOnly
+                      name="idNumber"
+                    />
+                  </Col>
+                </Row>
+              </div>
+              <div className="mb-3">
+                <Row>
+                  <Col md={6}>
+                    <Label htmlFor="idType">Full Name</Label>
+                    <Input
+                      value={validation.values.fullName}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      readOnly
+                      name="fullname"
+                    />
+                  </Col>
+                  <Col md={6}>
+                    <Label htmlFor="status">Status</Label>
+                    <Input
+                      value={validation.values.status}
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      readOnly
+                      name="status"
+                    />
+                  </Col>
+                </Row>
+              </div>
+              <div className="mb-3 mt-4 ">
+                <Col>
+                  <Col className="d-flex align-items-center justify-content-between gap-2 p-2">
+                    <Label htmlFor="idType">Front ID</Label>
+                    <figure
+                      style={{ width: "100px", height: "60px" }}
+                      className="bg-info-subtle d-flex align-items-center justify-content-center"
+                    >
+                      <img
+                        src={`${liveServer}${verifyInfo?.frontId}`}
+                        alt="front-id"
+                        width={40}
+                        height={40}
+                      />
+                    </figure>
+                  </Col>
+                  <Col className="d-flex align-items-center justify-content-between gap-2 p-2">
+                    <Label htmlFor="status">Back ID</Label>
 
-                <figure
-                  style={{ width: "100px", height: "60px" }}
-                  className="bg-info-subtle d-flex align-items-center justify-content-center"
-                >
-                  <img
-                    src={`${liveServer}${verifyInfo?.backId}`}
-                    alt="back-id"
-                    width={40}
-                    height={40}
-                  />
-                </figure>
-              </Col>
+                    <figure
+                      style={{ width: "100px", height: "60px" }}
+                      className="bg-info-subtle d-flex align-items-center justify-content-center"
+                    >
+                      <img
+                        src={`${liveServer}${verifyInfo?.backId}`}
+                        alt="back-id"
+                        width={40}
+                        height={40}
+                      />
+                    </figure>
+                  </Col>
+                </Col>
+              </div>
+
+              {verifyInfo && verifyInfo.status === "pending" && (
+                <Row>
+                  <Col md={6}>
+                    <button
+                      type="button"
+                      disabled={mutation.isPending}
+                      className="btn btn-success w-100"
+                      onClick={(e) => handleSubmit(e, "approve")}
+                    >
+                      {mutation.isPending ? (
+                        <Spinner size="sm" className="me-2">
+                          Loading...
+                        </Spinner>
+                      ) : null}
+                      Approve
+                    </button>
+                  </Col>
+                  <Col md={6}>
+                    <button
+                      type="button"
+                      disabled={mutation.isPending}
+                      className="btn btn-danger w-100"
+                      onClick={(e) => handleSubmit(e, "reject")}
+                    >
+                      {mutation.isPending ? (
+                        <Spinner size="sm" className="me-2">
+                          Loading...
+                        </Spinner>
+                      ) : null}
+                      Reject
+                    </button>
+                  </Col>
+                </Row>
+              )}
             </Col>
-          </div>
-
-          {verifyInfo && verifyInfo.status === "pending" && (
-            <Row>
-              <Col md={6}>
-                <button
-                  type="button"
-                  disabled={mutation.isPending}
-                  className="btn btn-success w-100"
-                  onClick={(e) => handleSubmit(e, "approve")}
-                >
-                  {mutation.isPending ? (
-                    <Spinner size="sm" className="me-2">
-                      Loading...
-                    </Spinner>
-                  ) : null}
-                  Approve
-                </button>
-              </Col>
-              <Col md={6}>
-                <button
-                  type="button"
-                  disabled={mutation.isPending}
-                  className="btn btn-danger w-100"
-                  onClick={(e) => handleSubmit(e, "reject")}
-                >
-                  {mutation.isPending ? (
-                    <Spinner size="sm" className="me-2">
-                      Loading...
-                    </Spinner>
-                  ) : null}
-                  Reject
-                </button>
-              </Col>
-            </Row>
           )}
           {error && (
             <ErrorToast

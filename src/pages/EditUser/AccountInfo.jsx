@@ -44,10 +44,6 @@ const AccountInfo = ({ user }) => {
     }
   }, [mutation.isSuccess]);
 
-  useEffect(() => {
-    if (user) console.log(user.accountStatus.banned);
-  }, [user]);
-
   return (
     <React.Fragment>
       <div>

@@ -6,21 +6,32 @@ import TableContainer from "../../Components/Common/TableContainer";
 
 import { format } from "date-fns";
 import { capitalize } from "lodash";
+import BanUserModal from "./BanUserModal";
 
 const AllUsers = ({ userList }) => {
   const history = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
+  const [banModal, setBanModal] = useState(false);
+  const [deleteUserModal, setDeleteUserModal] = useState(false);
+  const [data, setData] = useState("");
 
-  const handleAction = (e, id) => {
+  const handleAction = (e, id, userData) => {
     setRowId(id);
     setAction(e.target.value);
+    setData(userData);
   };
 
   useEffect(() => {
     if (action === "edit" && rowId) {
       const userId = rowId;
       window.location.href = `edituser/${userId}`;
+    } else if (action === "ban" && rowId) {
+      const userId = rowId;
+      setBanModal(true);
+    } else if (action === "delete" && rowId) {
+      const userId = rowId;
+      setDeleteUserModal(true);
     }
   }, [action, rowId]);
 
@@ -99,14 +110,17 @@ const AllUsers = ({ userList }) => {
         accessorKey: "_id",
         enableColumnFilter: false,
         cell: (cell) => {
+          const rowData = cell.row.original;
           return (
             <div>
               <select
                 name="action"
-                onChange={(e) => handleAction(e, cell.getValue())}
+                onChange={(e) => handleAction(e, cell.getValue(), rowData)}
               >
                 <option value="">Select Option</option>
-                <option value="edit">Edit</option>
+                <option value="edit">View</option>
+                <option value="ban">Ban</option>
+                <option value="delete">Delete</option>
               </select>
             </div>
           );
@@ -115,18 +129,13 @@ const AllUsers = ({ userList }) => {
     ],
     []
   );
+
   return (
     <React.Fragment>
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
             <h5 className="card-title mb-0 flex-grow-1">All Users</h5>
-            <div className="flex-shrink-0">
-              <div className="flax-shrink-0 hstack gap-2">
-                {/* <button className="btn btn-primary">Today's Orders</button> */}
-                {/* <button className="btn btn-soft-info">Past Orders</button> */}
-              </div>
-            </div>
           </CardHeader>
           <CardBody>
             <TableContainer
@@ -145,6 +154,14 @@ const AllUsers = ({ userList }) => {
           </CardBody>
         </Card>
       </Col>
+      {banModal && (
+        <BanUserModal
+          dataId={rowId}
+          isOpen={banModal}
+          onClose={() => setBanModal(false)}
+          data={data}
+        />
+      )}
     </React.Fragment>
   );
 };

@@ -4,13 +4,13 @@ import { Navigate } from "react-router-dom";
 import Login from "../pages/Authentication/Login";
 import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
-import Register from "../pages/Authentication/Register";
 
 import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
 import {
   Admins,
   EditUser,
+  ManageSettings,
   Plans,
   SavingsAccount,
   Trades,
@@ -27,6 +27,7 @@ const authProtectedRoutes = [
   { path: "/savings-accounts", component: <SavingsAccount /> },
   { path: "/investment-plans", component: <Plans /> },
   { path: "/admins", component: <Admins /> },
+  { path: "/settings", component: <ManageSettings /> },
   { path: "/edituser/:userId", component: <EditUser /> },
 
   // this route should be at the end of all other routes
@@ -43,7 +44,6 @@ const publicRoutes = [
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPasswordPage /> },
-  { path: "/register", component: <Register /> },
 ];
 
 export { authProtectedRoutes, publicRoutes };

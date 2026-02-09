@@ -9,6 +9,7 @@ import { getAccessToken } from "../../helpers/api_helper";
 import AccountInfo from "./AccountInfo";
 import Verification from "./Verification";
 import Settings from "./Settings";
+import Accounts from "./Accounts";
 
 const EditUser = () => {
   document.title = "Edit User | Itrust Investment";
@@ -34,6 +35,11 @@ const EditUser = () => {
           <Row>
             <Col>
               <Verification user={userInfo} />
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <Accounts user={userInfo} />
             </Col>
           </Row>
           <Row>

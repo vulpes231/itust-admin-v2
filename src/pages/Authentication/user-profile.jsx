@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { isEmpty } from "lodash";
+import { capitalize, isEmpty } from "lodash";
 
 import {
   Container,
@@ -15,88 +15,51 @@ import {
   Form,
 } from "reactstrap";
 
-// Formik Validation
 import * as Yup from "yup";
 import { useFormik } from "formik";
 
-//redux
-import { useSelector, useDispatch } from "react-redux";
-
 import avatar from "../../assets/images/users/avatar-1.jpg";
-// actions
-import { editProfile, resetProfileFlag } from "../../slices/thunks";
-import { createSelector } from "reselect";
+
+import { useQuery } from "@tanstack/react-query";
+import { getAdminInfo } from "../../services/settings";
+import { getAccessToken } from "../../helpers/api_helper";
 
 const UserProfile = () => {
-  const dispatch = useDispatch();
+  const [error, setError] = useState("");
+  const token = getAccessToken();
 
-  const [email, setemail] = useState("admin@gmail.com");
-  const [idx, setidx] = useState("1");
-
-  const [userName, setUserName] = useState("Admin");
-
-  const selectLayoutState = (state) => state.Profile;
-  const userprofileData = createSelector(
-    selectLayoutState,
-    (state) => ({
-      user: state.user,
-      success: state.success,
-      error: state.error
-    })
-  );
-  // Inside your component
-  const {
-    user, success, error 
-  } = useSelector(userprofileData);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("authUser")) {
-      const obj = JSON.parse(sessionStorage.getItem("authUser"));
-
-      if (!isEmpty(user)) {
-        obj.data.first_name = user.first_name;
-        sessionStorage.removeItem("authUser");
-        sessionStorage.setItem("authUser", JSON.stringify(obj));
-      }
-
-      setUserName(obj.data.first_name);
-      setemail(obj.data.email);
-      setidx(obj.data._id || "1");
-
-      setTimeout(() => {
-        dispatch(resetProfileFlag());
-      }, 3000);
-    }
-  }, [dispatch, user]);
-
-
+  const { data: user } = useQuery({
+    queryKey: ["admin"],
+    queryFn: getAdminInfo,
+    enabled: !!token,
+  });
 
   const validation = useFormik({
-    // enableReinitialize : use this flag when initial values needs to be changed
     enableReinitialize: true,
 
     initialValues: {
-      first_name: userName || 'Admin',
-      idx: idx || '',
+      first_name: user?.username || "",
+      idx: user?._id || "",
     },
     validationSchema: Yup.object({
       first_name: Yup.string().required("Please Enter Your UserName"),
     }),
     onSubmit: (values) => {
       dispatch(editProfile(values));
-    }
+    },
   });
 
-  document.title = "Profile | Velzon - React Admin & Dashboard Template";
+  document.title = "Admin Profile | Itrust Investment";
+
+  useEffect(() => {
+    if (user) console.log(user);
+  }, [user]);
   return (
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
           <Row>
             <Col lg="12">
-              {error && error ? <Alert color="danger">{error}</Alert> : null}
-              {success ? <Alert color="success">Username Updated To {userName}</Alert> : null}
-
               <Card>
                 <CardBody>
                   <div className="d-flex">
@@ -109,9 +72,9 @@ const UserProfile = () => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>{userName || "Admin"}</h5>
-                        <p className="mb-1">Email Id : {email}</p>
-                        <p className="mb-0">Id No : #{idx}</p>
+                        <h5>{capitalize(user?.username)}</h5>
+                        <p className="mb-1">Email Id : {user?.email}</p>
+                        <p className="mb-0">Id No : {user?._id}</p>
                       </div>
                     </div>
                   </div>
@@ -144,13 +107,19 @@ const UserProfile = () => {
                     onBlur={validation.handleBlur}
                     value={validation.values.first_name || ""}
                     invalid={
-                      validation.touched.first_name && validation.errors.first_name ? true : false
+                      validation.touched.first_name &&
+                      validation.errors.first_name
+                        ? true
+                        : false
                     }
                   />
-                  {validation.touched.first_name && validation.errors.first_name ? (
-                    <FormFeedback type="invalid">{validation.errors.first_name}</FormFeedback>
+                  {validation.touched.first_name &&
+                  validation.errors.first_name ? (
+                    <FormFeedback type="invalid">
+                      {validation.errors.first_name}
+                    </FormFeedback>
                   ) : null}
-                  <Input name="idx" value={idx} type="hidden" />
+                  <Input name="idx" value={1} type="hidden" />
                 </div>
                 <div className="text-center mt-4">
                   <Button type="submit" color="danger">

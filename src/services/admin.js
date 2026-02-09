@@ -8,7 +8,7 @@ export async function getAllAdmins() {
     // console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error;
     throw Error(errMsg);
   }
 }
@@ -19,7 +19,18 @@ export async function addNewAdmin(formData) {
     // console.log(res.data);
     return res.data;
   } catch (error) {
-    const errMsg = error.response?.data?.message || error?.message;
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
+export async function logoutAdmin() {
+  try {
+    const res = await api.create("/logout", {});
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
     throw Error(errMsg);
   }
 }
