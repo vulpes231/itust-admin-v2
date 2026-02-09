@@ -53,13 +53,6 @@ const setAuthorization = (token) => {
 };
 
 class APIClient {
-  /**
-   * Fetches data from given url
-   */
-
-  //  get = (url, params) => {
-  //   return axios.get(url, params);
-  // };
   get = (url, params) => {
     let response;
 

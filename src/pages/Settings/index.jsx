@@ -8,10 +8,10 @@ const ManageSettings = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb title="Setting" pageTitle="Global Settings" />
+          <BreadCrumb title="Settings" pageTitle="Global Settings" />
+          <GeneralSettings />
         </Container>
       </div>
-      <GeneralSettings />
     </React.Fragment>
   );
 };

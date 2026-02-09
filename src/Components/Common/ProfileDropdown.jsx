@@ -14,6 +14,7 @@ import { getAccessToken } from "../../helpers/api_helper";
 import { getAdminInfo } from "../../services/settings";
 import { capitalize } from "lodash";
 import { logoutAdmin } from "../../services/auth";
+import Loader from "./Loader";
 
 const ProfileDropdown = () => {
   const token = getAccessToken();
@@ -49,7 +50,7 @@ const ProfileDropdown = () => {
       const tmt = setTimeout(() => {
         sessionStorage.removeItem("token");
         sessionStorage.clear();
-        window.location.href = "/login";
+        window.location.href = "/";
       }, 3000);
       return () => clearTimeout(tmt);
     }
@@ -117,12 +118,28 @@ const ProfileDropdown = () => {
             >
               <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
               <span className="align-middle" data-key="t-logout">
-                {mutation.isPending ? "Wait..." : "Logout"}
+                {"Logout"}
               </span>
             </button>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>
+      {mutation.isPending && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            height: "100vh",
+            width: "100vw",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Loader />
+        </div>
+      )}
     </React.Fragment>
   );
 };
