@@ -16,7 +16,11 @@ const Info = ({ settings }) => {
             <Input
               type="text"
               readOnly
-              value={format(settings?.updatedAt, "dd MMM, yyyy hh:mm a")}
+              value={
+                settings && settings.updatedAt
+                  ? format(settings.updatedAt, "dd MMM, yyyy hh:mm a")
+                  : null
+              }
             />
 
             <button className="mt-3 btn btn-warning">Clear Cache</button>

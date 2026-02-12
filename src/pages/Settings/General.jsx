@@ -1,6 +1,6 @@
 import { useFormik } from "formik";
-import React, { useState } from "react";
-import { Card, CardBody, CardHeader, Col, Input, Label, Row } from "reactstrap";
+import React, { useEffect, useState } from "react";
+import { Card, CardBody, CardHeader, Col, Spinner } from "reactstrap";
 import Bank from "./Bank";
 import Wallet from "./Wallet";
 import Limits from "./Limits";
@@ -10,9 +10,12 @@ import {
   updateLimit,
   updateWallet,
 } from "../../services/generalSettings";
+import ErrorToast from "../../Components/Common/ErrorToast";
+import SuccessToast from "../../Components/Common/SuccessToast";
 
 const General = ({ settings }) => {
   const [error, setError] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const walletMutation = useMutation({
     mutationFn: updateWallet,
@@ -39,7 +42,7 @@ const General = ({ settings }) => {
     },
     onSubmit: (values) => {
       console.log(values);
-      // walletMutation.mutate(values)
+      walletMutation.mutate(values);
     },
   });
 
@@ -47,15 +50,15 @@ const General = ({ settings }) => {
     enableReinitialize: true,
     initialValues: {
       bankName: settings?.bankDetails?.bankName || "",
-      account: settings?.bankDetails?.accountNumber || "",
+      accountNumber: settings?.bankDetails?.accountNumber || "",
       routing: settings?.bankDetails?.routing || "",
       accountName: settings?.bankDetails?.accountName || "",
-      bankAddress: settings?.bankDetails?.address || "",
+      address: settings?.bankDetails?.address || "",
       reference: settings?.bankDetails?.reference || "",
     },
     onSubmit: (values) => {
       console.log(values);
-      // bankMutation.mutate(values)
+      bankMutation.mutate(values);
     },
   });
 
@@ -73,9 +76,42 @@ const General = ({ settings }) => {
     },
     onSubmit: (values) => {
       console.log(values);
-      // limitMutation.mutate(values)
+      limitMutation.mutate(values);
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (
+      limitMutation.isSuccess ||
+      bankMutation.isSuccess ||
+      walletMutation.isSuccess
+    ) {
+      setIsSuccess(true);
+      const tmt = setTimeout(() => {
+        limitMutation.reset();
+        bankMutation.reset();
+        walletMutation.reset();
+        setIsSuccess(false);
+        window.location.reload();
+      }, 3000);
+
+      return () => clearTimeout(tmt);
+    }
+  }, [
+    limitMutation.isSuccess,
+    bankMutation.isSuccess,
+    walletMutation.isSuccess,
+  ]);
 
   return (
     <React.Fragment>
@@ -87,20 +123,80 @@ const General = ({ settings }) => {
           <Col className="mb-5">
             <Wallet validation={walletValidation} />
 
-            <button className="btn btn-info mt-3">Update Wallet</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                walletValidation.submitForm();
+              }}
+              className="btn btn-info mt-3"
+            >
+              {walletMutation.isPending ? (
+                <Spinner size="sm" className="me-2">
+                  Loading...
+                </Spinner>
+              ) : (
+                "Update Wallet"
+              )}
+            </button>
           </Col>
 
           <Col className="mb-5">
             <Bank validation={bankValidation} />
-            <button className="btn btn-info mt-3">Update Bank</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                bankValidation.submitForm();
+              }}
+              className="btn btn-info mt-3"
+            >
+              {bankMutation.isPending ? (
+                <Spinner size="sm" className="me-2">
+                  Loading...
+                </Spinner>
+              ) : (
+                " Update Bank"
+              )}
+            </button>
           </Col>
 
           <Col className="mt-5">
             <Limits validation={limitValidation} />
-            <button className="mt-3 btn btn-info">Update Limits</button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                limitValidation.submitForm();
+              }}
+              className="mt-3 btn btn-info"
+              disabled={limitMutation.isPending}
+            >
+              {limitMutation.isPending ? (
+                <Spinner size="sm" className="me-2">
+                  Loading...
+                </Spinner>
+              ) : (
+                " Update Limits"
+              )}
+            </button>
           </Col>
         </CardBody>
       </Card>
+      {error && (
+        <ErrorToast
+          errMsg={error}
+          onClose={() => setError("")}
+          isOpen={!!error}
+        />
+      )}
+      {isSuccess && (
+        <SuccessToast
+          msg={"Update Successful"}
+          onClose={() => setError("")}
+          isOpen={isSuccess}
+        />
+      )}
     </React.Fragment>
   );
 };

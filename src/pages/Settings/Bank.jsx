@@ -29,20 +29,20 @@ const Bank = ({ validation }) => {
           <Label>Account Number</Label>
           <Input
             type="text"
-            value={validation.values.account}
+            value={validation.values.accountNumber}
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            name="account"
+            name="accountNumber"
           />
         </Col>
         <Col md={12}>
           <Label>Bank Address</Label>
           <Input
             type="text"
-            value={validation.values.bankAddress}
+            value={validation.values.address}
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            name="bankAddress"
+            name="address"
           />
         </Col>
         <Col md={6}>
