@@ -46,7 +46,7 @@ const EditUser = () => {
 
           <Row>
             <Col>
-              <DepositDetails />
+              <DepositDetails settings={userInfo?.settings} />
             </Col>
           </Row>
           <Row>

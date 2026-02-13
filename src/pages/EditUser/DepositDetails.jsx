@@ -1,9 +1,14 @@
-import { Tab } from "bootstrap";
 import React, { useState } from "react";
 import { Card, Col, TabContent, TabPane } from "reactstrap";
+import AddBankModal from "./AddBankModal";
+import AddCryptoModal from "./AddCryptoModal";
+import Bank from "./Bank";
+import CryptoDepositAddress from "./CryptoDepositAddress";
 
-const DepositDetails = () => {
+const DepositDetails = ({ settings }) => {
   const [activeTab, setActiveTab] = useState("bank");
+  const [showBankModal, setShowBankModal] = useState(false);
+  const [showCryptoModal, setShowCryptoModal] = useState(false);
   return (
     <React.Fragment>
       <Card>
@@ -39,10 +44,18 @@ const DepositDetails = () => {
               </span>
             </span>
             <span className="d-flex align-items-center gap-3">
-              <button className="btn btn-success" type="button">
+              <button
+                onClick={() => setShowBankModal(true)}
+                className="btn btn-success"
+                type="button"
+              >
                 Add Bank Accounts
               </button>
-              <button className="btn btn-success" type="button">
+              <button
+                onClick={() => setShowCryptoModal(true)}
+                className="btn btn-success"
+                type="button"
+              >
                 Add Crypto Wallet
               </button>
             </span>
@@ -51,17 +64,36 @@ const DepositDetails = () => {
           <TabContent activeTab={activeTab}>
             <TabPane tabId={"bank"}>
               <Col>
-                <span>Bank Accounts</span>
+                <Bank
+                  settings={settings}
+                  handleClick={() => setShowBankModal(true)}
+                />
               </Col>
             </TabPane>
             <TabPane tabId={"crypto"}>
               <Col>
-                <span>Crypto Wallets</span>
+                <CryptoDepositAddress
+                  settings={settings}
+                  handleClick={() => setShowCryptoModal(true)}
+                />
               </Col>
             </TabPane>
           </TabContent>
         </Col>
       </Card>
+      {showBankModal && (
+        <AddBankModal
+          isOpen={showBankModal}
+          handleToggle={() => setShowBankModal(false)}
+          settings={settings}
+        />
+      )}
+      {showCryptoModal && (
+        <AddCryptoModal
+          isOpen={showCryptoModal}
+          handleToggle={() => setShowCryptoModal(false)}
+        />
+      )}
     </React.Fragment>
   );
 };
