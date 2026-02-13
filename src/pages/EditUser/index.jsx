@@ -5,12 +5,13 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers, getUserInfo } from "../../services/users";
 import { getAccessToken } from "../../helpers/api_helper";
-import AccountInfo from "./AccountInfo";
 import Settings from "./Settings";
 import Profile from "./Profile";
 import EditProfile from "./EditProfile";
 import DepositDetails from "./DepositDetails";
 import WithdrawDetails from "./WithdrawDetails";
+import Wallet from "./Wallet";
+import { getUserAccounts } from "../../services/account";
 
 const EditUser = () => {
   document.title = "Edit User | Itrust Investment";
@@ -23,6 +24,12 @@ const EditUser = () => {
     enabled: !!tk,
   });
 
+  const { data: userAccounts } = useQuery({
+    queryFn: () => getUserAccounts(userId),
+    queryKey: ["userAccounts"],
+    enabled: !!tk,
+  });
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -30,7 +37,7 @@ const EditUser = () => {
           <BreadCrumb title="User" pageTitle="Manage User" />
           <Row>
             <Col md={5}>
-              <Profile user={userInfo} />
+              <Profile user={userInfo} accounts={userAccounts} />
             </Col>
             <Col md={7}>
               <EditProfile user={userInfo} />
@@ -55,7 +62,7 @@ const EditUser = () => {
           </Row>
           <Row>
             <Col>
-              <AccountInfo user={userInfo} />
+              <Wallet settings={userInfo?.settings} />
             </Col>
           </Row>
         </Container>

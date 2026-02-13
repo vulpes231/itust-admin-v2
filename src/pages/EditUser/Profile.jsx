@@ -1,11 +1,18 @@
 import { capitalize } from "lodash";
+import numeral, { Numeral } from "numeral";
 import React, { useEffect } from "react";
 import { Card, Label, Input, Row, Col } from "reactstrap";
 
-const Profile = ({ user }) => {
+const Profile = ({ user, accounts }) => {
   // useEffect(() => {
-  //   if (user) console.log(user);
-  // }, [user]);
+  //   if (accounts) console.log(accounts);
+  // }, [accounts]);
+
+  const brokerage =
+    accounts && accounts.find((acct) => acct.name === "brokerage");
+  const auto =
+    accounts && accounts.find((acct) => acct.name === "automated investing");
+  const cash = accounts && accounts.find((acct) => acct.name === "cash");
 
   const KYC_STATUS = user && user.identityVerification.kycStatus;
   const ACCOUNT_STATUS = user && user.accountStatus.status;
@@ -40,7 +47,9 @@ const Profile = ({ user }) => {
             >
               Cash Balance
             </span>
-            <span className="fw-bold fs-20">$0.00</span>
+            <span className="fw-bold fs-20">
+              {numeral(cash?.availableBalance).format("$0,0.00")}
+            </span>
           </Col>
         </Row>
         <Row className="mb-3">
@@ -60,7 +69,9 @@ const Profile = ({ user }) => {
             >
               Brokerage Balance
             </span>
-            <span className="fw-bold fs-20">$0.00</span>
+            <span className="fw-bold fs-20">
+              {numeral(brokerage?.availableBalance).format("$0,0.00")}
+            </span>
           </Col>
         </Row>
         <Row className="mb-3">
@@ -82,7 +93,9 @@ const Profile = ({ user }) => {
             >
               Auto Balance
             </spa>
-            <span className="fw-bold fs-20">$0.00</span>
+            <span className="fw-bold fs-20">
+              {numeral(auto?.availableBalance).format("$0,0.00")}
+            </span>
           </Col>
         </Row>
         <Row className="mb-3">
