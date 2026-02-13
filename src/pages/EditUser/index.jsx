@@ -2,14 +2,15 @@ import React, { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import { useParams } from "react-router-dom";
-import PersonalInfo from "./PersonalInfo";
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers, getUserInfo } from "../../services/users";
 import { getAccessToken } from "../../helpers/api_helper";
 import AccountInfo from "./AccountInfo";
-import Verification from "./Verification";
 import Settings from "./Settings";
-import Accounts from "./Accounts";
+import Profile from "./Profile";
+import EditProfile from "./EditProfile";
+import DepositDetails from "./DepositDetails";
+import WithdrawDetails from "./WithdrawDetails";
 
 const EditUser = () => {
   document.title = "Edit User | Itrust Investment";
@@ -28,20 +29,25 @@ const EditUser = () => {
         <Container fluid>
           <BreadCrumb title="User" pageTitle="Manage User" />
           <Row>
+            <Col md={5}>
+              <Profile user={userInfo} />
+            </Col>
+            <Col md={7}>
+              <EditProfile user={userInfo} />
+            </Col>
+          </Row>
+
+          <Row>
             <Col>
-              <PersonalInfo user={userInfo} />
+              <DepositDetails />
             </Col>
           </Row>
           <Row>
             <Col>
-              <Verification user={userInfo} />
+              <WithdrawDetails />
             </Col>
           </Row>
-          <Row>
-            <Col>
-              <Accounts user={userInfo} />
-            </Col>
-          </Row>
+
           <Row>
             <Col>
               <Settings settings={userInfo?.settings} />
