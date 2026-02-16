@@ -39,7 +39,7 @@ const WithdrawDetails = () => {
               </span>
             </span>
           </div>
-          <hr />
+          <hr style={{ border: "1px solid #dedede" }} />
           <TabContent activeTab={activeTab}>
             <TabPane tabId={"bank"}>
               <Col>

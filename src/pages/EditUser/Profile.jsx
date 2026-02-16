@@ -20,7 +20,7 @@ const Profile = ({ user, accounts }) => {
     <Card>
       <Col>
         <h4 className="p-4">Profile</h4>
-        <hr />
+        <hr style={{ border: "1px solid #dedede" }} />
         <div className="d-flex flex-column align-items-center">
           <span className="fw-bold fs-20">
             {capitalize(user?.name?.firstName)}{" "}
@@ -155,7 +155,7 @@ const Profile = ({ user, accounts }) => {
         <div className="d-flex gap-3 align-items-center mb-3">
           <span className="fs-18 fw-normal">ID</span>
           <span className="bg-info-subtle text-info py-1 px-3 fs-14 fw-medium">
-            {user
+            {user?.identityVerification?.idType
               ? capitalize(user?.identityVerification?.idType)
               : "--000-000--000"}
           </span>

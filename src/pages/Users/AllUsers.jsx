@@ -47,15 +47,22 @@ const AllUsers = ({ userList }) => {
         header: "Name",
         accessorKey: "credentials.username",
         enableColumnFilter: false,
-        cell: (cell) => (
-          <>
+        cell: (cell) => {
+          const userId = cell.row.original._id;
+          return (
             <div className="d-flex align-items-center">
-              <Link to="#" className="currency_name flex-grow-1 ms-2">
+              <Link
+                // to={}
+                onClick={() => {
+                  window.location.href = `/edituser/${userId}`;
+                }}
+                className="currency_name flex-grow-1 ms-2"
+              >
                 {capitalize(cell.getValue())}
               </Link>
             </div>
-          </>
-        ),
+          );
+        },
       },
       {
         header: "Experience",

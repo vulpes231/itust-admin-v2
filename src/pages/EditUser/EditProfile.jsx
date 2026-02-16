@@ -61,15 +61,19 @@ const EditProfile = ({
         return;
       }
 
-      console.log(changedFields);
-      // mutation.mutate(changedFields)
+      const formData = { userId: user._id, ...changedFields };
+
+      console.log(formData);
+      mutation.mutate(formData);
     },
   });
 
   const countryStates =
-    states &&
-    states.length > 0 &&
-    states.filter((state) => state.countryId === validation.values.countryId);
+    states && states.length > 0
+      ? states.filter(
+          (state) => state.countryId === validation.values.countryId
+        )
+      : [];
 
   useEffect(() => {
     if (error) {
@@ -89,12 +93,16 @@ const EditProfile = ({
       return () => clearTimeout(tmt);
     }
   }, [mutation.isSuccess]);
+
+  useEffect(() => {
+    if (user) console.log(user.locationDetails);
+  }, [user]);
   return (
     <Card>
       <form onSubmit={validation.handleSubmit}>
         <Col>
           <h4 className="p-4">Edit Profile</h4>
-          <hr />
+          <hr style={{ border: "1px solid #dedede" }} />
         </Col>
 
         <Col className="p-4 d-flex flex-column gap-3">
@@ -242,7 +250,7 @@ const EditProfile = ({
           </Row>
         </Col>
 
-        <hr />
+        <hr style={{ border: "1px solid #dedede" }} />
 
         <div className="d-flex justify-content-end p-3 mb-3">
           <button

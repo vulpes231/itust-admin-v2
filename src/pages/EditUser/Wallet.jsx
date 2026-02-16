@@ -18,7 +18,7 @@ const Wallet = ({ settings }) => {
               {settings?.wallet?.isConnected ? "Activated" : "Deactivated"}
             </span>
           </div>
-          <hr />
+          <hr style={{ border: "1px solid #dedede" }} />
           <div className="p-4">
             <span>User has no connected wallets.</span>
           </div>

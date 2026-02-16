@@ -67,7 +67,7 @@ const Settings = ({ settings }) => {
       <Card>
         <Col>
           <h4 className="text-capitalize p-4">User Settings</h4>
-          <hr />
+          <hr style={{ border: "1px solid #dedede" }} />
           <div className="p-4 d-flex flex-column gap-3">
             <Row>
               <Col md={6}>
@@ -210,7 +210,7 @@ const Settings = ({ settings }) => {
               </Col>
             </Row>
           </div>
-          <hr />
+          <hr style={{ border: "1px solid #dedede" }} />
           <div className="p-4 d-flex align-items-center">
             <button
               onClick={(e) => {
