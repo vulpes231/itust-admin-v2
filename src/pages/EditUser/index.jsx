@@ -12,9 +12,15 @@ import DepositDetails from "./DepositDetails";
 import WithdrawDetails from "./WithdrawDetails";
 import Wallet from "./Wallet";
 import { getUserAccounts } from "../../services/account";
+import {
+  getCountries,
+  getCurrencies,
+  getNations,
+  getStates,
+} from "../../services/generic";
 
 const EditUser = () => {
-  document.title = "Edit User | Itrust Investment";
+  document.title = "Edit User | Admin";
   const { userId } = useParams();
   const tk = getAccessToken;
 
@@ -30,6 +36,30 @@ const EditUser = () => {
     enabled: !!tk,
   });
 
+  const { data: countries } = useQuery({
+    queryFn: () => getCountries(userId),
+    queryKey: ["countries"],
+    enabled: !!tk,
+  });
+
+  const { data: states } = useQuery({
+    queryFn: () => getStates(),
+    queryKey: ["states"],
+    enabled: !!tk,
+  });
+
+  const { data: nationalities } = useQuery({
+    queryFn: () => getNations(),
+    queryKey: ["nations"],
+    enabled: !!tk,
+  });
+
+  const { data: currencies } = useQuery({
+    queryFn: () => getCurrencies(),
+    queryKey: ["currencies"],
+    enabled: !!tk,
+  });
+
   return (
     <React.Fragment>
       <div className="page-content">
@@ -40,7 +70,13 @@ const EditUser = () => {
               <Profile user={userInfo} accounts={userAccounts} />
             </Col>
             <Col md={7}>
-              <EditProfile user={userInfo} />
+              <EditProfile
+                user={userInfo}
+                countries={countries}
+                states={states}
+                nationalities={nationalities}
+                currencies={currencies}
+              />
             </Col>
           </Row>
 

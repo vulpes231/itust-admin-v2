@@ -1,257 +1,277 @@
-import React from "react";
-import { Card, Col, Input, Label, Row } from "reactstrap";
+import React, { useEffect, useMemo, useState } from "react";
+import { Card, Col, Input, Label, Row, Spinner } from "reactstrap";
 import { useFormik } from "formik";
-import { format } from "date-fns";
-import { SlArrowDown, SlArrowUp } from "react-icons/sl";
 import * as Yup from "yup";
+import { useMutation } from "@tanstack/react-query";
+import { configureUser } from "../../services/userSettings";
+import ErrorToast from "../../Components/Common/ErrorToast";
+import SuccessToast from "../../Components/Common/SuccessToast";
 
-const EditProfile = ({ user }) => {
-  const formattedDob =
-    user &&
-    user.personalDetails &&
-    user.personalDetails.dob &&
-    format(user.personalDetails.dob, "MMM dd, yyyy");
-
-  const validation = useFormik({
-    enableReinitialize: true,
-    initialValues: {
+const EditProfile = ({
+  user,
+  countries = [],
+  states = [],
+  currencies = [],
+  nationalities = [],
+}) => {
+  const [error, setError] = useState("");
+  const initialValues = useMemo(
+    () => ({
       firstName: user?.name?.firstName || "",
       lastName: user?.name?.lastName || "",
       email: user?.credentials?.email || "",
-      username: user?.credentials?.username || "",
-      country: user?.locationDetails?.country?.name || "",
       address: user?.contactInfo?.address?.street || "",
-      state: user?.locationDetails?.state?.name || "",
       city: user?.contactInfo?.address?.city || "",
       zip: user?.contactInfo?.address?.zipCode || "",
-      dob: formattedDob || user?.personalDetails?.dob || "",
+      dob: user?.personalDetails?.dob
+        ? new Date(user.personalDetails.dob).toISOString()
+        : "",
       experience: user?.professionalInfo?.experience || "",
       employment: user?.professionalInfo?.employment || "",
-      nationality: user?.locationDetails?.nationality?.name || "",
-      currency: user?.locationDetails?.currency?.name || "",
-      // isBanned: user?.locationDetails?.nationality?.name || "",
-      // isEmailVerified: user?.locationDetails?.nationality?.name || "",
-      // isKycVerified: user?.locationDetails?.nationality?.name || "",
-    },
+      countryId: user?.locationDetails?.country?.countryId || "",
+      stateId: user?.locationDetails?.state?.stateId || "",
+      currencyId: user?.locationDetails?.currency?.id || "",
+      nationalityId: user?.locationDetails?.nationality?.id || "",
+    }),
+    [user]
+  );
+
+  const mutation = useMutation({
+    mutationFn: configureUser,
+    onError: (err) => setError(err.message),
+  });
+
+  const validation = useFormik({
+    enableReinitialize: true,
+    initialValues,
     validationSchema: Yup.object({
       firstName: Yup.string().required("First name is required"),
     }),
+    onSubmit: async (values) => {
+      const changedFields = {};
+
+      Object.keys(values).forEach((key) => {
+        if (values[key] !== initialValues[key]) {
+          changedFields[key] = values[key];
+        }
+      });
+
+      if (Object.keys(changedFields).length === 0) {
+        console.log("No changes made");
+        return;
+      }
+
+      console.log(changedFields);
+      // mutation.mutate(changedFields)
+    },
   });
 
+  const countryStates =
+    states &&
+    states.length > 0 &&
+    states.filter((state) => state.countryId === validation.values.countryId);
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      const tmt = setTimeout(() => {
+        mutation.reset();
+        window.location.reload();
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [mutation.isSuccess]);
   return (
     <Card>
-      <Col>
-        <h4 className="p-4">Edit Profile</h4>
-        <hr />
-      </Col>
-      <Col className="p-4 d-flex flex-column gap-3">
-        <div className="">
+      <form onSubmit={validation.handleSubmit}>
+        <Col>
+          <h4 className="p-4">Edit Profile</h4>
+          <hr />
+        </Col>
+
+        <Col className="p-4 d-flex flex-column gap-3">
           <Row>
             <Col md={6}>
-              <Label htmlFor="firstName">First Name</Label>
+              <Label>First Name</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
+                name="firstName"
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.firstName
-                    ? true
-                    : false
-                }
-                name="firstName"
               />
             </Col>
+
             <Col md={6}>
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label>Last Name</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
+                name="lastName"
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.lastName
-                    ? true
-                    : false
-                }
-                name="lastName"
               />
             </Col>
           </Row>
-        </div>
-        <div className="d-flex flex-column gap-3">
+
           <Row>
             <Col>
-              <Label htmlFor="email">Email</Label>
+              <Label>Email</Label>
               <Input
-                className="fs-18 fw-light"
+                name="email"
                 value={validation.values.email}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.email ? true : false
-                }
-                name="email"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Label htmlFor="address">Address</Label>
-              <Input
-                className="fs-18 fw-light text-uppercase"
-                value={validation.values.address}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.address ? true : false
-                }
-                name="address"
               />
             </Col>
           </Row>
 
           <Row>
             <Col md={6}>
-              <Label htmlFor="country">Country</Label>
+              <Label>Country</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
-                value={validation.values.country}
+                type="select"
+                name="countryId"
+                value={validation.values.countryId}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.country ? true : false
-                }
-                name="country"
-              />
+              >
+                <option value="">Select Country</option>
+                {countries.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </Input>
             </Col>
+
             <Col md={6}>
-              <Label htmlFor="state">State</Label>
+              <Label>State</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
-                value={validation.values.state}
+                type="select"
+                name="stateId"
+                value={validation.values.stateId}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.state ? true : false
-                }
-                name="state"
-              />
+              >
+                <option value="">Select State</option>
+                {countryStates.map((s) => (
+                  <option key={s._id} value={s._id}>
+                    {s.name}
+                  </option>
+                ))}
+              </Input>
             </Col>
           </Row>
+
           <Row>
-            <Col md={4}>
-              <Label htmlFor="city">City</Label>
+            <Col md={6}>
+              <Label>Currency</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
+                type="select"
+                name="currencyId"
+                value={validation.values.currencyId}
+                onChange={validation.handleChange}
+              >
+                <option value="">Select Currency</option>
+                {currencies.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+
+            <Col md={6}>
+              <Label>Nationality</Label>
+              <Input
+                type="select"
+                name="nationalityId"
+                value={validation.values.nationalityId}
+                onChange={validation.handleChange}
+              >
+                <option value="">Select Nationality</option>
+                {nationalities.map((n) => (
+                  <option key={n._id} value={n._id}>
+                    {n.name}
+                  </option>
+                ))}
+              </Input>
+            </Col>
+          </Row>
+
+          <Row>
+            <Col md={6}>
+              <Label>City</Label>
+              <Input
+                name="city"
                 value={validation.values.city}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.city ? true : false
-                }
-                name="city"
               />
             </Col>
-            <Col md={4}>
-              <Label htmlFor="zip">Zipcode</Label>
+
+            <Col md={6}>
+              <Label>Zip</Label>
               <Input
-                className="fs-18 fw-light"
+                name="zip"
                 value={validation.values.zip}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.zip ? true : false
-                }
-                name="zip"
-              />
-            </Col>
-            <Col md={4}>
-              <Label htmlFor="dob">DOB</Label>
-              <Input
-                className="fs-18 fw-light"
-                value={validation.values.dob}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.dob ? true : false
-                }
-                name="dob"
               />
             </Col>
           </Row>
+
           <Row>
             <Col md={6}>
-              <Label htmlFor="experience">Experience</Label>
+              <Label>Employment</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
-                value={validation.values.experience}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.experience
-                    ? true
-                    : false
-                }
-                name="experience"
-              />
-            </Col>
-            <Col md={6}>
-              <Label htmlFor="currency">Currency</Label>
-              <Input
-                className="fs-18 fw-light"
-                value={validation.values.currency}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.currency
-                    ? true
-                    : false
-                }
-                name="currency"
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <Label htmlFor="employment">Employment</Label>
-              <Input
-                className="fs-18 fw-light text-capitalize"
+                name="employment"
                 value={validation.values.employment}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.employment
-                    ? true
-                    : false
-                }
-                name="employment"
               />
             </Col>
+
             <Col md={6}>
-              <Label htmlFor="nationality">Nationality</Label>
+              <Label>Experience</Label>
               <Input
-                className="fs-18 fw-light text-capitalize"
-                value={validation.values.nationality}
+                name="experience"
+                value={validation.values.experience}
                 onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                invalid={
-                  validation.touched && validation.errors.nationality
-                    ? true
-                    : false
-                }
-                name="nationality"
               />
             </Col>
           </Row>
+        </Col>
+
+        <hr />
+
+        <div className="d-flex justify-content-end p-3 mb-3">
+          <button
+            disabled={mutation.isPending}
+            type="submit"
+            className="btn btn-primary"
+          >
+            {mutation.isPending ? (
+              <Spinner>Loading...</Spinner>
+            ) : (
+              "Update Profile"
+            )}
+          </button>
         </div>
-      </Col>
-      <hr />
-      <div className="d-flex justify-content-end p-3 mb-3">
-        <button type="button" className="btn btn-primary">
-          Update Profile
-        </button>
-      </div>
+      </form>
+      {error && (
+        <ErrorToast
+          errMsg={error}
+          isOpen={!!error}
+          onClose={() => setError("")}
+        />
+      )}
+      {mutation.isSuccess && (
+        <SuccessToast
+          isOpen={mutation.isSuccess}
+          msg={"User Information Updated."}
+          onClose={() => mutation.reset()}
+        />
+      )}
     </Card>
   );
 };
