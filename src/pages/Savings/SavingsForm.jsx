@@ -48,7 +48,7 @@ const SavingsForm = ({ mutation, onClose }) => {
       eligibleCountries: [],
     },
     onSubmit: (values) => {
-      console.log(values);
+      // console.log(values);s
       mutation.mutate(values);
     },
   });

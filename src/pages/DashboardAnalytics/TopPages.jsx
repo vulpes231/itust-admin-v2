@@ -19,10 +19,10 @@ const TopPages = () => {
   };
   return (
     <React.Fragment>
-      <Col xl={4} md={6}>
+      <Col>
         <Card className="card-height-100">
           <CardHeader className="align-items-center d-flex">
-            <h4 className="card-title mb-0 flex-grow-1">Top Pages</h4>
+            <h4 className="card-title mb-0 flex-grow-1">Recent Transactions</h4>
             <div className="flex-shrink-0">
               <Dropdown
                 isOpen={isTopPageDropdown}

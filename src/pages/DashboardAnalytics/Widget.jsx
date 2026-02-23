@@ -8,8 +8,8 @@ import FeatherIcon from "feather-icons-react";
 const Widget = () => {
   return (
     <React.Fragment>
-      <Row>
-        <Col md={6}>
+      <Col>
+        <Col>
           <Card className="card-animate">
             <CardBody>
               <div className="d-flex justify-content-between">
@@ -46,12 +46,12 @@ const Widget = () => {
           </Card>
         </Col>
 
-        <Col md={6}>
+        <Col>
           <Card className="card-animate">
             <CardBody>
               <div className="d-flex justify-content-between">
                 <div>
-                  <p className="fw-medium text-muted mb-0">Sessions</p>
+                  <p className="fw-medium text-muted mb-0">Transactions</p>
                   <h2 className="mt-4 ff-secondary fw-semibold">
                     <span className="counter-value" data-target="97.66">
                       <CountUp
@@ -81,17 +81,12 @@ const Widget = () => {
             </CardBody>
           </Card>
         </Col>
-      </Row>
-
-      <Row>
-        <Col md={6}>
+        <Col>
           <Card className="card-animate">
             <CardBody>
               <div className="d-flex justify-content-between">
                 <div>
-                  <p className="fw-medium text-muted mb-0">
-                    Avg. Visit Duration
-                  </p>
+                  <p className="fw-medium text-muted mb-0">Trades</p>
                   <h2 className="mt-4 ff-secondary fw-semibold">
                     <span className="counter-value" data-target="3">
                       <CountUp start={0} end={3} duration={4} />
@@ -120,43 +115,7 @@ const Widget = () => {
             </CardBody>
           </Card>
         </Col>
-
-        <Col md={6}>
-          <Card className="card-animate">
-            <CardBody>
-              <div className="d-flex justify-content-between">
-                <div>
-                  <p className="fw-medium text-muted mb-0">Bounce Rate</p>
-                  <h2 className="mt-4 ff-secondary fw-semibold">
-                    <span className="counter-value" data-target="33.48">
-                      <CountUp
-                        start={0}
-                        end={33.48}
-                        decimals={2}
-                        duration={4}
-                      />
-                    </span>
-                    %
-                  </h2>
-                  <p className="mb-0 text-muted">
-                    <span className="badge bg-light text-success mb-0">
-                      <i className="ri-arrow-up-line align-middle"></i> 7.05 %
-                    </span>{" "}
-                    vs. previous month
-                  </p>
-                </div>
-                <div>
-                  <div className="avatar-sm flex-shrink-0">
-                    <span className="avatar-title bg-info-subtle rounded-circle fs-2">
-                      <FeatherIcon icon="external-link" className="text-info" />
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
-        </Col>
-      </Row>
+      </Col>
     </React.Fragment>
   );
 };

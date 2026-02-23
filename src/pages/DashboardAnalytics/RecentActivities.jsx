@@ -15,7 +15,7 @@ import FeatherIcon from "feather-icons-react";
 
 import { UsersByDeviceCharts } from "./DashboardAnalyticsCharts";
 
-const UsersByDevice = () => {
+const RecentActivities = () => {
   const [isUserDropdown, setUserDropdown] = useState(false);
   const toggleDropdown = () => setUserDropdown(!isUserDropdown);
 
@@ -33,7 +33,7 @@ const UsersByDevice = () => {
       <Col>
         <Card className="card-height-100">
           <CardHeader className="align-items-center d-flex">
-            <h4 className="card-title mb-0 flex-grow-1">New Users</h4>
+            <h4 className="card-title mb-0 flex-grow-1">Recent Activities</h4>
             <div className="flex-shrink-0">
               <Dropdown
                 className="card-header-dropdown"
@@ -168,4 +168,4 @@ const UsersByDevice = () => {
   );
 };
 
-export default UsersByDevice;
+export default RecentActivities;
