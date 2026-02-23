@@ -54,6 +54,28 @@ const AllTrades = ({ tradeList }) => {
         cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")}</>,
       },
       {
+        header: "Name",
+        accessorKey: "fullname",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const userId = cell.row.original.userId;
+          return (
+            <div className="d-flex align-items-center">
+              <Link
+                to="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = `/edituser/${userId}`;
+                }}
+                className="currency_name flex-grow-1 ms-2 text-capitalize"
+              >
+                {cell.getValue()}
+              </Link>
+            </div>
+          );
+        },
+      },
+      {
         header: "Asset",
         accessorKey: "asset.name",
         enableColumnFilter: false,

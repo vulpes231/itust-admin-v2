@@ -12,6 +12,7 @@ import {
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import CreateSavings from "./CreateSavings";
+import AccountFilter from "./AccountFilter";
 
 const AllAccounts = ({ accountList }) => {
   const [createSavingsModal, setCreateSavingsModal] = useState(false);
@@ -22,6 +23,7 @@ const AllAccounts = ({ accountList }) => {
   const closeCreateSavingsModal = () => {
     setCreateSavingsModal(false);
   };
+  // console.log(accountList);
   const columns = useMemo(
     () => [
       {
@@ -37,7 +39,10 @@ const AllAccounts = ({ accountList }) => {
         cell: (cell) => (
           <>
             <div className="d-flex align-items-center">
-              <Link to="#" className="currency_name flex-grow-1 ms-2">
+              <Link
+                to="#"
+                className="currency_name flex-grow-1 ms-2 text-capitalize"
+              >
                 {cell.getValue()}
               </Link>
             </div>
@@ -45,16 +50,25 @@ const AllAccounts = ({ accountList }) => {
         ),
       },
       {
+        header: "Slug",
+        accessorKey: "slug",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <Symbol {...cell} />;
+        },
+      },
+      {
         header: "Type",
-        accessorKey: "category",
+        accessorKey: "tag",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Type {...cell} />;
         },
       },
+
       {
-        header: "Interest(%)",
-        accessorKey: "interestRate",
+        header: "APY",
+        accessorKey: "yearlyAPY",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Interest {...cell} />;
@@ -69,21 +83,14 @@ const AllAccounts = ({ accountList }) => {
         },
       },
       {
-        header: "Minimum",
-        accessorKey: "contributionLimits.min",
+        header: "Title",
+        accessorKey: "title",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Minimum {...cell} />;
         },
       },
-      {
-        header: "Symbol",
-        accessorKey: "symbol",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Symbol {...cell} />;
-        },
-      },
+
       {
         header: "Status",
         accessorKey: "status",
@@ -114,18 +121,19 @@ const AllAccounts = ({ accountList }) => {
               </div>
             </div>
           </CardHeader>
+          <AccountFilter />
           <CardBody>
             <TableContainer
               columns={columns}
               data={accountList || []}
-              isGlobalFilter={true}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"
               theadClass="table-light text-muted"
-              isCryptoOrdersFilter={true}
+              isCryptoOrdersFilter={false}
               SearchPlaceholder="Search Trades..."
             />
           </CardBody>

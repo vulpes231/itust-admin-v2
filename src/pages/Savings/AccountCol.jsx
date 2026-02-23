@@ -24,11 +24,15 @@ const CanTrade = (cell) => {
 };
 
 const Minimum = (cell) => {
-  return <React.Fragment>{cell.getValue()}</React.Fragment>;
+  return (
+    <React.Fragment>
+      <span className="text-capitalize">{cell.getValue()}</span>
+    </React.Fragment>
+  );
 };
 
 const Symbol = (cell) => {
-  return <React.Fragment>{cell.getValue()}</React.Fragment>;
+  return <React.Fragment>{cell.getValue().toUpperCase()}</React.Fragment>;
 };
 
 const Status = (cell) => {

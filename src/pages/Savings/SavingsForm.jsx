@@ -3,54 +3,47 @@ import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import { getAccessToken } from "../../helpers/api_helper";
-import { searchCountry } from "../../services/generic";
-
-function useDebounce(value, delay = 500) {
-  const [debouncedValue, setDebouncedValue] = React.useState(value);
-
-  React.useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import { getCountries } from "../../services/generic";
+import { FaToggleOff, FaToggleOn } from "react-icons/fa";
 
 const SavingsForm = ({ mutation, onClose }) => {
   const tk = getAccessToken();
 
   const [noteInput, setNoteInput] = useState("");
 
-  const [assetSearch, setAssetSearch] = useState("");
-  const [showDropdown, setShowDropdown] = useState(false);
-
   const addNote = () => {
     const note = noteInput.trim();
-    const notes = validation.values.notes;
+    const notes = validation.values.details;
 
     if (!note) return;
     if (notes.includes(note)) return;
     if (notes.length >= 3) return;
 
-    validation.setFieldValue("notes", [...notes, note]);
+    validation.setFieldValue("details", [...notes, note]);
     setNoteInput("");
   };
 
-  const debouncedSearch = useDebounce(assetSearch, 500);
+  const { data: countries } = useQuery({
+    queryKey: ["countries"],
+    queryFn: getCountries,
+    enabled: !!tk,
+  });
 
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       name: "",
-      notes: [],
+      details: [],
       title: "",
-      subTitle: "",
-      canTrade: "",
-      category: "",
-      symbol: "",
+      information: "",
+      canTrade: false,
+      tag: "",
+      apy: "",
+      designTag: "",
+      maxSavingsYearly: "",
+      maxSavingsTotal: "",
+      jointMaxSelection: "",
+      slug: "",
       interestRate: "",
       eligibleCountries: [],
     },
@@ -60,16 +53,31 @@ const SavingsForm = ({ mutation, onClose }) => {
     },
   });
 
-  const { data: searchResult = [] } = useQuery({
-    queryKey: ["searchAsset", debouncedSearch],
-    queryFn: () => searchCountry(debouncedSearch),
-    enabled: !!tk && debouncedSearch.length > 3,
-  });
+  const toggleTrade = () => {
+    validation.setFieldValue("canTrade", !validation.values.canTrade);
+  };
 
   return (
     <React.Fragment>
       <form action="">
         <div className="mb-3 mt-3">
+          <Row className="mb-3">
+            <Col>
+              <Label>Tag</Label>
+              <Input
+                type="select"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.tag}
+                name="tag"
+              >
+                <option value="">Select Tag</option>
+                <option value="savings">Savings</option>
+                <option value="retirement">Retirement</option>
+                {/* <option value="investment">Investment</option> */}
+              </Input>
+            </Col>
+          </Row>
           <Row className="mb-3">
             <Col>
               <Label> Name</Label>
@@ -92,132 +100,116 @@ const SavingsForm = ({ mutation, onClose }) => {
               />
             </Col>
           </Row>
-          <Row className="mb-3">
-            <Col>
-              <Label>Category</Label>
-              <Input
-                type="select"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.category}
-                name="category"
-              >
-                <option value="">Select Category</option>
-                <option value="savings">Savings</option>
-                <option value="retirement">Retirement</option>
-              </Input>
-            </Col>
-            <Col>
-              <Label> Tradeable</Label>
-              <Input
-                type="select"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.canTrade}
-                name="canTrade"
-              >
-                <option value="">Select Option</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
-              </Input>
-            </Col>
-          </Row>
 
           <Row className="mb-3">
             <Col>
-              <Label>Subtitle</Label>
+              <Label className="text-capitalize">information</Label>
               <Input
                 type="text"
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.subTitle}
-                name="subTitle"
+                value={validation.values.information}
+                name="information"
               />
             </Col>
             <Col>
-              <Label>Symbol</Label>
+              <Label>Slug</Label>
               <Input
                 type="text"
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.symbol}
-                name="symbol"
+                value={validation.values.slug}
+                name="slug"
               />
             </Col>
           </Row>
           <Row className="mb-3">
             <Col>
-              <Label>Interest Rate (%)</Label>
+              <Label className="text-capitalize">design tag</Label>
               <Input
-                type="text"
+                type="select"
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.interestRate}
-                name="interestRate"
-              />
+                value={validation.values.designTag}
+                name="designTag"
+              >
+                <option value="">Select Design Tag</option>
+                <option value="savings 1">Savings 1</option>
+                <option value="savings 2">Savings 2</option>
+                <option value="savings 3">Savings 3</option>
+                <option value="retirement 1">Retirement 1</option>
+                <option value="retirement 2">Retirement 2</option>
+                <option value="retirement 3">Retirement 3</option>
+                {/* <option value="investment1">Investment</option> */}
+              </Input>
             </Col>
           </Row>
+          {validation.values.tag === "retirement" && (
+            <Col>
+              <Row className="mb-3">
+                <Col>
+                  <Label className="text-capitalize">
+                    joint maximum selection
+                  </Label>
+                  <Input
+                    type="text"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.designTag}
+                    name="designTag"
+                  />
+                </Col>
+              </Row>
+              <Row className="mb-3">
+                <Col>
+                  <Label className="text-capitalize">maximum yearly</Label>
+                  <Input
+                    type="text"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.designTag}
+                    name="designTag"
+                  />
+                </Col>
+                <Col>
+                  <Label className="text-capitalize">maximum all time</Label>
+                  <Input
+                    type="text"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.designTag}
+                    name="designTag"
+                  />
+                </Col>
+              </Row>
+            </Col>
+          )}
+          {validation.values.tag === "savings" && (
+            <Row className="mb-3">
+              <Col>
+                <Label>Annual APY</Label>
+                <Input
+                  type="text"
+                  onChange={validation.handleChange}
+                  onBlur={validation.handleBlur}
+                  value={validation.values.apy}
+                  name="apy"
+                />
+              </Col>
+            </Row>
+          )}
           <Row className="mb-3 position-relative">
             <Col>
               <Label>Select Countries</Label>
-              <Input
-                type="text"
-                value={assetSearch}
-                onChange={(e) => {
-                  setAssetSearch(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onBlur={() => {
-                  setTimeout(() => setShowDropdown(false), 150);
-                }}
-                placeholder="Search Countries..."
-              />
-
-              {showDropdown && searchResult.length > 0 && (
-                <div
-                  className="border rounded bg-white position-absolute w-100"
-                  style={{
-                    zIndex: 1000,
-                    maxHeight: "200px",
-                    overflowY: "auto",
-                  }}
-                >
-                  {searchResult.map((country) => (
-                    <div
-                      key={country._id}
-                      className="p-2 dropdown-item"
-                      style={{ cursor: "pointer" }}
-                      onMouseDown={() => {
-                        const current = validation.values.eligibleCountries;
-
-                        if (!current.includes(country._id)) {
-                          validation.setFieldValue("eligibleCountries", [
-                            ...current,
-                            country._id,
-                          ]);
-                        }
-
-                        setAssetSearch("");
-                        setShowDropdown(false);
-                      }}
-                    >
-                      <span className="d-flex align-items-center gap-2">
-                        <span> {country.name}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {validation.values.eligibleCountries.length > 0 && (
-                <div className="mt-2 d-flex flex-wrap gap-2">
+                <div className="my-2 d-flex flex-wrap gap-2 ">
                   {validation.values.eligibleCountries.map((id) => {
-                    const country = searchResult.find((c) => c._id === id);
+                    const country = countries.find((c) => c._id === id);
 
                     return (
                       <span
                         key={id}
-                        className="badge bg-info d-flex align-items-center gap-2"
+                        className="badge bg-secondary d-flex align-items-center gap-2 text-capitalize"
                       >
                         {country?.name || id}
                         <span
@@ -238,11 +230,42 @@ const SavingsForm = ({ mutation, onClose }) => {
                   })}
                 </div>
               )}
+              <Input
+                type="select"
+                className="text-capitalize"
+                value=""
+                onChange={(e) => {
+                  const selectedId = e.target.value;
+                  if (!selectedId) return;
+
+                  if (
+                    !validation.values.eligibleCountries.includes(selectedId)
+                  ) {
+                    validation.setFieldValue("eligibleCountries", [
+                      ...validation.values.eligibleCountries,
+                      selectedId,
+                    ]);
+                  }
+                }}
+              >
+                <option value="">Select Eligible Countries</option>
+                {countries &&
+                  countries
+                    .filter(
+                      (ctr) =>
+                        !validation.values.eligibleCountries.includes(ctr._id)
+                    )
+                    .map((ctr) => (
+                      <option key={ctr._id} value={ctr._id}>
+                        {ctr.name}
+                      </option>
+                    ))}
+              </Input>
             </Col>
           </Row>
           <Row className="mb-3">
             <Col>
-              <Label>Notes (max 3)</Label>
+              <Label>Details (max 3)</Label>
               <div className="d-flex gap-2">
                 <Input
                   type="text"
@@ -260,15 +283,15 @@ const SavingsForm = ({ mutation, onClose }) => {
                   type="button"
                   className="btn btn-secondary"
                   onClick={addNote}
-                  disabled={validation.values.notes.length >= 3}
+                  disabled={validation.values.details.length >= 3}
                 >
                   Add
                 </button>
               </div>
 
-              {validation.values.notes.length > 0 && (
+              {validation.values.details.length > 0 && (
                 <div className="mt-2 d-flex flex-wrap gap-2">
-                  {validation.values.notes.map((note, idx) => (
+                  {validation.values.details.map((note, idx) => (
                     <span
                       key={idx}
                       className="badge bg-dark d-flex align-items-center gap-2"
@@ -278,8 +301,8 @@ const SavingsForm = ({ mutation, onClose }) => {
                         style={{ cursor: "pointer" }}
                         onClick={() => {
                           validation.setFieldValue(
-                            "notes",
-                            validation.values.notes.filter((n) => n !== note)
+                            "details",
+                            validation.values.details.filter((n) => n !== note)
                           );
                         }}
                       >
@@ -291,9 +314,18 @@ const SavingsForm = ({ mutation, onClose }) => {
               )}
             </Col>
           </Row>
-
+          <Col className="d-flex align-items-center justify-content-between mt-3">
+            <Label> Tradeable</Label>
+            <span onClick={toggleTrade}>
+              {!validation.values.canTrade ? (
+                <FaToggleOff style={{ color: "grey" }} size={28} />
+              ) : (
+                <FaToggleOn className="text-secondary" size={28} />
+              )}
+            </span>
+          </Col>
           <Row>
-            <div className="d-flex align-items-center gap-2">
+            <div className="d-flex align-items-center gap-2 mt-4">
               <button
                 className="btn btn-info"
                 type="button"
