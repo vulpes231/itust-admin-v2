@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Card,
@@ -10,13 +10,19 @@ import {
   DropdownMenu,
   DropdownToggle,
 } from "reactstrap";
-import { topPages } from "../../common/data";
 
-const TopPages = () => {
+import { format } from "date-fns";
+import numeral from "numeral";
+
+const TopPages = ({ transactions }) => {
   const [isTopPageDropdown, setTopPageDropdown] = useState(false);
   const toggleDropdown = () => {
     setTopPageDropdown(!isTopPageDropdown);
   };
+
+  useEffect(() => {
+    if (transactions) console.log(transactions);
+  }, [transactions]);
   return (
     <React.Fragment>
       <Col>
@@ -52,23 +58,99 @@ const TopPages = () => {
               <table className="table align-middle table-borderless table-centered table-nowrap mb-0">
                 <thead className="text-muted table-light">
                   <tr>
-                    <th scope="col" style={{ width: "62" }}>
-                      Active Page
-                    </th>
-                    <th scope="col">Active</th>
-                    <th scope="col">Users</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Name</th>
+                    {/* style={{ width: "62" }} */}
+                    <th scope="col">Type</th>
+                    <th scope="col">Account</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Status</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {(topPages || []).map((item, index) => (
-                    <tr key={index}>
-                      <td>
-                        <Link to="#">{item.page}</Link>
-                      </td>
-                      <td>{item.active}</td>
-                      <td>{item.user}</td>
-                    </tr>
-                  ))}
+                  {(transactions || []).map((item) => {
+                    const userId = item.userId;
+                    return (
+                      <tr key={item._id}>
+                        <td>
+                          <span className="d-flex flex-column">
+                            <span className="fw-normal fs-14">
+                              {format(item.createdAt, "MMM dd, yyyy ")}
+                            </span>
+                            <span className="fw-light fs-12">
+                              {format(item.createdAt, "hh:mm a")}
+                            </span>
+                          </span>
+                        </td>
+                        <td>
+                          <Link
+                            to="#"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              window.location.href = `/edituser/${userId}`;
+                            }}
+                            className="text-capitalize"
+                          >
+                            {item.fullname}
+                          </Link>
+                        </td>
+                        <td>
+                          <span
+                            className={`fs-13 text-capitalize ${
+                              item.type === "deposit"
+                                ? "text-success bg-success-subtle py-1 px-3 rounded-pill"
+                                : item.type === "transfer"
+                                ? "text-warning bg-warning-subtle py-1 px-3 rounded-pill"
+                                : item.type === "withdrawal"
+                                ? "text-danger bg-danger-subtle py-1 px-3 rounded-pill"
+                                : null
+                            }`}
+                          >
+                            {item.type}
+                          </span>
+                        </td>
+                        <td className="text-capitalize">{item.account}</td>
+                        <td>
+                          {" "}
+                          <span
+                            className={`fs-13 ${
+                              item.type === "deposit"
+                                ? "text-success "
+                                : item.type === "transfer"
+                                ? "text-warning"
+                                : item.type === "withdrawal"
+                                ? "text-danger"
+                                : null
+                            }`}
+                          >
+                            {item.type === "deposit"
+                              ? "+ "
+                              : item.type === "transfer"
+                              ? ""
+                              : item.type === "withdrawal"
+                              ? "-"
+                              : null}
+                            {numeral(item.amount).format("$0,0.00")}
+                          </span>{" "}
+                        </td>
+                        <td>
+                          <span
+                            className={`fs-13 text-capitalize ${
+                              item.status === "completed"
+                                ? "text-success bg-success-subtle py-1 px-3 rounded-pill"
+                                : item.status === "pending"
+                                ? "text-warning bg-warning-subtle py-1 px-3 rounded-pill"
+                                : item.status === "failed"
+                                ? "text-danger bg-danger-subtle py-1 px-3 rounded-pill"
+                                : null
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Col, Container, Row } from "reactstrap";
 
 import UsersByDevice from "./UsersByDevice";
@@ -7,11 +7,15 @@ import BreadCrumb from "../../Components/Common/BreadCrumb";
 import LiveUsers from "./LiveUsers";
 import TopPages from "./TopPages";
 import RecentActivities from "./RecentActivities";
-import { getAllUsers } from "../../services/users";
-import { getAllTrades } from "../../services/trades";
-import { getAllTransactions } from "../../services/transactions";
+
 import { useQuery } from "@tanstack/react-query";
 import { getAccessToken } from "../../helpers/api_helper";
+import {
+  getRecentActivities,
+  getRecentTransactions,
+  getRecentUsers,
+  getSysInfo,
+} from "../../services/analytics";
 
 const DashboardAnalytics = () => {
   document.title = "Admin Dashboard | Itrust Investment";
@@ -19,20 +23,26 @@ const DashboardAnalytics = () => {
   const token = getAccessToken();
 
   const { data: users } = useQuery({
-    queryFn: getAllUsers,
-    queryKey: ["AllUsers"],
+    queryFn: getRecentUsers,
+    queryKey: ["recentUsers"],
     enabled: !!token,
   });
 
   const { data: transactions } = useQuery({
-    queryFn: getAllTransactions,
-    queryKey: ["AllTransactions"],
+    queryFn: getRecentTransactions,
+    queryKey: ["recentTrnxs"],
     enabled: !!token,
   });
 
-  const { data: trades } = useQuery({
-    queryKey: ["trades"],
-    queryFn: getAllTrades,
+  const { data: activities } = useQuery({
+    queryFn: getRecentActivities,
+    queryKey: ["recentActivites"],
+    enabled: !!token,
+  });
+
+  const { data: sysInfo } = useQuery({
+    queryKey: ["sysInfo"],
+    queryFn: getSysInfo,
     enabled: !!token,
   });
 
@@ -43,22 +53,22 @@ const DashboardAnalytics = () => {
           <BreadCrumb title="Analytics" pageTitle="Dashboard" />
           <Row>
             <Col md={3}>
-              <Widget />
+              <Widget info={sysInfo} />
             </Col>
             <Col md={6}>
               <LiveUsers />
             </Col>
             <Col md={3}>
-              <RecentActivities />
+              <RecentActivities activities={activities} />
             </Col>
           </Row>
 
           <Row>
             <Col md={3}>
-              <UsersByDevice />
+              <UsersByDevice users={users} />
             </Col>
             <Col>
-              <TopPages />
+              <TopPages transactions={transactions} />
             </Col>
           </Row>
         </Container>
