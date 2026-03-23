@@ -3,7 +3,7 @@ import axios from "axios";
 import { liveServer, devServer } from "../config";
 
 // default
-axios.defaults.baseURL = devServer;
+axios.defaults.baseURL = liveServer;
 // content type
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
