@@ -9,10 +9,9 @@ const Profile = ({ user, accounts }) => {
   // }, [accounts]);
 
   const brokerage =
-    accounts && accounts.find((acct) => acct.name === "brokerage");
-  const auto =
-    accounts && accounts.find((acct) => acct.name === "automated investing");
-  const cash = accounts && accounts.find((acct) => acct.name === "cash");
+    accounts && accounts.find((acct) => acct.slug === "brokerage");
+  const auto = accounts && accounts.find((acct) => acct.slug === "auto");
+  const cash = accounts && accounts.find((acct) => acct.slug === "cash");
 
   const KYC_STATUS = user && user.identityVerification.kycStatus;
   const ACCOUNT_STATUS = user && user.accountStatus.status;
@@ -22,11 +21,10 @@ const Profile = ({ user, accounts }) => {
         <h4 className="p-4">Profile</h4>
         <hr style={{ border: "1px solid #dedede" }} />
         <div className="d-flex flex-column align-items-center">
-          <span className="fw-bold fs-20">
-            {capitalize(user?.name?.firstName)}{" "}
-            {capitalize(user?.name?.lastName)}
+          <span className="fw-bold fs-20 text-capitalize">
+            {user?.personalInfo?.firstName} {user?.personalInfo?.lastName}
           </span>
-          <span>@{user?.credentials?.username}</span>
+          <span>@{user?.personalInfo?.username}</span>
         </div>
       </Col>
       <Col className="px-3 py-3">
@@ -36,7 +34,7 @@ const Profile = ({ user, accounts }) => {
             <Input
               type="text"
               readOnly
-              value={user?.credentials?.email}
+              value={user?.contactInfo?.email}
               className="fs-16"
             />
           </Col>
@@ -80,10 +78,8 @@ const Profile = ({ user, accounts }) => {
             <Input
               type="text"
               readOnly
-              value={
-                user ? capitalize(user?.locationDetails?.country?.name) : null
-              }
-              className="fs-16"
+              value={user ? user?.contactInfo?.country?.name : null}
+              className="fs-16 text-capitalize"
             />
           </Col>
           <Col sm={5} className="d-flex flex-column">
@@ -104,7 +100,7 @@ const Profile = ({ user, accounts }) => {
             <Input
               type="text"
               readOnly
-              value={user?.locationDetails?.currency?.name}
+              value={user?.currency?.name}
               className="fs-16"
             />
           </Col>

@@ -20,9 +20,9 @@ const TopPages = ({ transactions }) => {
     setTopPageDropdown(!isTopPageDropdown);
   };
 
-  useEffect(() => {
-    if (transactions) console.log(transactions);
-  }, [transactions]);
+  // useEffect(() => {
+  //   if (transactions) console.log(transactions);
+  // }, [transactions]);
   return (
     <React.Fragment>
       <Col>

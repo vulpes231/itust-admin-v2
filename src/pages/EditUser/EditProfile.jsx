@@ -17,21 +17,21 @@ const EditProfile = ({
   const [error, setError] = useState("");
   const initialValues = useMemo(
     () => ({
-      firstName: user?.name?.firstName || "",
-      lastName: user?.name?.lastName || "",
-      email: user?.credentials?.email || "",
-      address: user?.contactInfo?.address?.street || "",
-      city: user?.contactInfo?.address?.city || "",
-      zip: user?.contactInfo?.address?.zipCode || "",
-      dob: user?.personalDetails?.dob
-        ? new Date(user.personalDetails.dob).toISOString()
+      firstName: user?.personalInfo?.firstName || "",
+      lastName: user?.personalInfo?.lastName || "",
+      email: user?.contactInfo?.email || "",
+      address: user?.contactInfo?.street || "",
+      city: user?.contactInfo?.city || "",
+      zip: user?.contactInfo?.zipCode || "",
+      dob: user?.personalInfo?.dob
+        ? new Date(user.personalInfo.dob).toISOString()
         : "",
-      experience: user?.professionalInfo?.experience || "",
-      employment: user?.professionalInfo?.employment || "",
-      countryId: user?.locationDetails?.country?.countryId || "",
-      stateId: user?.locationDetails?.state?.stateId || "",
-      currencyId: user?.locationDetails?.currency?.id || "",
-      nationalityId: user?.locationDetails?.nationality?.id || "",
+      experience: user?.investmentInfo?.experience || "",
+      employment: user?.employmentInfo?.status || "",
+      countryId: user?.contactInfo?.country?.countryId || "",
+      stateId: user?.contactInfo?.state?.stateId || "",
+      currencyId: user?.currency?.id || "",
+      nationalityId: user?.personalInfo?.nationality?.id || "",
     }),
     [user]
   );
@@ -63,7 +63,6 @@ const EditProfile = ({
 
       const formData = { userId: user._id, ...changedFields };
 
-      console.log(formData);
       mutation.mutate(formData);
     },
   });
@@ -94,9 +93,6 @@ const EditProfile = ({
     }
   }, [mutation.isSuccess]);
 
-  useEffect(() => {
-    if (user) console.log(user.locationDetails);
-  }, [user]);
   return (
     <Card>
       <form onSubmit={validation.handleSubmit}>
@@ -113,6 +109,7 @@ const EditProfile = ({
                 name="firstName"
                 value={validation.values.firstName}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
 
@@ -122,6 +119,7 @@ const EditProfile = ({
                 name="lastName"
                 value={validation.values.lastName}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
           </Row>
@@ -133,6 +131,7 @@ const EditProfile = ({
                 name="email"
                 value={validation.values.email}
                 onChange={validation.handleChange}
+                // className="text-capitalize"
               />
             </Col>
           </Row>
@@ -145,6 +144,7 @@ const EditProfile = ({
                 name="countryId"
                 value={validation.values.countryId}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               >
                 <option value="">Select Country</option>
                 {countries.map((c) => (
@@ -162,6 +162,7 @@ const EditProfile = ({
                 name="stateId"
                 value={validation.values.stateId}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               >
                 <option value="">Select State</option>
                 {countryStates.map((s) => (
@@ -181,6 +182,7 @@ const EditProfile = ({
                 name="currencyId"
                 value={validation.values.currencyId}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               >
                 <option value="">Select Currency</option>
                 {currencies.map((c) => (
@@ -198,6 +200,7 @@ const EditProfile = ({
                 name="nationalityId"
                 value={validation.values.nationalityId}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               >
                 <option value="">Select Nationality</option>
                 {nationalities.map((n) => (
@@ -216,6 +219,7 @@ const EditProfile = ({
                 name="city"
                 value={validation.values.city}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
 
@@ -225,6 +229,7 @@ const EditProfile = ({
                 name="zip"
                 value={validation.values.zip}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
           </Row>
@@ -236,6 +241,7 @@ const EditProfile = ({
                 name="employment"
                 value={validation.values.employment}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
 
@@ -245,6 +251,7 @@ const EditProfile = ({
                 name="experience"
                 value={validation.values.experience}
                 onChange={validation.handleChange}
+                className="text-capitalize"
               />
             </Col>
           </Row>

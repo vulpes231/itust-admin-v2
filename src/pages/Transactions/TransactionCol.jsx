@@ -35,21 +35,33 @@ const Price = (cell) => {
 };
 
 const Status = (cell) => {
+  const status = cell.getValue();
+  const icon =
+    status === "pending" ? (
+      <i className="ri-time-line align-bottom"></i>
+    ) : status === "processed" ? (
+      <i className="ri-checkbox-circle-line align-bottom"></i>
+    ) : status === "cancelled" ? (
+      <i className="ri-close-circle-line align-bottom"></i>
+    ) : null;
   return (
     <React.Fragment>
-      {cell.getValue() === "pending" ? (
-        <span className="badge bg-warning-subtle text-warning text-uppercase">
+      <span
+        className={`${
+          status === "pending"
+            ? "bg-warning-subtle text-warning badge text-capitalize"
+            : status === "processed"
+            ? "bg-success-subtle text-success badge text-capitalize"
+            : status === "cancelled"
+            ? "bg-danger-subtle text-danger badge text-capitalize"
+            : ""
+        }`}
+      >
+        <span className="d-flex items-center gap-1 p-1 rounded-4">
+          {icon}
           {cell.getValue()}
         </span>
-      ) : cell.getValue() === "completed" ? (
-        <span className="badge bg-success-subtle text-success text-uppercase">
-          {cell.getValue()}
-        </span>
-      ) : cell.getValue() === "failed" ? (
-        <span className="badge bg-danger-subtle text-danger text-uppercase">
-          {cell.getValue()}
-        </span>
-      ) : null}
+      </span>
     </React.Fragment>
   );
 };

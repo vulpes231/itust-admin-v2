@@ -34,11 +34,11 @@ const UsersByDevice = ({ users }) => {
                               //   window.location.href = `/edituser/${userId}`;
                               // }}
                             >
-                              <span>{user.name.firstName}</span>
-                              <span> {user.name.lastName}</span>
+                              <span>{user.personalInfo.firstName}</span>
+                              <span> {user.personalInfo.lastName}</span>
                             </span>
                             <span className="fs-13 fw-light">
-                              {user.locationDetails.country.name}
+                              {user.contactInfo.country.name}
                             </span>
                           </div>
                         </div>

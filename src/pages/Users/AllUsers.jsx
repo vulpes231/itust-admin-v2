@@ -45,7 +45,7 @@ const AllUsers = ({ userList }) => {
       },
       {
         header: "Name",
-        accessorKey: "credentials.username",
+        accessorKey: "personalInfo.username",
         enableColumnFilter: false,
         cell: (cell) => {
           const userId = cell.row.original._id;
@@ -66,7 +66,7 @@ const AllUsers = ({ userList }) => {
       },
       {
         header: "Experience",
-        accessorKey: "professionalInfo.experience",
+        accessorKey: "investmentInfo.experience",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Experience {...cell} />;
@@ -82,7 +82,7 @@ const AllUsers = ({ userList }) => {
       },
       {
         header: "Email",
-        accessorKey: "credentials.email",
+        accessorKey: "contactInfo.email",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Email {...cell} />;
@@ -98,7 +98,7 @@ const AllUsers = ({ userList }) => {
       },
       {
         header: "Nationality",
-        accessorKey: "locationDetails.nationality.name",
+        accessorKey: "personalInfo.nationality.name",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Nationality {...cell} />;
