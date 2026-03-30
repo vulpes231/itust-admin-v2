@@ -136,7 +136,7 @@ const TopPages = ({ transactions }) => {
                         <td>
                           <span
                             className={`fs-13 text-capitalize ${
-                              item.status === "completed"
+                              item.status === "processed"
                                 ? "text-success bg-success-subtle py-1 px-3 rounded-pill"
                                 : item.status === "pending"
                                 ? "text-warning bg-warning-subtle py-1 px-3 rounded-pill"

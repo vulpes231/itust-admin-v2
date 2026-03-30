@@ -18,7 +18,7 @@ const UsersByDevice = ({ users }) => {
                 users.map((user) => {
                   // const userId = user._id;
                   return (
-                    <Row key={user._id} className="border rounded-2 p-2">
+                    <Row key={user?._id} className="border rounded-2 p-2">
                       <Col className="text-capitalize fw-medium fs-14">
                         <div className="d-flex align-items-center gap-4">
                           <img
@@ -34,11 +34,11 @@ const UsersByDevice = ({ users }) => {
                               //   window.location.href = `/edituser/${userId}`;
                               // }}
                             >
-                              <span>{user.personalInfo.firstName}</span>
-                              <span> {user.personalInfo.lastName}</span>
+                              <span>{user?.personalInfo?.firstName}</span>
+                              <span> {user?.personalInfo?.lastName}</span>
                             </span>
                             <span className="fs-13 fw-light">
-                              {user.contactInfo.country.name}
+                              {user?.contactInfo?.country?.name || "Not Set"}
                             </span>
                           </div>
                         </div>

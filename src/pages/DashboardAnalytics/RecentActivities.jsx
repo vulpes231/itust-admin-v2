@@ -5,6 +5,9 @@ import numeral from "numeral";
 import { Link } from "react-router-dom";
 
 const RecentActivities = ({ activities }) => {
+  if (activities) {
+    console.log(activities);
+  }
   return (
     <React.Fragment>
       <Col>
@@ -44,12 +47,12 @@ const RecentActivities = ({ activities }) => {
                             ? "text-warning bg-warning-subtle"
                             : history.type === "withdrawal"
                             ? "text-danger bg-danger-subtle"
-                            : history.type === "buy"
+                            : history.orderType === "buy"
                             ? "text-success bg-success-subtle"
                             : "text-danger bg-danger-subtle"
                         }`}
                       >
-                        {history.type}
+                        {history.type || history?.orderType}
                       </span>
                     </Col>
                     <Col>
