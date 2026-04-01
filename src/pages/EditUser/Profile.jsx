@@ -4,7 +4,7 @@ import numeral, { Numeral } from "numeral";
 import React, { useEffect, useState } from "react";
 import { Card, Label, Input, Row, Col, Spinner } from "reactstrap";
 import { getUserVerifyInfo } from "../../services/users";
-import { devServer } from "../../config";
+import { devServer, liveServer } from "../../config";
 import { verifyuserAccount } from "../../services/verification";
 import SuccessToast from "../../Components/Common/SuccessToast";
 import ErrorToast from "../../Components/Common/ErrorToast";
@@ -209,7 +209,7 @@ const Profile = ({ user, accounts }) => {
                     width: verifyInfo?.backId ? "100%" : "50%",
                     height: "100px",
                   }}
-                  src={`${devServer}${verifyInfo?.frontId}`}
+                  src={`${liveServer}${verifyInfo?.frontId}`}
                   alt="ID Image"
                   // width={100}
                 />
@@ -217,7 +217,7 @@ const Profile = ({ user, accounts }) => {
                   <img
                     className="border border-1 rounded-1"
                     style={{ width: "100%", height: "100px" }}
-                    src={`${devServer}${verifyInfo?.backId}`}
+                    src={`${liveServer}${verifyInfo?.backId}`}
                     alt="ID Image"
                     // width={100}
                   />
