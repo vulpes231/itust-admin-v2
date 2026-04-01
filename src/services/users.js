@@ -23,3 +23,14 @@ export async function getUserInfo(userId) {
     throw Error(errMsg);
   }
 }
+
+export async function getUserVerifyInfo(userId) {
+  try {
+    const res = await api.get(`/manageuser/verify/${userId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}

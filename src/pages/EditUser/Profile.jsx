@@ -1,12 +1,46 @@
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { capitalize } from "lodash";
 import numeral, { Numeral } from "numeral";
-import React, { useEffect } from "react";
-import { Card, Label, Input, Row, Col } from "reactstrap";
+import React, { useEffect, useState } from "react";
+import { Card, Label, Input, Row, Col, Spinner } from "reactstrap";
+import { getUserVerifyInfo } from "../../services/users";
+import { devServer } from "../../config";
+import { verifyuserAccount } from "../../services/verification";
+import SuccessToast from "../../Components/Common/SuccessToast";
+import ErrorToast from "../../Components/Common/ErrorToast";
 
 const Profile = ({ user, accounts }) => {
   // useEffect(() => {
   //   if (accounts) console.log(accounts);
   // }, [accounts]);
+
+  const [error, setError] = useState("");
+
+  const { data: verifyInfo } = useQuery({
+    queryKey: ["verifyData"],
+    queryFn: () => getUserVerifyInfo(user?._id),
+  });
+
+  const approveMutation = useMutation({
+    mutationFn: verifyuserAccount,
+    onError: (err) => setError(err.message),
+    onSuccess: () => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    },
+  });
+
+  const acceptVerfication = () => {
+    if (!verifyInfo || !user) {
+      setError("Verification Info required!");
+      return;
+    }
+    const verifyId = verifyInfo._id;
+    const userId = user._id;
+    const data = { verifyId, userId };
+    approveMutation.mutate(data);
+  };
 
   const brokerage =
     accounts && accounts.find((acct) => acct.slug === "brokerage");
@@ -15,6 +49,15 @@ const Profile = ({ user, accounts }) => {
 
   const KYC_STATUS = user && user.identityVerification.kycStatus;
   const ACCOUNT_STATUS = user && user.accountStatus.status;
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
   return (
     <Card>
       <Col>
@@ -150,13 +193,57 @@ const Profile = ({ user, accounts }) => {
         </div>
         <div className="d-flex gap-3 align-items-center mb-3">
           <span className="fs-18 fw-normal">ID</span>
-          <span className="bg-info-subtle text-info py-1 px-3 fs-14 fw-medium">
+          <span className="bg-secondary-subtle text-secondary py-1 px-3 fs-14 fw-medium text-capitalize">
             {user?.identityVerification?.idType
-              ? capitalize(user?.identityVerification?.idType)
+              ? user?.identityVerification?.idType
               : "--000-000--000"}
           </span>
         </div>
+        <div>
+          {user?.identityVerification?.kycStatus === "pending" && (
+            <div className="d-flex flex-column gap-2">
+              <div className="d-flex align-items-center gap-2">
+                <img
+                  className="border border-1 rounded-1"
+                  style={{
+                    width: verifyInfo?.backId ? "100%" : "50%",
+                    height: "100px",
+                  }}
+                  src={`${devServer}${verifyInfo?.frontId}`}
+                  alt="ID Image"
+                  // width={100}
+                />
+                {verifyInfo?.backId && (
+                  <img
+                    className="border border-1 rounded-1"
+                    style={{ width: "100%", height: "100px" }}
+                    src={`${devServer}${verifyInfo?.backId}`}
+                    alt="ID Image"
+                    // width={100}
+                  />
+                )}
+              </div>
+              <div className="d-flex gap-2">
+                <button
+                  onClick={acceptVerfication}
+                  className="btn btn-secondary w-100 d-flex align-items-center justify-content-center gap-2"
+                >
+                  {approveMutation.isPending && <Spinner size={"sm"} />}
+                  Approve
+                </button>
+                <button className="btn btn-danger w-100">Reject</button>
+              </div>
+            </div>
+          )}
+        </div>
       </Col>
+      {approveMutation.isSuccess && (
+        <SuccessToast
+          msg={"Verification approved."}
+          onClose={() => approveMutation.reset()}
+        />
+      )}
+      {error && <ErrorToast errMsg={error} onClose={() => setError("")} />}
     </Card>
   );
 };
