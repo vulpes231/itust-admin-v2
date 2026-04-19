@@ -5,9 +5,14 @@ import React, { useEffect, useState } from "react";
 import { Card, Label, Input, Row, Col, Spinner } from "reactstrap";
 import { getUserVerifyInfo } from "../../services/users";
 import { devServer, liveServer } from "../../config";
-import { verifyuserAccount } from "../../services/verification";
+import {
+  failVerification,
+  resetVerification,
+  verifyuserAccount,
+} from "../../services/verification";
 import SuccessToast from "../../Components/Common/SuccessToast";
 import ErrorToast from "../../Components/Common/ErrorToast";
+import ApproveOptions from "./ApproveOptions";
 
 const Profile = ({ user, accounts }) => {
   // useEffect(() => {
@@ -31,6 +36,26 @@ const Profile = ({ user, accounts }) => {
     },
   });
 
+  const rejectMutation = useMutation({
+    mutationFn: failVerification,
+    onError: (err) => setError(err.message),
+    onSuccess: () => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    },
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: resetVerification,
+    onError: (err) => setError(err.message),
+    onSuccess: () => {
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+    },
+  });
+
   const acceptVerfication = () => {
     if (!verifyInfo || !user) {
       setError("Verification Info required!");
@@ -40,6 +65,28 @@ const Profile = ({ user, accounts }) => {
     const userId = user._id;
     const data = { verifyId, userId };
     approveMutation.mutate(data);
+  };
+
+  const rejectVerfication = () => {
+    if (!verifyInfo || !user) {
+      setError("Verification Info required!");
+      return;
+    }
+    const verifyId = verifyInfo._id;
+    const userId = user._id;
+    const data = { verifyId, userId };
+    rejectMutation.mutate(data);
+  };
+
+  const deleteVerification = () => {
+    if (!verifyInfo || !user) {
+      setError("Verification Info required!");
+      return;
+    }
+    const verifyId = verifyInfo._id;
+    const userId = user._id;
+    const data = { verifyId, userId };
+    cancelMutation.mutate(data);
   };
 
   const brokerage =
@@ -200,47 +247,35 @@ const Profile = ({ user, accounts }) => {
           </span>
         </div>
         <div>
-          {user?.identityVerification?.kycStatus === "pending" && (
-            <div className="d-flex flex-column gap-2">
-              <div className="d-flex align-items-center gap-2">
-                <img
-                  className="border border-1 rounded-1"
-                  style={{
-                    width: verifyInfo?.backId ? "100%" : "50%",
-                    height: "100px",
-                  }}
-                  src={`${liveServer}${verifyInfo?.frontId}`}
-                  alt="ID Image"
-                  // width={100}
-                />
-                {verifyInfo?.backId && (
-                  <img
-                    className="border border-1 rounded-1"
-                    style={{ width: "100%", height: "100px" }}
-                    src={`${liveServer}${verifyInfo?.backId}`}
-                    alt="ID Image"
-                    // width={100}
-                  />
-                )}
-              </div>
-              <div className="d-flex gap-2">
-                <button
-                  onClick={acceptVerfication}
-                  className="btn btn-secondary w-100 d-flex align-items-center justify-content-center gap-2"
-                >
-                  {approveMutation.isPending && <Spinner size={"sm"} />}
-                  Approve
-                </button>
-                <button className="btn btn-danger w-100">Reject</button>
-              </div>
-            </div>
-          )}
+          <ApproveOptions
+            liveServer={liveServer}
+            acceptVerfication={acceptVerfication}
+            rejectVerfication={rejectVerfication}
+            deleteVerification={deleteVerification}
+            verifyInfo={verifyInfo}
+            approveMutation={approveMutation}
+            rejectMutation={rejectMutation}
+            cancelMutation={cancelMutation}
+            kycStatus={user?.identityVerification?.kycStatus}
+          />
         </div>
       </Col>
       {approveMutation.isSuccess && (
         <SuccessToast
           msg={"Verification approved."}
           onClose={() => approveMutation.reset()}
+        />
+      )}
+      {rejectMutation.isSuccess && (
+        <SuccessToast
+          msg={"Verification rejected."}
+          onClose={() => rejectMutation.reset()}
+        />
+      )}
+      {cancelMutation.isSuccess && (
+        <SuccessToast
+          msg={"Verification cancelled."}
+          onClose={() => cancelMutation.reset()}
         />
       )}
       {error && <ErrorToast errMsg={error} onClose={() => setError("")} />}

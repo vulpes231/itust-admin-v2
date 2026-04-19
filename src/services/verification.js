@@ -13,6 +13,28 @@ export async function getVerificationDetails(userId) {
   }
 }
 
+export async function failVerification(formData) {
+  const { userId } = formData;
+  try {
+    const res = await api.update(`/manageverify/${userId}`, formData);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
+export async function resetVerification(formData) {
+  const { userId } = formData;
+  try {
+    const res = await api.create(`/manageverify/${userId}`, formData);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
 export async function verifyuserAccount(formData) {
   const { userId } = formData;
   try {
