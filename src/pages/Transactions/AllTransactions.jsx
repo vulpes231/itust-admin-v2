@@ -11,6 +11,7 @@ import CreateTransaction from "./CreateTransaction";
 const AllTransactions = ({ transactionList }) => {
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
+  const [rowData, setRowData] = useState("");
   const [showModal, setShowModal] = useState(false);
 
   const [createTransactionModal, setCreateTransactionModal] = useState(false);
@@ -22,8 +23,9 @@ const AllTransactions = ({ transactionList }) => {
     setCreateTransactionModal(false);
   };
 
-  const handleAction = (e, id) => {
+  const handleAction = (e, id, transaction) => {
     setRowId(id);
+    setRowData(transaction);
     setAction(e.target.value);
     setShowModal(true);
   };
@@ -126,15 +128,18 @@ const AllTransactions = ({ transactionList }) => {
         accessorKey: "_id",
         enableColumnFilter: false,
         cell: (cell) => {
+          const method = cell.row.original.method.mode;
+          const data = cell.row.original;
           return (
             <div>
               <select
                 name="action"
-                onChange={(e) => handleAction(e, cell.getValue())}
+                onChange={(e) => handleAction(e, cell.getValue(), data)}
               >
                 <option value="">Select Option</option>
                 <option value="approve">Approve</option>
                 <option value="reject">Reject</option>
+                {method === "bank" && <option value="view">View</option>}
               </select>
             </div>
           );
@@ -182,11 +187,13 @@ const AllTransactions = ({ transactionList }) => {
       {action && showModal && (
         <TransactionModal
           dataId={rowId}
+          data={rowData}
           action={action}
           isOpen={showModal}
           onClose={() => {
             setAction("");
             setRowId("");
+            setRowData("");
             setShowModal(false);
           }}
         />

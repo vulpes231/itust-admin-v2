@@ -4,8 +4,9 @@ import React, { useEffect, useState } from "react";
 import { Card, Modal, ModalBody, ModalHeader, Spinner } from "reactstrap";
 import { updateTransaction } from "../../services/transactions";
 import { ErrorToast, SuccessToast } from "../../Components";
+import { liveServer } from "../../config";
 
-const TransactionModal = ({ dataId, action, isOpen, onClose }) => {
+const TransactionModal = ({ dataId, action, isOpen, onClose, data }) => {
   const [error, setError] = useState("");
 
   const mutation = useMutation({
@@ -47,6 +48,8 @@ const TransactionModal = ({ dataId, action, isOpen, onClose }) => {
       return () => clearTimeout(tmt);
     }
   }, [mutation.isSuccess]);
+
+  // console.log(data);
   return (
     <React.Fragment>
       <Card>
@@ -55,22 +58,48 @@ const TransactionModal = ({ dataId, action, isOpen, onClose }) => {
             {capitalize(action)} Transaction
           </ModalHeader>
           <ModalBody className="d-flex flex-column gap-4">
-            <span>
-              {capitalize(action)} Transaction ID: {dataId}{" "}
-            </span>
+            {action === "view" && (
+              <div className="d-flex flex-column gap-2">
+                <span className="text-capitalize fw-bold">
+                  method:{" "}
+                  <span className="text-muted fw-normal">
+                    {data?.method?.mode}
+                  </span>
+                </span>
+                <span className="text-capitalize fw-bold">
+                  amount:{" "}
+                  <span className="text-muted fw-normal">${data?.amount}</span>
+                </span>
+                <span className="text-capitalize fw-bold">
+                  status:{" "}
+                  <span className="text-muted fw-normal">{data?.status}</span>
+                </span>
+                <span className="d-flex flex-column gap-2 fw-bold text-capitalize">
+                  proof:{" "}
+                  <span>
+                    <img
+                      className="border p-2 rounded-2"
+                      style={{ width: "100px" }}
+                      src={`${liveServer}${data?.proof}`}
+                      alt=""
+                    />
+                  </span>{" "}
+                </span>
+              </div>
+            )}
             <div className="d-flex align-items-center gap-2">
               <button
                 className="btn btn-info"
                 type="button"
                 onClick={handleSubmit}
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || data?.status === "processed"}
               >
                 {mutation.isPending ? (
                   <Spinner size="sm" className="me-2">
                     Loading...
                   </Spinner>
                 ) : null}
-                {capitalize(action)}
+                {action === "view" ? "Approve" : capitalize(action)}
               </button>
               <button
                 type="button"
