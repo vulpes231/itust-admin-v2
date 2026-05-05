@@ -13,6 +13,7 @@ import {
 import SuccessToast from "../../Components/Common/SuccessToast";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import ApproveOptions from "./ApproveOptions";
+import ApproveAddressOptions from "./ApproveAddressOptions";
 
 const Profile = ({ user, accounts }) => {
   // useEffect(() => {
@@ -26,7 +27,7 @@ const Profile = ({ user, accounts }) => {
     queryFn: () => getUserVerifyInfo(user?._id),
   });
 
-  const approveMutation = useMutation({
+  const approveVerification = useMutation({
     mutationFn: verifyuserAccount,
     onError: (err) => setError(err.message),
     onSuccess: () => {
@@ -36,7 +37,7 @@ const Profile = ({ user, accounts }) => {
     },
   });
 
-  const rejectMutation = useMutation({
+  const rejectVerification = useMutation({
     mutationFn: failVerification,
     onError: (err) => setError(err.message),
     onSuccess: () => {
@@ -64,7 +65,7 @@ const Profile = ({ user, accounts }) => {
     const verifyId = verifyInfo._id;
     const userId = user._id;
     const data = { verifyId, userId };
-    approveMutation.mutate(data);
+    approveVerification.mutate(data);
   };
 
   const rejectVerfication = () => {
@@ -75,7 +76,7 @@ const Profile = ({ user, accounts }) => {
     const verifyId = verifyInfo._id;
     const userId = user._id;
     const data = { verifyId, userId };
-    rejectMutation.mutate(data);
+    rejectVerification.mutate(data);
   };
 
   const deleteVerification = () => {
@@ -213,10 +214,10 @@ const Profile = ({ user, accounts }) => {
               ACCOUNT_STATUS === "active"
                 ? "bg-success-subtle text-success"
                 : ACCOUNT_STATUS === "active"
-                ? "bg-danger-subtle text-danger"
-                : ACCOUNT_STATUS === "review"
-                ? "bg-warning-subtle text-warning"
-                : null
+                  ? "bg-danger-subtle text-danger"
+                  : ACCOUNT_STATUS === "review"
+                    ? "bg-warning-subtle text-warning"
+                    : null
             } py-1 px-3 rounded fs-14 fw-medium`}
           >
             {user && capitalize(user?.accountStatus?.status)}
@@ -229,10 +230,10 @@ const Profile = ({ user, accounts }) => {
               KYC_STATUS === "approved"
                 ? "bg-success-subtle text-success"
                 : KYC_STATUS === "rejected"
-                ? "bg-danger-subtle text-danger"
-                : KYC_STATUS === "pending"
-                ? "bg-warning-subtle text-warning"
-                : "bg-info-subtle text-info"
+                  ? "bg-danger-subtle text-danger"
+                  : KYC_STATUS === "pending"
+                    ? "bg-warning-subtle text-warning"
+                    : "bg-info-subtle text-info"
             } py-1 px-3 rounded fs-14 fw-medium`}
           >
             {user && capitalize(user?.identityVerification?.kycStatus)}
@@ -253,23 +254,28 @@ const Profile = ({ user, accounts }) => {
             rejectVerfication={rejectVerfication}
             deleteVerification={deleteVerification}
             verifyInfo={verifyInfo}
-            approveMutation={approveMutation}
-            rejectMutation={rejectMutation}
+            approveMutation={approveVerification}
+            rejectMutation={rejectVerification}
             cancelMutation={cancelMutation}
             kycStatus={user?.identityVerification?.kycStatus}
           />
         </div>
+        <div>
+          <hr />
+          <h4>Contact Address Verification</h4>
+          <ApproveAddressOptions user={user} />
+        </div>
       </Col>
-      {approveMutation.isSuccess && (
+      {approveVerification.isSuccess && (
         <SuccessToast
           msg={"Verification approved."}
-          onClose={() => approveMutation.reset()}
+          onClose={() => approveVerification.reset()}
         />
       )}
-      {rejectMutation.isSuccess && (
+      {rejectVerification.isSuccess && (
         <SuccessToast
           msg={"Verification rejected."}
-          onClose={() => rejectMutation.reset()}
+          onClose={() => rejectVerification.reset()}
         />
       )}
       {cancelMutation.isSuccess && (

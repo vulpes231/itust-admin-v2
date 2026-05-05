@@ -12,7 +12,6 @@ const ApproveOptions = ({
   deleteVerification,
   kycStatus,
 }) => {
-  // console.log(verifyInfo);
   return (
     <div className="d-flex flex-column gap-2">
       <div className="d-flex align-items-center gap-2">
@@ -33,7 +32,6 @@ const ApproveOptions = ({
             style={{ width: "100%", height: "100px" }}
             src={`${liveServer}${verifyInfo?.backId}`}
             alt="Back ID"
-            // width={100}
           />
         )}
       </div>

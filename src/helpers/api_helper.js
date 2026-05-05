@@ -2,25 +2,19 @@ import axios from "axios";
 
 import { liveServer, devServer } from "../config";
 
-// default
-axios.defaults.baseURL = liveServer;
-// content type
+axios.defaults.baseURL = devServer;
+
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
-// content type
-const token = JSON.parse(sessionStorage.getItem("authUser"))
-  ? JSON.parse(sessionStorage.getItem("authUser")).token
-  : null;
+const token = getAccessToken();
 
 if (token) axios.defaults.headers.common["Authorization"] = "Bearer " + token;
 
-// intercepting to capture errors
 axios.interceptors.response.use(
   function (response) {
     return response.data ? response.data : response;
   },
   function (error) {
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
     let message;
     switch (error.status) {
       case 500:
@@ -41,7 +35,7 @@ axios.interceptors.response.use(
         message = error.response?.data?.message || error;
     }
     return Promise.reject(message);
-  }
+  },
 );
 
 /**
@@ -106,13 +100,8 @@ const getLoggedinUser = () => {
   }
 };
 
-const getAccessToken = () => {
-  const tk = sessionStorage.getItem("token");
-  if (!tk) {
-    return null;
-  } else {
-    return tk;
-  }
-};
+function getAccessToken() {
+  return sessionStorage.getItem("token") || null;
+}
 
 export { APIClient, setAuthorization, getLoggedinUser, getAccessToken };
