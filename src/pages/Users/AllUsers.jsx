@@ -7,6 +7,7 @@ import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import { capitalize } from "lodash";
 import BanUserModal from "./BanUserModal";
+import DeleteUser from "./DeleteUser";
 
 const AllUsers = ({ userList }) => {
   const history = useNavigate();
@@ -134,7 +135,7 @@ const AllUsers = ({ userList }) => {
         },
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -166,6 +167,14 @@ const AllUsers = ({ userList }) => {
           dataId={rowId}
           isOpen={banModal}
           onClose={() => setBanModal(false)}
+          data={data}
+        />
+      )}
+      {deleteUserModal && (
+        <DeleteUser
+          dataId={rowId}
+          isOpen={deleteUserModal}
+          onClose={() => setDeleteUserModal(false)}
           data={data}
         />
       )}

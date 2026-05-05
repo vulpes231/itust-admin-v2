@@ -47,3 +47,14 @@ export async function verifyUserAddress(formData) {
     throw Error(errMsg);
   }
 }
+
+export async function deleteAccount(userId) {
+  try {
+    const res = await api.delete(`/manageuser/${userId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}

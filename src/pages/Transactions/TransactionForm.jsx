@@ -85,7 +85,7 @@ const TransactionForm = ({ mutation, onClose }) => {
                   users.map((usr) => {
                     return (
                       <option key={usr._id} value={usr._id}>
-                        {usr.credentials.email}
+                        {usr.personalInfo.firstName} {usr.personalInfo.lastName}
                       </option>
                     );
                   })}
