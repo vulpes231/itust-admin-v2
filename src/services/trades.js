@@ -13,6 +13,18 @@ export async function getAllTrades() {
   }
 }
 
+export async function getUserTrades(formData) {
+  const { userId } = formData;
+  try {
+    const res = await api.get(`/managetrade/${userId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
 export async function addNewTrade(formData) {
   try {
     const res = await api.create("/managetrade", formData);
