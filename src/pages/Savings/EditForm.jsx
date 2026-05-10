@@ -1,12 +1,14 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getCountries } from "../../services/generic";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa";
+import { updateSavingsAccount } from "../../services/savings";
+import { ErrorToast, SuccessToast } from "../../Components";
 
-const SavingsForm = ({ mutation, onClose }) => {
+const EditForm = ({ onClose, data }) => {
   const tk = getAccessToken();
 
   const [noteInput, setNoteInput] = useState("");
@@ -23,56 +25,114 @@ const SavingsForm = ({ mutation, onClose }) => {
     setNoteInput("");
   };
 
-  const { data: countries } = useQuery({
+  const { data: countries = [] } = useQuery({
     queryKey: ["countries"],
     queryFn: getCountries,
     enabled: !!tk,
   });
 
+  //   console.log(data);
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      name: "",
-      details: [],
-      title: "",
-      information: "",
-      canTrade: false,
-      tag: "",
-      apy: "",
-      designTag: "",
-      maxSavingsYearly: "",
-      maxSavingsTotal: "",
-      jointMaxSelection: "",
-      slug: "",
-      interestRate: "",
-      eligibleCountries: [],
+      name: data?.name || "",
+      details: data?.details || [],
+      title: data?.title || "",
+      information: data?.information || "",
+      canTrade: data?.canTrade || false,
+      tag: data?.tag || "",
+      apy: data?.yearlyAPY || "",
+      designTag: data?.designTag || "",
+      maxSavingsYearly: data?.maxSavings?.yearly || "",
+      maxSavingsTotal: data?.maxSavings?.total || "",
+      jointMaxSelection: data?.jointMaxSelection || "",
+      minDeposit: data?.contributionLimits?.min || "",
+      maxDeposit: data?.contributionLimits?.max || "",
+      minWithdrawal: data?.withdrawalLimits?.min || "",
+      maxWithdrawal: data?.withdrawalLimits?.max || "",
+      slug: data?.slug || "",
+      //   interestRate: data?.interestRate || "",
+      eligibleCountries: data?.eligibleCountries || [],
     },
     onSubmit: (values) => {
-      console.log(values);
-      mutation.mutate(values);
+      const initialValues = {
+        name: data?.name || "",
+        details: data?.details || [],
+        title: data?.title || "",
+        information: data?.information || "",
+        canTrade: data?.canTrade || false,
+        tag: data?.tag || "",
+        apy: data?.yearlyAPY || "",
+        designTag: data?.designTag || "",
+        maxSavingsYearly: data?.maxSavings?.yearly || "",
+        maxSavingsTotal: data?.maxSavings?.total || "",
+        jointMaxSelection: data?.jointMaxSelection || "",
+        minDeposit: data?.contributionLimits?.min || "",
+        maxDeposit: data?.contributionLimits?.max || "",
+        minWithdrawal: data?.withdrawalLimits?.min || "",
+        maxWithdrawal: data?.withdrawalLimits?.max || "",
+        slug: data?.slug || "",
+        // interestRate: data?.interestRate || "",
+        eligibleCountries: data?.eligibleCountries || [],
+      };
+
+      const changedValues = Object.keys(values).reduce((acc, key) => {
+        if (Array.isArray(values[key]) && Array.isArray(initialValues[key])) {
+          if (
+            JSON.stringify(values[key]) !== JSON.stringify(initialValues[key])
+          ) {
+            acc[key] = values[key];
+          }
+        } else if (values[key] !== initialValues[key]) {
+          acc[key] = values[key];
+        }
+        return acc;
+      }, {});
+
+      console.log("Changed fields only:", changedValues);
+
+      mutation.mutate({ ...changedValues, accountId: data?._id });
     },
   });
+
+  //   console.log(data);
 
   const toggleTrade = () => {
     validation.setFieldValue("canTrade", !validation.values.canTrade);
   };
 
-  // Function to select all countries
-  const selectAllCountries = () => {
-    if (countries && countries.length > 0) {
-      const allCountryIds = countries.map((country) => country._id);
-      validation.setFieldValue("eligibleCountries", allCountryIds);
-    }
-  };
+  const [error, setError] = useState("");
 
-  // Function to clear all selected countries
-  const clearAllCountries = () => {
-    validation.setFieldValue("eligibleCountries", []);
-  };
+  const mutation = useMutation({
+    mutationFn: updateSavingsAccount,
+    onError: (err) => setError(err.message),
+    onSuccess: () => {
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 3000);
+    },
+  });
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
 
   return (
     <React.Fragment>
-      <form action="">
+      <form
+        action=""
+        onSubmit={(e) => {
+          e.preventDefault();
+          validation.handleSubmit();
+        }}
+      >
         <div className="mb-3 mt-3">
           <Row className="mb-3">
             <Col>
@@ -88,6 +148,25 @@ const SavingsForm = ({ mutation, onClose }) => {
                 <option value="savings">Savings</option>
                 <option value="retirement">Retirement</option>
                 {/* <option value="investment">Investment</option> */}
+              </Input>
+            </Col>
+            <Col>
+              <Label className="text-capitalize">design tag</Label>
+              <Input
+                type="select"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.designTag}
+                name="designTag"
+              >
+                <option value="">Select Design Tag</option>
+                <option value="savings 1">Savings 1</option>
+                <option value="savings 2">Savings 2</option>
+                <option value="savings 3">Savings 3</option>
+                <option value="retirement 1">Retirement 1</option>
+                <option value="retirement 2">Retirement 2</option>
+                <option value="retirement 3">Retirement 3</option>
+                {/* <option value="investment1">Investment</option> */}
               </Input>
             </Col>
           </Row>
@@ -136,25 +215,70 @@ const SavingsForm = ({ mutation, onClose }) => {
               />
             </Col>
           </Row>
-          <Row className="mb-3">
+          {/* <Row className="mb-3">
             <Col>
-              <Label className="text-capitalize">design tag</Label>
+              <Label> Interest Rate</Label>
               <Input
-                type="select"
+                type="text"
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.designTag}
-                name="designTag"
-              >
-                <option value="">Select Design Tag</option>
-                <option value="savings 1">Savings 1</option>
-                <option value="savings 2">Savings 2</option>
-                <option value="savings 3">Savings 3</option>
-                <option value="retirement 1">Retirement 1</option>
-                <option value="retirement 2">Retirement 2</option>
-                <option value="retirement 3">Retirement 3</option>
-                {/* <option value="investment1">Investment</option> */}
-              </Input>
+                value={validation.values.interestRate}
+                name="interestRate"
+              />
+            </Col>
+            <Col>
+              <Label> Sellt</Label>
+              <Input
+                type="text"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.title}
+                name="title"
+              />
+            </Col>
+          </Row> */}
+          <Row className="mb-3">
+            <Col>
+              <Label> Minimum Deposit</Label>
+              <Input
+                type="text"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.minDeposit}
+                name="minDeposit"
+              />
+            </Col>
+            <Col>
+              <Label> Maximum Deposit</Label>
+              <Input
+                type="text"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.maxDeposit}
+                name="maxDeposit"
+              />
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col>
+              <Label> Minimum Withdrawal</Label>
+              <Input
+                type="text"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.minWithdrawal}
+                name="minWithdrawal"
+              />
+            </Col>
+            <Col>
+              <Label> Maximum Withdrawal</Label>
+              <Input
+                type="text"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.maxWithdrawal}
+                name="maxWithdrawal"
+              />
             </Col>
           </Row>
           {validation.values.tag === "retirement" && (
@@ -214,34 +338,10 @@ const SavingsForm = ({ mutation, onClose }) => {
           <Row className="mb-3 position-relative">
             <Col>
               <Label>Select Countries</Label>
-
-              {/* Action Buttons for Country Selection */}
-              {countries && countries.length > 0 && (
-                <div className="mb-2 d-flex gap-2">
-                  <button
-                    type="button"
-                    className="btn btn-sm btn-primary"
-                    onClick={selectAllCountries}
-                  >
-                    Select All Countries
-                  </button>
-                  {validation.values.eligibleCountries.length > 0 && (
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-danger"
-                      onClick={clearAllCountries}
-                    >
-                      Clear All
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Display Selected Countries */}
               {validation.values.eligibleCountries.length > 0 && (
                 <div className="my-2 d-flex flex-wrap gap-2 ">
                   {validation.values.eligibleCountries.map((id) => {
-                    const country = countries?.find((c) => c._id === id);
+                    const country = countries.find((c) => c._id === id);
 
                     return (
                       <span
@@ -267,8 +367,6 @@ const SavingsForm = ({ mutation, onClose }) => {
                   })}
                 </div>
               )}
-
-              {/* Country Selection Dropdown */}
               <Input
                 type="select"
                 className="text-capitalize"
@@ -363,37 +461,41 @@ const SavingsForm = ({ mutation, onClose }) => {
               )}
             </span>
           </Col>
-          <Row>
-            <div className="d-flex align-items-center gap-2 mt-4">
-              <button
-                className="btn btn-info"
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  validation.submitForm();
-                }}
-                disabled={mutation.isPending}
-              >
-                {mutation.isPending ? (
-                  <Spinner size="sm" className="me-2">
-                    Loading...
-                  </Spinner>
-                ) : null}
-                Create Account
-              </button>
-              <button
-                type="button"
-                onClick={onClose}
-                className="btn btn-danger"
-              >
-                Cancel
-              </button>
-            </div>
-          </Row>
+        </div>
+        <div className="d-flex gap-2">
+          <button
+            className="btn btn-info"
+            type="submit"
+            disabled={mutation.isPending}
+          >
+            {mutation.isPending ? (
+              <Spinner size="sm" className="me-2">
+                Loading...
+              </Spinner>
+            ) : null}
+            Edit
+          </button>
+          <button type="button" onClick={onClose} className="btn btn-danger">
+            Cancel
+          </button>
         </div>
       </form>
+      {error && (
+        <ErrorToast
+          errMsg={error}
+          isOpen={error !== undefined}
+          onClose={() => setError("")}
+        />
+      )}
+      {mutation.isSuccess && (
+        <SuccessToast
+          msg={"Account updated successfully."}
+          isOpen={mutation.isSuccess}
+          onClose={() => mutation.reset()}
+        />
+      )}
     </React.Fragment>
   );
 };
 
-export default SavingsForm;
+export default EditForm;

@@ -9,6 +9,8 @@ import {
   Price,
   Status,
   Amount,
+  Leverage,
+  Extra,
 } from "./TradeCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
@@ -129,8 +131,24 @@ const AllTrades = ({ tradeList }) => {
         },
       },
       {
+        header: "Extra Profit",
+        accessorKey: "extra",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <Extra {...cell} />;
+        },
+      },
+      {
+        header: "Leverage",
+        accessorKey: "execution.leverage",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <Leverage {...cell} />;
+        },
+      },
+      {
         header: "Today Return (%)",
-        accessorKey: "performance.todayReturnPercent",
+        accessorKey: "performance.totalReturnPercent",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Roi {...cell} />;
@@ -175,7 +193,7 @@ const AllTrades = ({ tradeList }) => {
         },
       },
     ],
-    []
+    [],
   );
 
   // useEffect(() => {

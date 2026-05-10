@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import {
@@ -8,14 +8,29 @@ import {
   Minimum,
   Status,
   Symbol,
+  MaxYearly,
+  MaxTotal,
 } from "./AccountCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import CreateSavings from "./CreateSavings";
 import AccountFilter from "./AccountFilter";
+import { FaDelicious } from "react-icons/fa";
+import { RiDeleteBin5Line } from "react-icons/ri";
+import { TiEdit } from "react-icons/ti";
+import { GrOverview } from "react-icons/gr";
+import DeleteSavings from "./DeleteSavings";
+import ViewSavings from "./ViewSavings";
+import EditSavings from "./EditSavings";
 
 const AllAccounts = ({ accountList }) => {
   const [createSavingsModal, setCreateSavingsModal] = useState(false);
+  const [deleteSavingsModal, setDeleteSavingsModal] = useState(false);
+  const [editSavingsModal, setEditSavingsModal] = useState(false);
+  const [viewSavingsModal, setViewSavingsModal] = useState(false);
+  const [action, setAction] = useState("");
+  const [rowId, setRowId] = useState("");
+  const [rowData, setRowData] = useState("");
 
   const openCreateSavingsModal = () => {
     setCreateSavingsModal(true);
@@ -23,7 +38,13 @@ const AllAccounts = ({ accountList }) => {
   const closeCreateSavingsModal = () => {
     setCreateSavingsModal(false);
   };
-  // console.log(accountList);
+
+  const handleAction = (id, data, currentAction) => {
+    setRowId(id);
+    setRowData(data);
+    setAction(currentAction);
+  };
+
   const columns = useMemo(
     () => [
       {
@@ -74,20 +95,30 @@ const AllAccounts = ({ accountList }) => {
           return <Interest {...cell} />;
         },
       },
+
+      {
+        header: "Max (yearly)",
+        accessorKey: "maxSavings.yearly",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <MaxYearly {...cell} />;
+        },
+      },
+
+      {
+        header: "Max (All Time)",
+        accessorKey: "maxSavings.total",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <MaxTotal {...cell} />;
+        },
+      },
       {
         header: "Tradeable",
         accessorKey: "canTrade",
         enableColumnFilter: false,
         cell: (cell) => {
           return <CanTrade {...cell} />;
-        },
-      },
-      {
-        header: "Title",
-        accessorKey: "title",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Minimum {...cell} />;
         },
       },
 
@@ -99,9 +130,66 @@ const AllAccounts = ({ accountList }) => {
           return <Status {...cell} />;
         },
       },
+      {
+        header: "Actions",
+        accessorKey: "title",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const data = cell.row.original;
+          return (
+            <div className="d-flex align-items-center gap-1">
+              <button
+                onClick={() => handleAction(data._id, data, "view")}
+                className="btn btn-info"
+              >
+                <GrOverview />
+              </button>
+              <button
+                onClick={() => handleAction(data._id, data, "edit")}
+                className="btn btn-secondary"
+              >
+                <TiEdit />
+              </button>
+              <button
+                onClick={() => handleAction(data._id, data, "delete")}
+                className="btn btn-danger"
+              >
+                <RiDeleteBin5Line />
+              </button>
+            </div>
+          );
+        },
+      },
     ],
-    []
+    [],
   );
+
+  const handleCloseModal = () => {
+    setAction("");
+    setRowData("");
+    setRowId("");
+    if (action === "edit") {
+      setEditSavingsModal(false);
+    } else if (action === "delete") {
+      setDeleteSavingsModal(false);
+    } else {
+      setViewSavingsModal(false);
+    }
+  };
+
+  useEffect(() => {
+    if (action === "edit") {
+      console.log(rowId, "edit");
+      setEditSavingsModal(true);
+    } else if (action === "view") {
+      console.log(rowId, "view");
+      setViewSavingsModal(true);
+    } else if (action === "delete") {
+      console.log(rowId, "delete");
+      setDeleteSavingsModal(true);
+    }
+  }, [action]);
+
   return (
     <React.Fragment>
       <Col lg={12}>
@@ -143,6 +231,30 @@ const AllAccounts = ({ accountList }) => {
         <CreateSavings
           isOpen={createSavingsModal}
           onClose={closeCreateSavingsModal}
+        />
+      )}
+      {deleteSavingsModal && (
+        <DeleteSavings
+          isOpen={deleteSavingsModal}
+          onClose={handleCloseModal}
+          data={rowData}
+          dataId={rowId}
+        />
+      )}
+      {editSavingsModal && (
+        <EditSavings
+          isOpen={editSavingsModal}
+          onClose={handleCloseModal}
+          data={rowData}
+          dataId={rowId}
+        />
+      )}
+      {viewSavingsModal && (
+        <ViewSavings
+          isOpen={viewSavingsModal}
+          onClose={handleCloseModal}
+          data={rowData}
+          dataId={rowId}
         />
       )}
     </React.Fragment>

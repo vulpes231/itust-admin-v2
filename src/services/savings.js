@@ -23,3 +23,27 @@ export async function createSavingsAccount(formData) {
     throw Error(errMsg);
   }
 }
+
+export async function updateSavingsAccount(formData) {
+  const { accountId } = formData;
+  try {
+    const res = await api.update(`/managesavings/${accountId}`, formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}
+
+export async function deleteSavingsAccount(formData) {
+  const { accountId } = formData;
+  try {
+    const res = await api.delete(`/managesavings/${accountId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}

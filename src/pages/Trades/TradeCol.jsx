@@ -45,6 +45,20 @@ const Price = (cell) => {
     </React.Fragment>
   );
 };
+const Extra = (cell) => {
+  return (
+    <React.Fragment>
+      {numeral(cell.getValue()).format("$0,0.00")}
+    </React.Fragment>
+  );
+};
+const Leverage = (cell) => {
+  return (
+    <React.Fragment>
+      {cell.getValue() ? `${cell.getValue()}X` : "-"}
+    </React.Fragment>
+  );
+};
 
 const Status = (cell) => {
   return (
@@ -66,4 +80,14 @@ const Status = (cell) => {
   );
 };
 
-export { Type, Quantity, OrderValue, Roi, Price, Status, Amount };
+export {
+  Type,
+  Quantity,
+  OrderValue,
+  Roi,
+  Price,
+  Status,
+  Amount,
+  Extra,
+  Leverage,
+};

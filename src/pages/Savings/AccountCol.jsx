@@ -14,7 +14,24 @@ const Type = (cell) => {
 };
 
 const Interest = (cell) => {
-  return <React.Fragment>{cell.getValue()}%</React.Fragment>;
+  return (
+    <React.Fragment>
+      {cell.getValue() ? cell.getValue() : "-"}
+      {cell.getValue() && "%"}
+    </React.Fragment>
+  );
+};
+
+const MaxYearly = (cell) => {
+  return (
+    <React.Fragment>{cell.getValue() ? cell.getValue() : "-"}</React.Fragment>
+  );
+};
+
+const MaxTotal = (cell) => {
+  return (
+    <React.Fragment>{cell.getValue() ? cell.getValue() : "-"}</React.Fragment>
+  );
 };
 
 const CanTrade = (cell) => {
@@ -51,4 +68,13 @@ const Status = (cell) => {
   );
 };
 
-export { Type, Interest, CanTrade, Minimum, Symbol, Status };
+export {
+  Type,
+  Interest,
+  CanTrade,
+  Minimum,
+  Symbol,
+  Status,
+  MaxTotal,
+  MaxYearly,
+};

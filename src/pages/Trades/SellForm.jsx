@@ -41,7 +41,7 @@ const SellForm = ({ order, token, users, onClose }) => {
       notifyUser: false,
     },
     onSubmit: (values) => {
-      console.log(values);
+      //   console.log(values);
       mutation.mutate(values);
     },
   });
