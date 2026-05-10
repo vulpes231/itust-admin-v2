@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { getUserAccounts } from "../../services/account";
 import { searchAsset } from "../../services/asset";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import { ErrorToast, SuccessToast } from "../../Components";
 import { addNewTrade, closeTrade, getUserTrades } from "../../services/trades";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
+import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 
 const SellForm = ({ order, token, users, onClose }) => {
   const [error, setError] = useState("");
@@ -28,7 +29,7 @@ const SellForm = ({ order, token, users, onClose }) => {
     initialValues: {
       userId: "",
       walletId: "",
-      assetId: "",
+      tradeId: "",
       amount: "",
       executionType: "",
       orderType: order || "",
@@ -37,6 +38,7 @@ const SellForm = ({ order, token, users, onClose }) => {
       takeProfit: "",
       stopLoss: "",
       leverage: "",
+      notifyUser: false,
     },
     onSubmit: (values) => {
       console.log(values);
@@ -55,6 +57,13 @@ const SellForm = ({ order, token, users, onClose }) => {
     queryFn: () => getUserTrades({ userId: validation.values.userId }),
     enabled: !!token && !!validation.values.userId,
   });
+
+  const accountId = validation.values.walletId;
+
+  const acctTrades =
+    userTrades &&
+    userTrades.length > 0 &&
+    userTrades.filter((trade) => trade.wallet.id === accountId);
 
   useEffect(() => {
     if (error) {
@@ -130,14 +139,14 @@ const SellForm = ({ order, token, users, onClose }) => {
             type="select"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            value={validation.values.walletId}
-            name="walletId"
+            value={validation.values.tradeId}
+            name="tradeId"
             className="text-capitalize"
           >
             <option value="">Select Trade</option>
-            {userTrades &&
-              userTrades.length > 0 &&
-              userTrades.map((trade) => {
+            {acctTrades &&
+              acctTrades.length > 0 &&
+              acctTrades.map((trade) => {
                 return (
                   <option key={trade._id} value={trade._id}>
                     {`${trade.asset.name}: ${numeral(trade.performance.currentValue).format("$0,0.00")}`}
@@ -212,17 +221,40 @@ const SellForm = ({ order, token, users, onClose }) => {
 
       <Row className="mb-3">
         <Col>
-          <Label>Amount</Label>
+          <Label>Amount (%)</Label>
           <Input
-            type="text"
+            type="select"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
             value={validation.values.amount}
             name="amount"
             autoComplete="off"
-          />
+          >
+            <option value="">Select Amount</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="75">75</option>
+            <option value="100">100</option>
+          </Input>
         </Col>
       </Row>
+      <div className="d-flex align-items-center justify-content-between py-2">
+        <Label>Notify User</Label>
+        <div
+          onClick={() => {
+            validation.setFieldValue(
+              "notifyUser",
+              !validation.values.notifyUser,
+            );
+          }}
+        >
+          {validation.values.notifyUser ? (
+            <BsToggle2On size={20} className="text-success" />
+          ) : (
+            <BsToggle2Off size={20} />
+          )}
+        </div>
+      </div>
       <Row>
         <div className="d-flex align-items-center gap-2">
           <button

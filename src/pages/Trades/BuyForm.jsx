@@ -7,6 +7,7 @@ import { ErrorToast, SuccessToast } from "../../Components";
 import { addNewTrade } from "../../services/trades";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
+import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 
 function useDebounce(value, delay = 500) {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -30,7 +31,10 @@ const BuyForm = ({ order, token, users, onClose }) => {
 
   const mutation = useMutation({
     mutationFn: addNewTrade,
-    onError: (err) => setError(err.message),
+    onError: (err) => {
+      // validation.resetForm()
+      setError(err.message);
+    },
     onSuccess: () => {
       setTimeout(() => {
         mutation.reset();
@@ -56,6 +60,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
       takeProfit: "",
       stopLoss: "",
       leverage: "",
+      notifyUser: false,
     },
     onSubmit: (values) => {
       console.log(values);
@@ -264,6 +269,23 @@ const BuyForm = ({ order, token, users, onClose }) => {
           />
         </Col>
       </Row>
+      <div className="d-flex align-items-center justify-content-between py-2">
+        <Label>Notify User</Label>
+        <div
+          onClick={() => {
+            validation.setFieldValue(
+              "notifyUser",
+              !validation.values.notifyUser,
+            );
+          }}
+        >
+          {validation.values.notifyUser ? (
+            <BsToggle2On size={20} className="text-success" />
+          ) : (
+            <BsToggle2Off size={20} />
+          )}
+        </div>
+      </div>
       <Row>
         <div className="d-flex align-items-center gap-2">
           <button
