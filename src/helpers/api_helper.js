@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { liveServer, devServer } from "../config";
 
-axios.defaults.baseURL = devServer;
+axios.defaults.baseURL = liveServer;
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -67,22 +67,51 @@ class APIClient {
 
     return response;
   };
+
   /**
    * post given data to url
+   * Automatically detects FormData and sets appropriate headers
    */
   create = (url, data) => {
-    return axios.post(url, data);
+    const config = {};
+
+    // If data is FormData, let browser set the Content-Type with boundary
+    if (data instanceof FormData) {
+      config.headers = {
+        "Content-Type": "multipart/form-data",
+      };
+    }
+
+    return axios.post(url, data, config);
   };
+
   /**
-   * Updates data
+   * Updates data (supports FormData as well)
    */
   update = (url, data) => {
-    return axios.patch(url, data);
+    const config = {};
+
+    if (data instanceof FormData) {
+      config.headers = {
+        "Content-Type": "multipart/form-data",
+      };
+    }
+
+    return axios.patch(url, data, config);
   };
 
   put = (url, data) => {
-    return axios.put(url, data);
+    const config = {};
+
+    if (data instanceof FormData) {
+      config.headers = {
+        "Content-Type": "multipart/form-data",
+      };
+    }
+
+    return axios.put(url, data, config);
   };
+
   /**
    * Delete
    */

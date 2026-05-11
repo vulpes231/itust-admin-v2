@@ -2,9 +2,10 @@ import { useQuery } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
-import { getAllUsers } from "../../services/users";
+import { getAllUsers, getUserInfo } from "../../services/users";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getUserAccounts } from "../../services/account";
+import ErrorToast from "../../Components/Common/ErrorToast";
 
 const methods = [
   {
@@ -31,6 +32,7 @@ const methods = [
 
 const TransactionForm = ({ mutation, onClose }) => {
   const tk = getAccessToken();
+  const [error, setError] = useState("");
 
   const { data: users } = useQuery({
     queryFn: getAllUsers,
@@ -51,15 +53,71 @@ const TransactionForm = ({ mutation, onClose }) => {
     },
     onSubmit: (values) => {
       console.log(values);
-      mutation.mutate(values);
+      handleSubmit(values);
     },
   });
 
   const { data: userAccounts } = useQuery({
     queryFn: () => getUserAccounts(validation.values.userId),
-    queryKey: ["userAccounts"],
+    queryKey: ["userAccounts", validation.values.userId],
     enabled: !!tk && !!validation.values.userId,
   });
+
+  const { data: userInfo } = useQuery({
+    queryFn: () => getUserInfo(validation.values.userId),
+    queryKey: ["userInfo", validation.values.userId],
+    enabled: !!tk && !!validation.values.userId,
+  });
+
+  const userBankDepositLimits = userInfo?.settings?.limits?.deposit?.bank;
+  const userCryptoDepositLimits = userInfo?.settings?.limits?.deposit?.crypto;
+  const userBankWithdrawLimits = userInfo?.settings?.limits?.withdrawal?.bank;
+  const userCryptoWithdrawLimits =
+    userInfo?.settings?.limits?.withdrawal?.crypto;
+
+  function handleSubmit(values) {
+    if (!values) return;
+
+    const parsedAmt = parseFloat(values.amount);
+
+    if (isNaN(parsedAmt)) {
+      setError("Please enter a valid amount");
+      return;
+    }
+
+    const getLimits = () => {
+      if (values.type === "deposit") {
+        return values.method === "bank"
+          ? userBankDepositLimits
+          : userCryptoDepositLimits;
+      } else {
+        return values.method === "bank"
+          ? userBankWithdrawLimits
+          : userCryptoWithdrawLimits;
+      }
+    };
+
+    const limits = getLimits();
+    const action = values.type === "deposit" ? "deposit" : "withdrawal";
+
+    if (!limits) {
+      setError(`Unable to process ${action}. Please try again later.`);
+      return;
+    }
+
+    if (parsedAmt < limits.min) {
+      setError(`Minimum ${action} is ${limits.min}!`);
+      return;
+    }
+
+    if (parsedAmt > limits.max) {
+      setError(`Maximum ${action} is ${limits.max}!`);
+      return;
+    }
+
+    console.log(values);
+    mutation.mutate(values);
+  }
 
   const getNetworks = (method) => {
     return methods.find((mtd) => mtd.id === method)?.network || [];
@@ -229,6 +287,7 @@ const TransactionForm = ({ mutation, onClose }) => {
           </Row>
         </div>
       </form>
+      {error && <ErrorToast errMsg={error} onClose={() => setError("")} />}
     </React.Fragment>
   );
 };

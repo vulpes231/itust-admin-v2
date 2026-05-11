@@ -1,16 +1,15 @@
 import { useMutation } from "@tanstack/react-query";
 import React, { useState, useEffect } from "react";
 import { Card, Modal, ModalBody, ModalHeader, Spinner } from "reactstrap";
-// import { deleteAccount } from "../../services/users";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import SuccessToast from "../../Components/Common/SuccessToast";
-import { deleteSavingsAccount } from "../../services/savings";
+import { deleteAutoPlan } from "../../services/plans";
 
-const DeleteSavings = ({ onClose, isOpen, data, dataId }) => {
+const DeletePlan = ({ onClose, isOpen, data, dataId }) => {
   const [error, setError] = useState("");
 
   const mutation = useMutation({
-    mutationFn: deleteSavingsAccount,
+    mutationFn: deleteAutoPlan,
     onError: (err) => setError(err.message),
     onSuccess: () => {
       setTimeout(() => {
@@ -23,11 +22,11 @@ const DeleteSavings = ({ onClose, isOpen, data, dataId }) => {
   const handleDelete = (e) => {
     e.preventDefault();
     if (!dataId) {
-      setError("Account ID required!");
+      setError("Plan ID required!");
       return;
     }
-    const accountId = dataId;
-    mutation.mutate({ accountId });
+    const planId = dataId;
+    mutation.mutate(planId);
   };
 
   useEffect(() => {
@@ -42,11 +41,11 @@ const DeleteSavings = ({ onClose, isOpen, data, dataId }) => {
     <React.Fragment>
       <Card>
         <Modal toggle={onClose} isOpen={isOpen}>
-          <ModalHeader toggle={onClose}>Delete Account</ModalHeader>
+          <ModalHeader toggle={onClose}>Delete Plan</ModalHeader>
           <ModalBody className="d-flex flex-column gap-4">
             <div>
               <span className="text-capitalize">
-                Are you sure you want to delete <b> {data?.name}</b> account?
+                Are you sure you want to delete <b> {data?.name}</b> plan?
               </span>
             </div>
             <div className="d-flex align-items-center gap-2">
@@ -83,7 +82,7 @@ const DeleteSavings = ({ onClose, isOpen, data, dataId }) => {
       )}
       {mutation.isSuccess && (
         <SuccessToast
-          msg={"Account deleted successfully."}
+          msg={"Plan deleted successfully."}
           isOpen={mutation.isSuccess}
           onClose={() => mutation.reset()}
         />
@@ -92,4 +91,4 @@ const DeleteSavings = ({ onClose, isOpen, data, dataId }) => {
   );
 };
 
-export default DeleteSavings;
+export default DeletePlan;
