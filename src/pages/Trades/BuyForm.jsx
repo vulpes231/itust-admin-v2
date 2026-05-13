@@ -64,7 +64,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
     },
     onSubmit: (values) => {
       //   console.log(values);
-      mutation.mutate(values);
+      mutation.mutate({ values });
     },
   });
 
