@@ -58,10 +58,21 @@ const TransactionForm = ({ mutation, onClose }) => {
   });
 
   const { data: userAccounts } = useQuery({
-    queryFn: () => getUserAccounts(validation.values.userId),
+    queryFn: () => getUserAccounts({ userId: validation.values.userId }),
     queryKey: ["userAccounts", validation.values.userId],
     enabled: !!tk && !!validation.values.userId,
   });
+
+  useEffect(() => {
+    if (userAccounts && userAccounts.length > 0) {
+      const transactionAccount = userAccounts.find(
+        (acct) => acct.slug === "cash",
+      );
+      validation.setFieldValue("accountId", transactionAccount?._id);
+    }
+  }, [userAccounts]);
+
+  // console.log(userAccounts);
 
   const { data: userInfo } = useQuery({
     queryFn: () => getUserInfo(validation.values.userId),

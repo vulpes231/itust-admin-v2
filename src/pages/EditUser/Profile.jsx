@@ -137,7 +137,7 @@ const Profile = ({ user, accounts }) => {
               Cash Balance
             </span>
             <span className="fw-bold fs-20">
-              {numeral(cash?.availableBalance).format("$0,0.00")}
+              {numeral(cash?.balance.available).format("$0,0.00")}
             </span>
           </Col>
         </Row>
@@ -159,7 +159,7 @@ const Profile = ({ user, accounts }) => {
               Brokerage Balance
             </span>
             <span className="fw-bold fs-20">
-              {numeral(brokerage?.availableBalance).format("$0,0.00")}
+              {numeral(brokerage?.balance?.available).format("$0,0.00")}
             </span>
           </Col>
         </Row>
@@ -181,7 +181,7 @@ const Profile = ({ user, accounts }) => {
               Auto Balance
             </spa>
             <span className="fw-bold fs-20">
-              {numeral(auto?.availableBalance).format("$0,0.00")}
+              {numeral(auto?.balance?.available).format("$0,0.00")}
             </span>
           </Col>
         </Row>

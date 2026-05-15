@@ -8,7 +8,8 @@ import { getUserAccounts } from "../../services/account";
 import { searchAsset } from "../../services/asset";
 import numeral from "numeral";
 import BuyForm from "./BuyForm";
-import SellForm from "./SellForm";
+
+import { Link } from "react-router-dom";
 
 const TradeForm = ({ onClose }) => {
   const tk = getAccessToken();
@@ -45,7 +46,12 @@ const TradeForm = ({ onClose }) => {
         {order === "buy" ? (
           <BuyForm token={tk} order={order} users={users} onClose={onClose} />
         ) : (
-          <SellForm token={tk} order={order} users={users} onClose={onClose} />
+          // <SellForm token={tk} order={order} users={users} onClose={onClose} />
+          <div className="d-flex align-items-center justify-content-center p-4">
+            <Link to={"/positions"} className="text-decoration-underline">
+              Go to Positions
+            </Link>
+          </div>
         )}
       </Row>
     </React.Fragment>

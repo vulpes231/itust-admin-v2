@@ -1,32 +1,37 @@
 import React, { useEffect } from "react";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import { useFormik } from "formik";
+import numeral from "numeral";
 
 const EditTradeForm = ({ tradeData, mutation }) => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       tradeId: tradeData?._id,
-      currentValue: tradeData?.performance?.currentValue.toFixed(2) || "",
-      account: tradeData?.wallet?.name || "",
-      extra: tradeData?.extra || 0,
-      return: tradeData?.performance?.totalReturn.toFixed(2) || "",
-      amount: tradeData?.execution?.amount || "",
-      orderType: tradeData?.orderType || "",
+      customDate: tradeData?.customDate
+        ? tradeData.customDate.slice(0, 16)
+        : "",
     },
     onSubmit: (values) => {
       console.log(values);
-      const formData = {
-        tradeId: values.tradeId,
-        extra: values.extra,
-      };
-      mutation.mutate(formData);
+
+      const updatedData = {};
+
+      if (values.customDate !== tradeData?.customDate) {
+        updatedData.customDate = values.customDate
+          ? new Date(values.customDate)
+          : null;
+      }
+
+      updatedData.tradeId = values.tradeId;
+
+      if (Object.keys(updatedData).length > 1) {
+        mutation.mutate(updatedData);
+      } else {
+        console.log("No changes detected");
+      }
     },
   });
-
-  // useEffect(() => {
-  //   if (tradeData) console.log(tradeData.extra);
-  // }, [tradeData]);
 
   return (
     <React.Fragment>
@@ -35,78 +40,39 @@ const EditTradeForm = ({ tradeData, mutation }) => {
           <Label>Type</Label>
           <Input
             type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.orderType}
+            value={tradeData?.orderType}
             name="orderType"
-            autoComplete="off"
             readOnly
+            className="bg-light"
           />
         </Col>
         <Col>
           <Label>Amount</Label>
           <Input
             type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.amount}
+            value={numeral(tradeData?.execution?.amount).format("$0,0.00")}
             name="amount"
-            autoComplete="off"
             readOnly
+            className="bg-light"
           />
         </Col>
       </Row>
       <Row>
         <Col>
-          <Label>Current Value</Label>
+          <Label>Date & Time</Label>
           <Input
-            type="text"
+            type="datetime-local"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            value={validation.values.currentValue}
-            name="currentValue"
+            value={validation.values.customDate}
+            name="customDate"
             autoComplete="off"
-            readOnly
-          />
-        </Col>
-        <Col>
-          <Label>Account</Label>
-          <Input
-            type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.account}
-            name="account"
-            autoComplete="off"
-            readOnly
+            // Remove readOnly if you want users to edit it
+            // readOnly
           />
         </Col>
       </Row>
-      <Row className="mb-3">
-        <Col>
-          <Label>Extra</Label>
-          <Input
-            type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.extra}
-            name="extra"
-            autoComplete="off"
-          />
-        </Col>
-        <Col>
-          <Label>Total Return (%)</Label>
-          <Input
-            type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.return}
-            name="return"
-            autoComplete="off"
-            readOnly
-          />
-        </Col>
-      </Row>
+
       <Row>
         <div className="d-flex align-items-center gap-2">
           <button

@@ -10,6 +10,7 @@ const Navdata = () => {
   const [isUsers, setIsUsers] = useState(false);
   const [isTransactions, setIsTransactions] = useState(false);
   const [isTrades, setIsTrades] = useState(false);
+  const [isPositions, setIsPositions] = useState(false);
   const [isAdmins, setIsAdmins] = useState(false);
   const [isPlan, setIsPlan] = useState(false);
   const [isSavings, setIsSavings] = useState(false);
@@ -47,6 +48,9 @@ const Navdata = () => {
     if (iscurrentState !== "Trades") {
       setIsTrades(false);
     }
+    if (iscurrentState !== "Positions") {
+      setIsPositions(false);
+    }
     if (iscurrentState !== "Admins") {
       setIsAdmins(false);
     }
@@ -66,6 +70,7 @@ const Navdata = () => {
     isAdmins,
     isSavings,
     isPlan,
+    isPositions,
   ]);
 
   const menuItems = [
@@ -122,6 +127,20 @@ const Navdata = () => {
         e.preventDefault();
         setIsTrades(!isTrades);
         setIscurrentState("Trades");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "positions",
+      label: "Positions",
+      icon: "ri-line-chart-line",
+
+      link: "/positions",
+      stateVariables: isPositions,
+      click: function (e) {
+        e.preventDefault();
+        setIsPositions(!isPositions);
+        setIscurrentState("Positions");
         updateIconSidebar(e);
       },
     },

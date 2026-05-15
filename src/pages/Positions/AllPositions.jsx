@@ -11,40 +11,50 @@ import {
   Amount,
   Leverage,
   Extra,
-} from "./TradeCol";
+} from "./PositionCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
-import CreateTrade from "./CreateTrade";
-import CloseTradeModal from "./CloseTradeModal";
-import TradeModal from "./TradeModal";
+import ClosePositionForm from "./ClosePositionForm";
+import EditPosition from "./EditPosition";
 
-const AllTrades = ({ tradeList }) => {
-  const [action, setAction] = useState("");
+const AllPositions = ({ positions }) => {
+  const [selectedAction, setSelectedAction] = useState(null); // Track which row's action is selected
   const [rowId, setRowId] = useState("");
-  const [rowData, setRowData] = useState("");
-  const [showModal, setShowModal] = useState(false);
-  const [createTradeModal, setCreateTradeModal] = useState(false);
+  const [rowData, setRowData] = useState(null);
 
-  const openCreateTradeModal = () => {
-    setCreateTradeModal(true);
-  };
-  const closeCreateTradeModal = () => {
-    setCreateTradeModal(false);
-  };
+  const [closePositionModal, setClosePositionModal] = useState(false);
+  const [editPositionModal, setEditPositionModal] = useState(false);
 
   const handleAction = (e, id, data) => {
+    e.preventDefault();
+    const actionValue = e.target.value;
+
+    if (!actionValue) {
+      // If "Select Option" is chosen, do nothing
+      return;
+    }
+
     setRowId(id);
     setRowData(data);
-    setAction(e.target.value);
-    setShowModal(true);
+    setSelectedAction(actionValue);
+
+    // Open appropriate modal immediately
+    if (actionValue === "close") {
+      setClosePositionModal(true);
+    } else if (actionValue === "edit") {
+      setEditPositionModal(true);
+    }
+
+    // Reset the select dropdown value after opening modal
+    e.target.value = "";
   };
 
   const handleClose = () => {
-    setAction("");
+    setSelectedAction(null);
     setRowId("");
-    setRowData("");
-
-    setShowModal(false);
+    setRowData(null);
+    setClosePositionModal(false);
+    setEditPositionModal(false);
   };
 
   const columns = useMemo(
@@ -108,7 +118,7 @@ const AllTrades = ({ tradeList }) => {
       },
       {
         header: "Cost",
-        accessorKey: "execution.amount",
+        accessorKey: "amountInvested",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Amount {...cell} />;
@@ -116,7 +126,7 @@ const AllTrades = ({ tradeList }) => {
       },
       {
         header: "Quantity",
-        accessorKey: "execution.quantity",
+        accessorKey: "quantity",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Quantity {...cell} />;
@@ -130,46 +140,43 @@ const AllTrades = ({ tradeList }) => {
           return <OrderValue {...cell} />;
         },
       },
-      // {
-      //   header: "Extra Profit",
-      //   accessorKey: "extra",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Extra {...cell} />;
-      //   },
-      // },
       {
-        header: "Leverage",
-        accessorKey: "execution.leverage",
+        header: "Account",
+        accessorKey: "wallet.name",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Leverage {...cell} />;
+          return <Price {...cell} />;
         },
       },
       {
-        header: "Today Return (%)",
-        accessorKey: "performance.totalReturnPercent",
+        header: "Orders",
+        accessorKey: "tradeIds",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const orderCount = cell.row.original.tradeIds?.length;
+          return (
+            <span>
+              <b>{orderCount}</b> {orderCount > 1 ? "Orders" : "Order"}
+            </span>
+          );
+        },
+      },
+      {
+        header: "Total Return",
+        accessorKey: "performance.totalReturn",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Roi {...cell} />;
         },
       },
       {
-        header: "Price",
-        accessorKey: "performance.currentPrice",
+        header: "Extra Profit",
+        accessorKey: "performance.extra",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Price {...cell} />;
+          return <Extra {...cell} />;
         },
       },
-      // {
-      //   header: "Status",
-      //   accessorKey: "status",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Status {...cell} />;
-      //   },
-      // },
       {
         header: "Action",
         accessorKey: "_id",
@@ -182,45 +189,35 @@ const AllTrades = ({ tradeList }) => {
             <div>
               <select
                 name="action"
+                defaultValue="" // Use defaultValue instead of value
                 onChange={(e) => handleAction(e, id, rowData)}
               >
                 <option value="">Select Option</option>
                 <option value="edit">Edit</option>
+                <option value="close">Close</option>
               </select>
             </div>
           );
         },
       },
     ],
-    [],
+    [], // Remove action from dependencies
   );
 
-  // useEffect(() => {
-  //   if (tradeList) console.log(tradeList);
-  // }, [tradeList]);
+  // Remove useEffect since we're handling modals directly in handleAction
+
   return (
     <React.Fragment>
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
-            <h5 className="card-title mb-0 flex-grow-1">All Trades</h5>
-            <div className="flex-shrink-0">
-              <div className="flax-shrink-0 hstack gap-2">
-                <button
-                  type="button"
-                  onClick={openCreateTradeModal}
-                  className="btn btn-primary"
-                >
-                  Create Trade
-                </button>
-                {/* <button className="btn btn-soft-info">Past Orders</button> */}
-              </div>
-            </div>
+            <h5 className="card-title mb-0 flex-grow-1">All Positions</h5>
+            <div className="flex-shrink-0"></div>
           </CardHeader>
           <CardBody>
             <TableContainer
               columns={columns}
-              data={tradeList || []}
+              data={positions || []}
               isGlobalFilter={true}
               isAddUserList={false}
               customPageSize={8}
@@ -229,37 +226,29 @@ const AllTrades = ({ tradeList }) => {
               tableClass="align-middle table-nowrap"
               theadClass="table-light text-muted"
               isCryptoOrdersFilter={true}
-              SearchPlaceholder="Search Trades..."
+              SearchPlaceholder="Search Positions..."
             />
           </CardBody>
         </Card>
       </Col>
-      {action === "edit" && showModal && (
-        <TradeModal
-          dataId={rowId}
-          action={action}
-          isOpen={showModal}
-          onClose={handleClose}
+
+      {closePositionModal && rowData && (
+        <ClosePositionForm
+          isOpen={closePositionModal}
           rowData={rowData}
+          handleClose={handleClose}
         />
       )}
-      {createTradeModal && (
-        <CreateTrade
-          isOpen={createTradeModal}
-          onClose={closeCreateTradeModal}
-        />
-      )}
-      {action === "close" && (
-        <CloseTradeModal
-          dataId={rowId}
-          action={action}
-          isOpen={action === "close"}
-          onClose={() => setAction("")}
+
+      {editPositionModal && rowData && (
+        <EditPosition
           rowData={rowData}
+          isOpen={editPositionModal}
+          handleClose={handleClose}
         />
       )}
     </React.Fragment>
   );
 };
 
-export default AllTrades;
+export default AllPositions;

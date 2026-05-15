@@ -18,7 +18,7 @@ import {
 } from "../../services/analytics";
 
 const DashboardAnalytics = () => {
-  document.title = "Admin Dashboard | Itrust Investment";
+  document.title = "Admin  | Itrust Investment";
 
   const token = getAccessToken();
 

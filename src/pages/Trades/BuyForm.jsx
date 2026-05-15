@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getUserAccounts } from "../../services/account";
 import { searchAsset } from "../../services/asset";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -8,6 +8,7 @@ import { addNewTrade } from "../../services/trades";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
+import { capitalize } from "lodash";
 
 function useDebounce(value, delay = 500) {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -26,13 +27,12 @@ function useDebounce(value, delay = 500) {
 const BuyForm = ({ order, token, users, onClose }) => {
   const [assetSearch, setAssetSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-
   const [error, setError] = useState("");
+  const hasAutoSelectedRef = useRef(false);
 
   const mutation = useMutation({
     mutationFn: addNewTrade,
     onError: (err) => {
-      // validation.resetForm()
       setError(err.message);
     },
     onSuccess: () => {
@@ -53,17 +53,20 @@ const BuyForm = ({ order, token, users, onClose }) => {
       walletId: "",
       assetId: "",
       amount: "",
-      executionType: "",
+      executionType: "market",
       orderType: order || "",
-      date: "",
-      time: "",
+      customDate: "",
       takeProfit: "",
       stopLoss: "",
       leverage: "",
+      extra: "",
       notifyUser: false,
     },
     onSubmit: (values) => {
-      //   console.log(values);
+      if (values.customDate) {
+        values.customDate = new Date(values.customDate);
+      }
+      console.log(values);
       mutation.mutate(values);
     },
   });
@@ -74,21 +77,64 @@ const BuyForm = ({ order, token, users, onClose }) => {
     enabled: !!token && !!validation.values.userId,
   });
 
+  const filteredAccts =
+    userAccounts &&
+    userAccounts.length > 0 &&
+    userAccounts.filter((acct) => acct.slug !== "cash");
+
   const { data: searchResult = [] } = useQuery({
     queryKey: ["searchAsset", debouncedSearch],
     queryFn: () => searchAsset(debouncedSearch),
-    enabled: !!token && debouncedSearch.length > 3,
+    enabled: !!token && debouncedSearch.length >= 1,
   });
+
+  useEffect(() => {
+    if (
+      userAccounts.length > 0 &&
+      validation.values.userId &&
+      !hasAutoSelectedRef.current
+    ) {
+      const brokerageAccount = userAccounts.find(
+        (acct) => acct.slug === "brokerage",
+      );
+      const accountToSelect = brokerageAccount || userAccounts[0];
+
+      if (
+        accountToSelect &&
+        validation.values.walletId !== accountToSelect._id
+      ) {
+        hasAutoSelectedRef.current = true;
+        validation.setFieldValue("walletId", accountToSelect._id);
+      }
+    }
+
+    if (!validation.values.userId) {
+      hasAutoSelectedRef.current = false;
+    }
+  }, [userAccounts, validation.values.userId, validation.values.walletId]);
+
+  useEffect(() => {
+    hasAutoSelectedRef.current = false;
+  }, [validation.values.userId]);
 
   useEffect(() => {
     if (error) {
       const tmt = setTimeout(() => {
         setError("");
       }, 3000);
-
       return () => clearTimeout(tmt);
     }
   }, [error]);
+
+  const handleUserChange = (e) => {
+    const userId = e.target.value;
+    validation.setFieldValue("userId", userId);
+    validation.setFieldValue("walletId", "");
+    setAssetSearch(""); // Reset asset search
+    validation.setFieldValue("assetId", "");
+    hasAutoSelectedRef.current = false;
+  };
+
   return (
     <div className="mb-3 mt-3">
       <Row className="mb-3">
@@ -96,7 +142,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
           <Label>Select User</Label>
           <Input
             type="select"
-            onChange={validation.handleChange}
+            onChange={handleUserChange}
             onBlur={validation.handleBlur}
             value={validation.values.userId}
             name="userId"
@@ -107,13 +153,14 @@ const BuyForm = ({ order, token, users, onClose }) => {
               users.map((usr) => {
                 return (
                   <option key={usr._id} value={usr._id}>
-                    {usr.contactInfo.email}
+                    {`${capitalize(usr.personalInfo.firstName)} ${capitalize(usr.personalInfo.lastName)}`}
                   </option>
                 );
               })}
           </Input>
         </Col>
       </Row>
+
       <Row className="mb-3">
         <Col
           style={{
@@ -130,18 +177,67 @@ const BuyForm = ({ order, token, users, onClose }) => {
             className="text-capitalize"
           >
             <option value="">Select Account</option>
-            {userAccounts &&
-              userAccounts.length > 0 &&
-              userAccounts.map((acct) => {
+            {filteredAccts &&
+              filteredAccts.length > 0 &&
+              filteredAccts.map((acct) => {
                 return (
                   <option key={acct._id} value={acct._id}>
-                    {`${acct.name}: ${numeral(acct.availableBalance).format("$0,0.00")}`}
+                    {`${acct.name}: ${numeral(acct.balance.available).format("$0,0.00")}`}
                   </option>
                 );
               })}
           </Input>
         </Col>
       </Row>
+
+      <Row className="mb-3 position-relative">
+        <Col>
+          <Label>Search Asset</Label>
+          <Input
+            type="text"
+            value={assetSearch}
+            onChange={(e) => {
+              setAssetSearch(e.target.value);
+              setShowDropdown(true);
+            }}
+            onBlur={() => {
+              setTimeout(() => setShowDropdown(false), 150);
+            }}
+            placeholder="Search asset..."
+            disabled={!validation.values.walletId}
+          />
+
+          {showDropdown && searchResult.length > 0 && (
+            <div
+              className="border rounded bg-white position-absolute w-100"
+              style={{
+                zIndex: 1000,
+                maxHeight: "200px",
+                overflowY: "auto",
+              }}
+            >
+              {searchResult.map((asset) => (
+                <div
+                  key={asset._id}
+                  className="p-2 dropdown-item"
+                  style={{ cursor: "pointer" }}
+                  onMouseDown={() => {
+                    validation.setFieldValue("assetId", asset._id);
+                    setAssetSearch(asset.name);
+                    setShowDropdown(false);
+                  }}
+                >
+                  <span className="d-flex align-items-center gap-2">
+                    <img src={asset.imageUrl} alt="" width={20} />
+                    <span> {asset.name}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </Col>
+      </Row>
+
       <Row className="mb-3">
         <Col>
           <Label>Order Type</Label>
@@ -204,57 +300,6 @@ const BuyForm = ({ order, token, users, onClose }) => {
           </Col>
         )}
       </Row>
-      <Row className="mb-3 position-relative">
-        <Col>
-          <Label>Search Asset</Label>
-          <Input
-            type="text"
-            value={assetSearch}
-            onChange={(e) => {
-              setAssetSearch(e.target.value);
-              setShowDropdown(true);
-            }}
-            onBlur={() => {
-              // delay so click registers
-              setTimeout(() => setShowDropdown(false), 150);
-            }}
-            placeholder="Search asset..."
-          />
-
-          {showDropdown && searchResult.length > 0 && (
-            <div
-              className="border rounded bg-white position-absolute w-100"
-              style={{
-                zIndex: 1000,
-                maxHeight: "200px",
-                overflowY: "auto",
-              }}
-            >
-              {searchResult.map((asset) => (
-                <div
-                  key={asset._id}
-                  className="p-2 dropdown-item"
-                  style={{ cursor: "pointer" }}
-                  onMouseDown={() => {
-                    // set formik value
-                    validation.setFieldValue("assetId", asset._id);
-
-                    // set visible input value
-                    setAssetSearch(asset.name);
-
-                    setShowDropdown(false);
-                  }}
-                >
-                  <span className="d-flex align-items-center gap-2">
-                    <img src={asset.imageUrl} alt="" width={20} />
-                    <span> {asset.name}</span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </Col>
-      </Row>
 
       <Row className="mb-3">
         <Col>
@@ -269,6 +314,34 @@ const BuyForm = ({ order, token, users, onClose }) => {
           />
         </Col>
       </Row>
+      <Row className="mb-3">
+        <Col>
+          <Label>P&L</Label>
+          <Input
+            type="text"
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+            value={validation.values.extra}
+            name="extra"
+            autoComplete="off"
+          />
+        </Col>
+      </Row>
+
+      <Row className="mb-3">
+        <Col>
+          <Label>Date & Time</Label>
+          <Input
+            type="datetime-local"
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+            value={validation.values.customDate}
+            name="customDate"
+            autoComplete="off"
+          />
+        </Col>
+      </Row>
+
       <div className="d-flex align-items-center justify-content-between py-2">
         <Label>Notify User</Label>
         <div
@@ -286,6 +359,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
           )}
         </div>
       </div>
+
       <Row>
         <div className="d-flex align-items-center gap-2">
           <button

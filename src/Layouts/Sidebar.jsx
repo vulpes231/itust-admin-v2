@@ -30,7 +30,7 @@ const Sidebar = ({ layoutType }) => {
     ) {
       document.documentElement.setAttribute(
         "data-sidebar-size",
-        "sm-hover-active"
+        "sm-hover-active",
       );
     } else if (
       document.documentElement.getAttribute("data-sidebar-size") ===

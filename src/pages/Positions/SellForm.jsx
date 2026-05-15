@@ -1,16 +1,19 @@
 import { useFormik } from "formik";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { getUserAccounts } from "../../services/account";
-import { searchAsset } from "../../services/asset";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ErrorToast, SuccessToast } from "../../Components";
-import { addNewTrade, closeTrade, getUserTrades } from "../../services/trades";
+import { closeTrade, getUserTrades } from "../../services/trades";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
+import { capitalize } from "lodash";
+import { getAccessToken } from "../../helpers/api_helper";
 
-const SellForm = ({ order, token, users, onClose }) => {
+const SellForm = ({ rowData }) => {
+  // console.log(rowData);
   const [error, setError] = useState("");
+  const hasAutoSelectedRef = useRef(false);
 
   const mutation = useMutation({
     mutationFn: closeTrade,
@@ -27,135 +30,92 @@ const SellForm = ({ order, token, users, onClose }) => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userId: "",
-      walletId: "",
-      tradeId: "",
+      userId: rowData?.userId || "",
+      walletId: rowData?.wallet?.id || "",
+      positionId: rowData?._id || "",
       amount: "",
-      executionType: "",
-      orderType: order || "",
-      date: "",
-      time: "",
+      executionType: "market",
+      orderType: rowData?.orderType || "",
+      extra: rowData?.performance?.extra || "",
       takeProfit: "",
       stopLoss: "",
       leverage: "",
       notifyUser: false,
     },
     onSubmit: (values) => {
-      //   console.log(values);
-      mutation.mutate(values);
+      const formData = {
+        positionId: values.positionId,
+        userId: values.userId,
+        amount: values.amount,
+        notifyUser: values.notifyUser,
+      };
+      mutation.mutate(formData);
     },
   });
-
+  const token = getAccessToken();
   const { data: userAccounts = [] } = useQuery({
     queryFn: () => getUserAccounts({ userId: validation.values.userId }),
     queryKey: ["userAccounts", validation.values.userId],
     enabled: !!token && !!validation.values.userId,
   });
 
-  const { data: userTrades = [] } = useQuery({
-    queryKey: ["userTrades", validation.values.userId],
-    queryFn: () => getUserTrades({ userId: validation.values.userId }),
-    enabled: !!token && !!validation.values.userId,
-  });
-
-  const accountId = validation.values.walletId;
-
-  const acctTrades =
-    userTrades &&
-    userTrades.length > 0 &&
-    userTrades.filter((trade) => trade.wallet.id === accountId);
-
   useEffect(() => {
     if (error) {
       const tmt = setTimeout(() => {
         setError("");
       }, 3000);
-
       return () => clearTimeout(tmt);
     }
   }, [error]);
+
   return (
     <div className="mb-3 mt-3">
       <Row className="mb-3">
         <Col>
-          <Label>Select User</Label>
+          <Label> User</Label>
           <Input
-            type="select"
-            onChange={validation.handleChange}
+            type="text"
             onBlur={validation.handleBlur}
-            value={validation.values.userId}
+            value={rowData?.fullname}
             name="userId"
-          >
-            <option value="">Select User</option>
-            {users &&
-              users.length > 0 &&
-              users.map((usr) => {
-                return (
-                  <option key={usr._id} value={usr._id}>
-                    {usr.contactInfo.email}
-                  </option>
-                );
-              })}
-          </Input>
+            readOnly
+            className="text-capitalize bg-light"
+          />
         </Col>
       </Row>
 
       <Row className="mb-3">
-        <Col
-          style={{
-            display: validation.values.userId !== "" ? "block" : "none",
-          }}
-        >
-          <Label>Select Account</Label>
+        <Col>
+          <Label> Account</Label>
           <Input
-            type="select"
-            onChange={validation.handleChange}
+            type="text"
             onBlur={validation.handleBlur}
-            value={validation.values.walletId}
+            value={rowData?.wallet?.name}
             name="walletId"
-            className="text-capitalize"
-          >
-            <option value="">Select Account</option>
-            {userAccounts &&
-              userAccounts.length > 0 &&
-              userAccounts.map((acct) => {
-                return (
-                  <option key={acct._id} value={acct._id}>
-                    {`${acct.name}: ${numeral(acct.availableBalance).format("$0,0.00")}`}
-                  </option>
-                );
-              })}
-          </Input>
+            className="text-capitalize bg-light"
+            readOnly
+          />
         </Col>
       </Row>
+
       <Row className="mb-3">
-        <Col
-          style={{
-            display: validation.values.userId !== "" ? "block" : "none",
-          }}
-        >
-          <Label>Select Trade</Label>
+        <Col>
+          <Label>Asset</Label>
           <Input
-            type="select"
+            type="text"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            value={validation.values.tradeId}
-            name="tradeId"
-            className="text-capitalize"
-          >
-            <option value="">Select Trade</option>
-            {acctTrades &&
-              acctTrades.length > 0 &&
-              acctTrades.map((trade) => {
-                return (
-                  <option key={trade._id} value={trade._id}>
-                    {`${trade.asset.name}: ${numeral(trade.performance.currentValue).format("$0,0.00")}`}
-                  </option>
-                );
-              })}
-          </Input>
+            value={rowData?.asset?.name}
+            name="positionId"
+            className="text-capitalize bg-light"
+          />
         </Col>
+        <span>
+          Current Value:{" "}
+          {numeral(rowData?.performance?.currentValue).format("$0,0.00")}
+        </span>
       </Row>
+
       <Row className="mb-3">
         <Col>
           <Label>Order Type</Label>
@@ -168,9 +128,6 @@ const SellForm = ({ order, token, users, onClose }) => {
           >
             <option value="">Select Order Type</option>
             <option value="market">Market Order</option>
-            {/* <option value="leverage">Leverage Order</option>
-            <option value="stoploss">Stop Loss Order</option>
-            <option value="takeprofit">Take Profit Order</option> */}
           </Input>
         </Col>
         {validation.values.orderType === "leverage" && (
@@ -221,23 +178,34 @@ const SellForm = ({ order, token, users, onClose }) => {
 
       <Row className="mb-3">
         <Col>
-          <Label>Amount (%)</Label>
+          <Label>Amount </Label>
           <Input
-            type="select"
+            type="text"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
             value={validation.values.amount}
             name="amount"
             autoComplete="off"
-          >
-            <option value="">Select Amount</option>
-            <option value="25">25</option>
-            <option value="50">50</option>
-            <option value="75">75</option>
-            <option value="100">100</option>
-          </Input>
+            placeholder="$0.00"
+          />
         </Col>
       </Row>
+
+      <Row className="mb-3">
+        <Col>
+          <Label>Order(s)</Label>
+          <Input
+            type="text"
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+            value={rowData?.tradeIds?.length}
+            name="positionId"
+            className="text-capitalize bg-light"
+            readOnly
+          />
+        </Col>
+      </Row>
+
       <div className="d-flex align-items-center justify-content-between py-2">
         <Label>Notify User</Label>
         <div
@@ -255,6 +223,7 @@ const SellForm = ({ order, token, users, onClose }) => {
           )}
         </div>
       </div>
+
       <Row>
         <div className="d-flex align-items-center gap-2">
           <button
@@ -264,7 +233,7 @@ const SellForm = ({ order, token, users, onClose }) => {
               e.preventDefault();
               validation.submitForm();
             }}
-            disabled={mutation.isPending}
+            disabled={mutation.isPending || !validation.values.positionId}
           >
             {mutation.isPending ? (
               <Spinner size="sm" className="me-2">
@@ -273,7 +242,7 @@ const SellForm = ({ order, token, users, onClose }) => {
             ) : null}
             Close Trade
           </button>
-          <button type="button" onClick={onClose} className="btn btn-danger">
+          <button type="button" className="btn btn-danger">
             Cancel
           </button>
         </div>

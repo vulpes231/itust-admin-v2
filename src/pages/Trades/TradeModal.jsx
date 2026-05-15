@@ -12,6 +12,12 @@ const TradeModal = ({ dataId, action, isOpen, onClose, rowData }) => {
   const mutation = useMutation({
     mutationFn: updateTrade,
     onError: (err) => setError(err.message),
+    onSuccess: () => {
+      setTimeout(() => {
+        onClose();
+        window.location.reload();
+      }, 3000);
+    },
   });
 
   useEffect(() => {
@@ -24,24 +30,13 @@ const TradeModal = ({ dataId, action, isOpen, onClose, rowData }) => {
     }
   }, [error]);
 
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      const tmt = setTimeout(() => {
-        mutation.reset();
-        onClose();
-        window.location.reload();
-      }, 3000);
-
-      return () => clearTimeout(tmt);
-    }
-  }, [mutation.isSuccess]);
   return (
     <React.Fragment>
       <Card>
         <Modal toggle={onClose} isOpen={isOpen}>
           <ModalHeader toggle={onClose}>Update Trade</ModalHeader>
           <ModalBody className="d-flex flex-column gap-4">
-            <div>
+            <div className="d-flex align-items-center gap-2">
               <img src={rowData?.asset?.img} alt="" width={30} />
               <span className="fs-22 text-semibold">
                 {rowData?.asset?.name}

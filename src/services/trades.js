@@ -37,8 +37,9 @@ export async function addNewTrade(formData) {
 }
 
 export async function updateTrade(formData) {
+  const { tradeId } = formData;
   try {
-    const res = await api.put("/managetrade", formData);
+    const res = await api.update(`/managetrade/${tradeId}`, formData);
     // console.log(res.data);
     return res.data;
   } catch (error) {
@@ -48,9 +49,9 @@ export async function updateTrade(formData) {
 }
 
 export async function closeTrade(formData) {
-  const { tradeId } = formData;
+  const { positionId } = formData;
   try {
-    const res = await api.create(`/managetrade/${tradeId}`, formData);
+    const res = await api.update(`/manageposition/${positionId}`, formData);
     // console.log(res.data);
     return res.data;
   } catch (error) {
