@@ -9,6 +9,7 @@ import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 import { capitalize } from "lodash";
+import { getUserInfo } from "../../services/users";
 
 function useDebounce(value, delay = 500) {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -46,12 +47,15 @@ const BuyForm = ({ order, token, users, onClose }) => {
 
   const debouncedSearch = useDebounce(assetSearch, 500);
 
+  let selectedAcct, selectedPlan;
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       userId: "",
       walletId: "",
       assetId: "",
+      planId: "",
       amount: "",
       executionType: "market",
       orderType: order || "",
@@ -66,6 +70,13 @@ const BuyForm = ({ order, token, users, onClose }) => {
       if (values.customDate) {
         values.customDate = new Date(values.customDate);
       }
+      if (
+        selectedAcct?.slug === "auto" &&
+        parseFloat(values.amount) > selectedPlan?.balance?.available
+      ) {
+        setError("Insufficient funds!");
+        return;
+      }
       console.log(values);
       mutation.mutate(values);
     },
@@ -76,6 +87,24 @@ const BuyForm = ({ order, token, users, onClose }) => {
     queryKey: ["userAccounts", validation.values.userId],
     enabled: !!token && !!validation.values.userId,
   });
+
+  const { data: user } = useQuery({
+    queryFn: () => getUserInfo(validation.values.userId),
+    queryKey: ["user", validation.values.userId],
+    enabled: !!token && !!validation.values.userId,
+  });
+
+  const plans = user?.activePlans;
+
+  selectedAcct = userAccounts?.find(
+    (acct) => acct._id === validation.values.walletId,
+  );
+
+  selectedPlan = plans?.find(
+    (plan) => plan.planId === validation.values.planId,
+  );
+
+  // console.log(selectedPlan);
 
   const filteredAccts =
     userAccounts &&
@@ -189,6 +218,32 @@ const BuyForm = ({ order, token, users, onClose }) => {
           </Input>
         </Col>
       </Row>
+
+      {selectedAcct?.slug === "auto" && (
+        <Row className="mb-3">
+          <Col>
+            <Label>Select Plan</Label>
+            <Input
+              type="select"
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              value={validation.values.planId}
+              name="planId"
+            >
+              <option value="">Select Plan</option>
+              {plans &&
+                plans.length > 0 &&
+                plans.map((pln) => {
+                  return (
+                    <option key={pln._id} value={pln.planId}>
+                      {`${pln?.name}: ${numeral(pln.balance.available).format("$0,0.00")}`}
+                    </option>
+                  );
+                })}
+            </Input>
+          </Col>
+        </Row>
+      )}
 
       <Row className="mb-3 position-relative">
         <Col>

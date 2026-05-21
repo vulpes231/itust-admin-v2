@@ -18,6 +18,7 @@ import {
   getNations,
   getStates,
 } from "../../services/generic";
+import UserPlans from "./UserPlans";
 
 const EditUser = () => {
   document.title = "Edit User | Admin";
@@ -78,6 +79,9 @@ const EditUser = () => {
                 currencies={currencies}
               />
             </Col>
+          </Row>
+          <Row>
+            <UserPlans plans={userInfo?.activePlans} />
           </Row>
 
           <Row>

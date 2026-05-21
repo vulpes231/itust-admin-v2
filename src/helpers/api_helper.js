@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { liveServer, devServer } from "../config";
 
-axios.defaults.baseURL = liveServer;
+axios.defaults.baseURL = devServer;
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -75,7 +75,6 @@ class APIClient {
   create = (url, data) => {
     const config = {};
 
-    // If data is FormData, let browser set the Content-Type with boundary
     if (data instanceof FormData) {
       config.headers = {
         "Content-Type": "multipart/form-data",

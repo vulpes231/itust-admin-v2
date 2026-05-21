@@ -4,7 +4,7 @@ const api = new APIClient();
 
 export async function getSettings() {
   try {
-    const response = await api.get("/settings");
+    const response = await api.get("/managesettings");
     return response.data;
   } catch (error) {
     const errMsg = error;

@@ -25,9 +25,19 @@ export async function createAutoPlan(formData) {
 }
 
 export async function updateAutoPlan(formData) {
-  const { planId } = formData;
+  const planId = formData.get("planId");
   try {
     const res = await api.update(`/manageplans/${planId}`, formData);
+
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}
+export async function updateUserPlan(formData) {
+  try {
+    const res = await api.update(`/manageplans/user`, formData);
 
     return res.data;
   } catch (error) {

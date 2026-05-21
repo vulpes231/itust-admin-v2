@@ -5,6 +5,8 @@ import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getCountries } from "../../services/generic";
 import { FaToggleOff, FaToggleOn } from "react-icons/fa";
+import { getSavingsAccounts } from "../../services/savings";
+import { capitalize } from "lodash";
 
 const SavingsForm = ({ mutation, onClose }) => {
   const tk = getAccessToken();
@@ -29,6 +31,12 @@ const SavingsForm = ({ mutation, onClose }) => {
     enabled: !!tk,
   });
 
+  const { data: savingsAccounts } = useQuery({
+    queryKey: ["savingAccouts"],
+    queryFn: getSavingsAccounts,
+    enabled: !!tk,
+  });
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -43,11 +51,17 @@ const SavingsForm = ({ mutation, onClose }) => {
       maxSavingsYearly: "",
       maxSavingsTotal: "",
       jointMaxSelection: "",
+      selectedAcctMax: "",
+      setJointMaxSelection: false,
       slug: "",
       interestRate: "",
       eligibleCountries: [],
     },
     onSubmit: (values) => {
+      if (values.setJointMaxSelection) {
+        values.jointMaxSelection = values.selectedAcctMax;
+      }
+
       console.log(values);
       mutation.mutate(values);
     },
@@ -57,7 +71,6 @@ const SavingsForm = ({ mutation, onClose }) => {
     validation.setFieldValue("canTrade", !validation.values.canTrade);
   };
 
-  // Function to select all countries
   const selectAllCountries = () => {
     if (countries && countries.length > 0) {
       const allCountryIds = countries.map((country) => country._id);
@@ -65,7 +78,6 @@ const SavingsForm = ({ mutation, onClose }) => {
     }
   };
 
-  // Function to clear all selected countries
   const clearAllCountries = () => {
     validation.setFieldValue("eligibleCountries", []);
   };
@@ -160,19 +172,68 @@ const SavingsForm = ({ mutation, onClose }) => {
           {validation.values.tag === "retirement" && (
             <Col>
               <Row className="mb-3">
-                <Col>
-                  <Label className="text-capitalize">
-                    joint maximum selection
-                  </Label>
-                  <Input
-                    type="text"
-                    onChange={validation.handleChange}
-                    onBlur={validation.handleBlur}
-                    value={validation.values.jointMaxSelection}
-                    name="jointMaxSelection"
-                  />
+                <Col className="d-flex align-items-center justify-content-between">
+                  <Label className="text-capitalize">Set Joint Maximum</Label>
+                  <span
+                    onClick={() => {
+                      validation.setFieldValue(
+                        "setJointMaxSelection",
+                        !validation.values.setJointMaxSelection,
+                      );
+                    }}
+                  >
+                    {validation.values.setJointMaxSelection ? (
+                      <FaToggleOn size={20} className="text-secondary" />
+                    ) : (
+                      <FaToggleOff size={20} />
+                    )}
+                  </span>
                 </Col>
               </Row>
+              {validation.values.setJointMaxSelection ? (
+                <Row className="mb-3">
+                  <Col>
+                    <Label className="text-capitalize">Select Account</Label>
+                    <Input
+                      type="select"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.selectedAcctMax}
+                      name="selectedAcctMax"
+                    >
+                      <option value="">Select Account</option>
+                      {savingsAccounts &&
+                        savingsAccounts.length > 0 &&
+                        savingsAccounts.map((acct) => {
+                          return (
+                            <option
+                              key={acct._id}
+                              value={acct.jointMaxSelection}
+                            >
+                              {capitalize(acct.name)}:{" "}
+                              {acct.jointMaxSelection || "Joint Max Not Set"}
+                            </option>
+                          );
+                        })}
+                    </Input>
+                  </Col>
+                </Row>
+              ) : (
+                <Row className="mb-3">
+                  <Col>
+                    <Label className="text-capitalize">
+                      joint maximum selection
+                    </Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.jointMaxSelection}
+                      name="jointMaxSelection"
+                    />
+                  </Col>
+                </Row>
+              )}
               <Row className="mb-3">
                 <Col>
                   <Label className="text-capitalize">maximum yearly</Label>

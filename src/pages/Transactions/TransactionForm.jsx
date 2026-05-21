@@ -6,6 +6,7 @@ import { getAllUsers, getUserInfo } from "../../services/users";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getUserAccounts } from "../../services/account";
 import ErrorToast from "../../Components/Common/ErrorToast";
+import { getSettings } from "../../services/generalSettings";
 
 const methods = [
   {
@@ -80,10 +81,25 @@ const TransactionForm = ({ mutation, onClose }) => {
     enabled: !!tk && !!validation.values.userId,
   });
 
-  const userBankDepositLimits = userInfo?.settings?.limits?.deposit?.bank;
-  const userCryptoDepositLimits = userInfo?.settings?.limits?.deposit?.crypto;
-  const userBankWithdrawLimits = userInfo?.settings?.limits?.withdrawal?.bank;
+  const { data: defaultSettings } = useQuery({
+    queryFn: () => getSettings(),
+    queryKey: ["defaultSettings"],
+    enabled: !!tk,
+  });
+
+  // console.log(defaultSettings);
+
+  const userBankDepositLimits =
+    defaultSettings?.depositLimits?.bank ||
+    userInfo?.settings?.limits?.deposit?.bank;
+  const userCryptoDepositLimits =
+    defaultSettings?.depositLimits?.crypto ||
+    userInfo?.settings?.limits?.deposit?.crypto;
+  const userBankWithdrawLimits =
+    defaultSettings?.withdrawalLimits?.bank ||
+    userInfo?.settings?.limits?.withdrawal?.bank;
   const userCryptoWithdrawLimits =
+    defaultSettings?.withdrawalLimits?.bank ||
     userInfo?.settings?.limits?.withdrawal?.crypto;
 
   function handleSubmit(values) {
@@ -126,7 +142,7 @@ const TransactionForm = ({ mutation, onClose }) => {
       return;
     }
 
-    console.log(values);
+    // console.log(values);
     mutation.mutate(values);
   }
 
