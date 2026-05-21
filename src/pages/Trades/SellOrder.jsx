@@ -3,20 +3,19 @@ import React, { useEffect, useState, useRef } from "react";
 import { getUserAccounts } from "../../services/account";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ErrorToast, SuccessToast } from "../../Components";
-import { closePosition, getUserTrades } from "../../services/trades";
+import { closeTrade, getUserTrades } from "../../services/trades";
 import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 import { capitalize } from "lodash";
 import { getAccessToken } from "../../helpers/api_helper";
 
-const SellForm = ({ rowData }) => {
-  // console.log(rowData);
+const SellOrder = ({ token, order, users, onClose }) => {
   const [error, setError] = useState("");
   const hasAutoSelectedRef = useRef(false);
 
   const mutation = useMutation({
-    mutationFn: closePosition,
+    mutationFn: closeTrade,
     onError: (err) => setError(err.message),
     onSuccess: () => {
       setTimeout(() => {
@@ -30,13 +29,13 @@ const SellForm = ({ rowData }) => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userId: rowData?.userId || "",
-      walletId: rowData?.wallet?.id || "",
-      positionId: rowData?._id || "",
+      userId: "",
+      walletId: "",
+      tradeId: "",
       amount: "",
       executionType: "market",
-      orderType: rowData?.orderType || "",
-      extra: rowData?.performance?.extra || "",
+      orderType: "",
+      extra: "",
       takeProfit: "",
       stopLoss: "",
       leverage: "",
@@ -44,20 +43,41 @@ const SellForm = ({ rowData }) => {
     },
     onSubmit: (values) => {
       const formData = {
-        positionId: values.positionId,
+        tradeId: values.tradeId,
         userId: values.userId,
         amount: values.amount,
         notifyUser: values.notifyUser,
       };
+      //   console.log(formData);
       mutation.mutate(formData);
     },
   });
-  const token = getAccessToken();
+
   const { data: userAccounts = [] } = useQuery({
     queryFn: () => getUserAccounts({ userId: validation.values.userId }),
     queryKey: ["userAccounts", validation.values.userId],
     enabled: !!token && !!validation.values.userId,
   });
+
+  const { data: userTrades = [] } = useQuery({
+    queryFn: () => getUserTrades(validation.values.userId),
+    queryKey: ["userTrades", validation.values.userId],
+    enabled: !!token && !!validation.values.userId,
+  });
+
+  const filteredTrades =
+    userTrades &&
+    userTrades.length > 0 &&
+    userTrades.filter(
+      (trade) =>
+        trade.wallet.id.toString() === validation.values.walletId &&
+        trade.status === "open",
+    );
+
+  const filteredAccts =
+    userAccounts &&
+    userAccounts.length > 0 &&
+    userAccounts.filter((acct) => acct.slug !== "cash");
 
   useEffect(() => {
     if (error) {
@@ -68,52 +88,96 @@ const SellForm = ({ rowData }) => {
     }
   }, [error]);
 
+  const handleUserChange = (e) => {
+    const userId = e.target.value;
+    validation.setFieldValue("userId", userId);
+    validation.setFieldValue("walletId", "");
+    validation.setFieldValue("assetId", "");
+    hasAutoSelectedRef.current = false;
+  };
+
   return (
     <div className="mb-3 mt-3">
       <Row className="mb-3">
         <Col>
-          <Label> User</Label>
+          <Label>Select User</Label>
           <Input
-            type="text"
+            type="select"
+            onChange={handleUserChange}
             onBlur={validation.handleBlur}
-            value={rowData?.fullname}
+            value={validation.values.userId}
             name="userId"
-            readOnly
-            className="text-capitalize bg-light"
-          />
+          >
+            <option value="">Select User</option>
+            {users &&
+              users.length > 0 &&
+              users.map((usr) => {
+                return (
+                  <option key={usr._id} value={usr._id}>
+                    {`${capitalize(usr.personalInfo.firstName)} ${capitalize(usr.personalInfo.lastName)}`}
+                  </option>
+                );
+              })}
+          </Input>
         </Col>
       </Row>
 
       <Row className="mb-3">
-        <Col>
-          <Label> Account</Label>
+        <Col
+          style={{
+            display: validation.values.userId !== "" ? "block" : "none",
+          }}
+        >
+          <Label>Select Account</Label>
           <Input
-            type="text"
-            onBlur={validation.handleBlur}
-            value={rowData?.wallet?.name}
-            name="walletId"
-            className="text-capitalize bg-light"
-            readOnly
-          />
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
-        <Col>
-          <Label>Asset</Label>
-          <Input
-            type="text"
+            type="select"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            value={rowData?.asset?.name}
-            name="positionId"
-            className="text-capitalize bg-light"
-          />
+            value={validation.values.walletId}
+            name="walletId"
+            className="text-capitalize"
+          >
+            <option value="">Select Account</option>
+            {filteredAccts &&
+              filteredAccts.length > 0 &&
+              filteredAccts.map((acct) => {
+                return (
+                  <option key={acct._id} value={acct._id}>
+                    {`${acct.name}: ${numeral(acct.balance.available).format("$0,0.00")}`}
+                  </option>
+                );
+              })}
+          </Input>
         </Col>
-        <span>
-          Current Value:{" "}
-          {numeral(rowData?.performance?.currentValue).format("$0,0.00")}
-        </span>
+      </Row>
+
+      <Row className="mb-3">
+        <Col
+          style={{
+            display: validation.values.walletId !== "" ? "block" : "none",
+          }}
+        >
+          <Label>Select Asset</Label>
+          <Input
+            type="select"
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+            value={validation.values.tradeId}
+            name="tradeId"
+            className="text-capitalize"
+          >
+            <option value="">Select Asset</option>
+            {filteredTrades &&
+              filteredTrades.length > 0 &&
+              filteredTrades.map((trade) => {
+                return (
+                  <option key={trade._id} value={trade._id}>
+                    {`${trade.asset?.name}: ${numeral(trade.performance.currentValue).format("$0,0.00")}`}
+                  </option>
+                );
+              })}
+          </Input>
+        </Col>
       </Row>
 
       <Row className="mb-3">
@@ -191,21 +255,6 @@ const SellForm = ({ rowData }) => {
         </Col>
       </Row>
 
-      <Row className="mb-3">
-        <Col>
-          <Label>Order(s)</Label>
-          <Input
-            type="text"
-            onChange={validation.handleChange}
-            onBlur={validation.handleBlur}
-            value={rowData?.tradeIds?.length}
-            name="positionId"
-            className="text-capitalize bg-light"
-            readOnly
-          />
-        </Col>
-      </Row>
-
       <div className="d-flex align-items-center justify-content-between py-2">
         <Label>Notify User</Label>
         <div
@@ -233,7 +282,7 @@ const SellForm = ({ rowData }) => {
               e.preventDefault();
               validation.submitForm();
             }}
-            disabled={mutation.isPending || !validation.values.positionId}
+            disabled={mutation.isPending || !validation.values.tradeId}
           >
             {mutation.isPending ? (
               <Spinner size="sm" className="me-2">
@@ -266,4 +315,4 @@ const SellForm = ({ rowData }) => {
   );
 };
 
-export default SellForm;
+export default SellOrder;

@@ -13,8 +13,8 @@ export async function getAllTrades() {
   }
 }
 
-export async function getUserTrades(formData) {
-  const { userId } = formData;
+export async function getUserTrades(userId) {
+  console.log(typeof userId);
   try {
     const res = await api.get(`/managetrade/${userId}`);
     // console.log(res.data);
@@ -49,6 +49,17 @@ export async function updateTrade(formData) {
 }
 
 export async function closeTrade(formData) {
+  const { tradeId } = formData;
+  try {
+    const res = await api.create(`/managetrade/${tradeId}`, formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+export async function closePosition(formData) {
   const { positionId } = formData;
   try {
     const res = await api.update(`/manageposition/${positionId}`, formData);
