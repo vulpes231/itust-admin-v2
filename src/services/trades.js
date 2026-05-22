@@ -48,6 +48,17 @@ export async function updateTrade(formData) {
   }
 }
 
+export async function deleteTrade(tradeId) {
+  try {
+    const res = await api.delete(`/managetrade/${tradeId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
 export async function closeTrade(formData) {
   const { tradeId } = formData;
   try {

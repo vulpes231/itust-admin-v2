@@ -9,6 +9,7 @@ import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 import { capitalize } from "lodash";
 import { getAccessToken } from "../../helpers/api_helper";
+import { getUserInfo } from "../../services/users";
 
 const SellOrder = ({ token, order, users, onClose }) => {
   const [error, setError] = useState("");
@@ -32,6 +33,7 @@ const SellOrder = ({ token, order, users, onClose }) => {
       userId: "",
       walletId: "",
       tradeId: "",
+      planId: "",
       amount: "",
       executionType: "market",
       orderType: "",
@@ -65,14 +67,35 @@ const SellOrder = ({ token, order, users, onClose }) => {
     enabled: !!token && !!validation.values.userId,
   });
 
+  const { data: user = null } = useQuery({
+    queryFn: () => getUserInfo(validation.values.userId),
+    queryKey: ["user", validation.values.userId],
+    enabled: !!token && !!validation.values.userId,
+  });
+
+  const userActivePlans = user.activePlans;
+
+  const selectedAcct =
+    userAccounts &&
+    userAccounts.length > 0 &&
+    userAccounts.find((acct) => acct._id === validation.values.walletId);
+
   const filteredTrades =
-    userTrades &&
-    userTrades.length > 0 &&
-    userTrades.filter(
-      (trade) =>
-        trade.wallet.id.toString() === validation.values.walletId &&
-        trade.status === "open",
-    );
+    selectedAcct?.slug === "auto"
+      ? userTrades &&
+        userTrades.length > 0 &&
+        userTrades.filter(
+          (trade) =>
+            trade.planId.toString() === validation.values.planId &&
+            trade.status === "open",
+        )
+      : userTrades &&
+        userTrades.length > 0 &&
+        userTrades.filter(
+          (trade) =>
+            trade.wallet.id.toString() === validation.values.walletId &&
+            trade.status === "open",
+        );
 
   const filteredAccts =
     userAccounts &&
@@ -144,6 +167,35 @@ const SellOrder = ({ token, order, users, onClose }) => {
                 return (
                   <option key={acct._id} value={acct._id}>
                     {`${acct.name}: ${numeral(acct.balance.available).format("$0,0.00")}`}
+                  </option>
+                );
+              })}
+          </Input>
+        </Col>
+      </Row>
+
+      <Row className="mb-3">
+        <Col
+          style={{
+            display: selectedAcct?.slug === "auto" ? "block" : "none",
+          }}
+        >
+          <Label>Select Plan</Label>
+          <Input
+            type="select"
+            onChange={validation.handleChange}
+            onBlur={validation.handleBlur}
+            value={validation.values.walletId}
+            name="walletId"
+            className="text-capitalize"
+          >
+            <option value="">Select Plan</option>
+            {userActivePlans &&
+              userActivePlans.length > 0 &&
+              userActivePlans.map((plan) => {
+                return (
+                  <option key={plan._id} value={plan._id}>
+                    {`${plan.name}: ${numeral(plan.balance.available).format("$0,0.00")}`}
                   </option>
                 );
               })}

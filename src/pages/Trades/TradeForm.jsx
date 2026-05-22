@@ -12,10 +12,10 @@ import BuyForm from "./BuyForm";
 import { Link } from "react-router-dom";
 import SellOrder from "./SellOrder";
 
-const TradeForm = ({ onClose }) => {
+const TradeForm = ({ onClose, action }) => {
   const tk = getAccessToken();
 
-  const [order, setOrder] = useState("buy");
+  const [order, setOrder] = useState(action === "close" ? "sell" : "buy");
 
   const { data: users = [] } = useQuery({
     queryFn: getAllUsers,

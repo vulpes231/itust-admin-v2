@@ -12,3 +12,14 @@ export async function getAllPositions() {
     throw Error(errMsg);
   }
 }
+
+export async function deletePosition(positionId) {
+  try {
+    const res = await api.delete(`/manageposition/${positionId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}

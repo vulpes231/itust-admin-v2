@@ -16,21 +16,22 @@ import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import ClosePositionForm from "./ClosePositionForm";
 import EditPosition from "./EditPosition";
+import DeletePositionModal from "./DeletePositionModal";
 
 const AllPositions = ({ positions }) => {
-  const [selectedAction, setSelectedAction] = useState(null); // Track which row's action is selected
+  const [selectedAction, setSelectedAction] = useState(null);
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState(null);
 
   const [closePositionModal, setClosePositionModal] = useState(false);
   const [editPositionModal, setEditPositionModal] = useState(false);
+  const [deletePositionModal, setDeletePositionModal] = useState(false);
 
   const handleAction = (e, id, data) => {
     e.preventDefault();
     const actionValue = e.target.value;
 
     if (!actionValue) {
-      // If "Select Option" is chosen, do nothing
       return;
     }
 
@@ -38,14 +39,14 @@ const AllPositions = ({ positions }) => {
     setRowData(data);
     setSelectedAction(actionValue);
 
-    // Open appropriate modal immediately
     if (actionValue === "close") {
       setClosePositionModal(true);
     } else if (actionValue === "edit") {
       setEditPositionModal(true);
+    } else if (actionValue === "delete") {
+      setDeletePositionModal(true);
     }
 
-    // Reset the select dropdown value after opening modal
     e.target.value = "";
   };
 
@@ -55,6 +56,7 @@ const AllPositions = ({ positions }) => {
     setRowData(null);
     setClosePositionModal(false);
     setEditPositionModal(false);
+    setDeletePositionModal(false);
   };
 
   const columns = useMemo(
@@ -189,12 +191,13 @@ const AllPositions = ({ positions }) => {
             <div>
               <select
                 name="action"
-                defaultValue="" // Use defaultValue instead of value
+                defaultValue=""
                 onChange={(e) => handleAction(e, id, rowData)}
               >
                 <option value="">Select Option</option>
                 <option value="edit">Edit</option>
                 <option value="close">Close</option>
+                <option value="delete">Delete</option>
               </select>
             </div>
           );
@@ -245,6 +248,13 @@ const AllPositions = ({ positions }) => {
           rowData={rowData}
           isOpen={editPositionModal}
           handleClose={handleClose}
+        />
+      )}
+      {deletePositionModal && (
+        <DeletePositionModal
+          positionId={rowId}
+          isOpen={deletePositionModal}
+          handleToggle={handleClose}
         />
       )}
     </React.Fragment>

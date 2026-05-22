@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import CreateTrade from "./CreateTrade";
 import CloseTradeModal from "./CloseTradeModal";
 import TradeModal from "./TradeModal";
+import DeleteTradeModal from "./DeleteTradeModal";
 
 const AllTrades = ({ tradeList }) => {
   const [action, setAction] = useState("");
@@ -186,6 +187,8 @@ const AllTrades = ({ tradeList }) => {
               >
                 <option value="">Select Option</option>
                 <option value="edit">Edit</option>
+                <option value="delete">Delete</option>
+                <option value="close">Close</option>
               </select>
             </div>
           );
@@ -243,6 +246,13 @@ const AllTrades = ({ tradeList }) => {
           rowData={rowData}
         />
       )}
+      {action === "delete" && (
+        <DeleteTradeModal
+          tradeId={rowId}
+          isOpen={action === "delete"}
+          onClose={handleClose}
+        />
+      )}
       {createTradeModal && (
         <CreateTrade
           isOpen={createTradeModal}
@@ -250,12 +260,13 @@ const AllTrades = ({ tradeList }) => {
         />
       )}
       {action === "close" && (
-        <CloseTradeModal
-          dataId={rowId}
-          action={action}
+        <CreateTrade
           isOpen={action === "close"}
-          onClose={() => setAction("")}
-          rowData={rowData}
+          action={action}
+          onClose={() => {
+            setAction("");
+            closeCreateTradeModal();
+          }}
         />
       )}
     </React.Fragment>
