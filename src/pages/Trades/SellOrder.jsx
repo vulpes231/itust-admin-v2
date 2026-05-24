@@ -11,7 +11,7 @@ import { capitalize } from "lodash";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getUserInfo } from "../../services/users";
 
-const SellOrder = ({ token, order, users, onClose }) => {
+const SellOrder = ({ token, order, users, onClose, orderData }) => {
   const [error, setError] = useState("");
   const hasAutoSelectedRef = useRef(false);
 
@@ -30,10 +30,10 @@ const SellOrder = ({ token, order, users, onClose }) => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      userId: "",
-      walletId: "",
-      tradeId: "",
-      planId: "",
+      userId: orderData?.userId || "",
+      walletId: orderData?.wallet?.id || "",
+      tradeId: orderData?._id || "",
+      planId: orderData?.planId || "",
       amount: "",
       executionType: "market",
       orderType: "",
@@ -73,7 +73,7 @@ const SellOrder = ({ token, order, users, onClose }) => {
     enabled: !!token && !!validation.values.userId,
   });
 
-  const userActivePlans = user.activePlans;
+  const userActivePlans = user?.activePlans;
 
   const selectedAcct =
     userAccounts &&
@@ -86,7 +86,7 @@ const SellOrder = ({ token, order, users, onClose }) => {
         userTrades.length > 0 &&
         userTrades.filter(
           (trade) =>
-            trade.planId.toString() === validation.values.planId &&
+            trade.planId?.toString() === validation.values.planId &&
             trade.status === "open",
         )
       : userTrades &&
@@ -185,8 +185,8 @@ const SellOrder = ({ token, order, users, onClose }) => {
             type="select"
             onChange={validation.handleChange}
             onBlur={validation.handleBlur}
-            value={validation.values.walletId}
-            name="walletId"
+            value={validation.values.planId}
+            name="planId"
             className="text-capitalize"
           >
             <option value="">Select Plan</option>
@@ -194,7 +194,7 @@ const SellOrder = ({ token, order, users, onClose }) => {
               userActivePlans.length > 0 &&
               userActivePlans.map((plan) => {
                 return (
-                  <option key={plan._id} value={plan._id}>
+                  <option key={plan._id} value={plan.planId}>
                     {`${plan.name}: ${numeral(plan.balance.available).format("$0,0.00")}`}
                   </option>
                 );

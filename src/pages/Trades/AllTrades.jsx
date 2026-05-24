@@ -261,6 +261,7 @@ const AllTrades = ({ tradeList }) => {
       )}
       {action === "close" && (
         <CreateTrade
+          orderData={rowData}
           isOpen={action === "close"}
           action={action}
           onClose={() => {

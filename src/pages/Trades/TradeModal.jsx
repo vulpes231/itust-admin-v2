@@ -42,7 +42,11 @@ const TradeModal = ({ dataId, action, isOpen, onClose, rowData }) => {
                 {rowData?.asset?.name}
               </span>
             </div>
-            <EditTradeForm tradeData={rowData} mutation={mutation} />
+            <EditTradeForm
+              tradeData={rowData}
+              mutation={mutation}
+              onClose={onClose}
+            />
           </ModalBody>
         </Modal>
       </Card>

@@ -3,7 +3,7 @@ import { Col, Input, Label, Row, Spinner } from "reactstrap";
 import { useFormik } from "formik";
 import numeral from "numeral";
 
-const EditTradeForm = ({ tradeData, mutation }) => {
+const EditTradeForm = ({ tradeData, mutation, onClose }) => {
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -67,8 +67,6 @@ const EditTradeForm = ({ tradeData, mutation }) => {
             value={validation.values.customDate}
             name="customDate"
             autoComplete="off"
-            // Remove readOnly if you want users to edit it
-            // readOnly
           />
         </Col>
       </Row>
@@ -91,12 +89,8 @@ const EditTradeForm = ({ tradeData, mutation }) => {
             ) : null}
             Update Trade
           </button>
-          <button
-            type="button"
-            // onClick={onClose}
-            className="btn btn-danger"
-          >
-            Close Trade
+          <button type="button" onClick={onClose} className="btn btn-danger">
+            Cancel
           </button>
         </div>
       </Row>

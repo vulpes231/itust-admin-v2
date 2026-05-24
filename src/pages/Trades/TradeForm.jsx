@@ -12,7 +12,7 @@ import BuyForm from "./BuyForm";
 import { Link } from "react-router-dom";
 import SellOrder from "./SellOrder";
 
-const TradeForm = ({ onClose, action }) => {
+const TradeForm = ({ onClose, action, orderData }) => {
   const tk = getAccessToken();
 
   const [order, setOrder] = useState(action === "close" ? "sell" : "buy");
@@ -47,7 +47,13 @@ const TradeForm = ({ onClose, action }) => {
         {order === "buy" ? (
           <BuyForm token={tk} order={order} users={users} onClose={onClose} />
         ) : (
-          <SellOrder token={tk} order={order} users={users} onClose={onClose} />
+          <SellOrder
+            token={tk}
+            order={order}
+            users={users}
+            onClose={onClose}
+            orderData={orderData}
+          />
         )}
       </Row>
     </React.Fragment>
