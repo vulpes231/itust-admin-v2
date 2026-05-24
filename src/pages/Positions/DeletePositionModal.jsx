@@ -34,9 +34,11 @@ const DeletePositionModal = ({ isOpen, handleToggle, positionId }) => {
         <ModalBody>
           <div className="d-flex align-items-center gap-2">
             <button
-              onClick={handleToggle}
+              onClick={() => {
+                deletePositionOrder.mutate();
+              }}
               type="button"
-              className="btn btn-danger d-flex align-items-center gap-2 justify-content-center"
+              className="btn btn-secondary d-flex align-items-center gap-2 justify-content-center"
               disabled={deletePositionOrder.isPending}
             >
               {deletePositionOrder.isPending && <Spinner size={"sm"} />} Delete

@@ -13,6 +13,17 @@ export async function getAllPositions() {
   }
 }
 
+export async function updatePosition(formData) {
+  const { positionId } = formData;
+  try {
+    const res = await api.put(`/manageposition/${positionId}`, formData);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
 export async function deletePosition(positionId) {
   try {
     const res = await api.delete(`/manageposition/${positionId}`);
