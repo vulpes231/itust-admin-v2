@@ -7,6 +7,9 @@ import { getAccessToken } from "../../helpers/api_helper";
 import { getUserAccounts } from "../../services/account";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import { getSettings } from "../../services/generalSettings";
+import numeral from "numeral";
+
+import { MdToggleOff, MdToggleOn } from "react-icons/md";
 
 const methods = [
   {
@@ -29,11 +32,19 @@ const methods = [
     title: "USDT",
     network: ["ERC20", "TRC20"],
   },
+  {
+    id: "transfer",
+    title: "Transfer",
+    network: ["transfer"],
+  },
 ];
 
-const TransactionForm = ({ mutation, onClose }) => {
+const TransactionForm = ({ mutation, onClose, currentTab }) => {
   const tk = getAccessToken();
   const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [matchedUsers, setMatchedUsers] = useState([]);
 
   const { data: users } = useQuery({
     queryFn: getAllUsers,
@@ -50,7 +61,10 @@ const TransactionForm = ({ mutation, onClose }) => {
       amount: "",
       memo: "",
       network: "",
-      type: "",
+      type: currentTab || "",
+      notifyUser: false,
+      customDate: "",
+      toAccountId: "",
     },
     onSubmit: (values) => {
       console.log(values);
@@ -73,34 +87,17 @@ const TransactionForm = ({ mutation, onClose }) => {
     }
   }, [userAccounts]);
 
-  // console.log(userAccounts);
-
   const { data: userInfo } = useQuery({
     queryFn: () => getUserInfo(validation.values.userId),
     queryKey: ["userInfo", validation.values.userId],
     enabled: !!tk && !!validation.values.userId,
   });
 
-  const { data: defaultSettings } = useQuery({
-    queryFn: () => getSettings(),
-    queryKey: ["defaultSettings"],
-    enabled: !!tk,
-  });
-
-  // console.log(defaultSettings);
-
-  const userBankDepositLimits =
-    defaultSettings?.depositLimits?.bank ||
-    userInfo?.settings?.limits?.deposit?.bank;
-  const userCryptoDepositLimits =
-    defaultSettings?.depositLimits?.crypto ||
-    userInfo?.settings?.limits?.deposit?.crypto;
-  const userBankWithdrawLimits =
-    defaultSettings?.withdrawalLimits?.bank ||
-    userInfo?.settings?.limits?.withdrawal?.bank;
-  const userCryptoWithdrawLimits =
-    defaultSettings?.withdrawalLimits?.bank ||
-    userInfo?.settings?.limits?.withdrawal?.crypto;
+  // const { data: defaultSettings } = useQuery({
+  //   queryFn: () => getSettings(),
+  //   queryKey: ["defaultSettings"],
+  //   enabled: !!tk,
+  // });
 
   function handleSubmit(values) {
     if (!values) return;
@@ -112,36 +109,6 @@ const TransactionForm = ({ mutation, onClose }) => {
       return;
     }
 
-    const getLimits = () => {
-      if (values.type === "deposit") {
-        return values.method === "bank"
-          ? userBankDepositLimits
-          : userCryptoDepositLimits;
-      } else {
-        return values.method === "bank"
-          ? userBankWithdrawLimits
-          : userCryptoWithdrawLimits;
-      }
-    };
-
-    const limits = getLimits();
-    const action = values.type === "deposit" ? "deposit" : "withdrawal";
-
-    if (!limits) {
-      setError(`Unable to process ${action}. Please try again later.`);
-      return;
-    }
-
-    if (parsedAmt < limits.min) {
-      setError(`Minimum ${action} is ${limits.min}!`);
-      return;
-    }
-
-    if (parsedAmt > limits.max) {
-      setError(`Maximum ${action} is ${limits.max}!`);
-      return;
-    }
-
     // console.log(values);
     mutation.mutate(values);
   }
@@ -150,38 +117,104 @@ const TransactionForm = ({ mutation, onClose }) => {
     return methods.find((mtd) => mtd.id === method)?.network || [];
   };
 
+  useEffect(() => {
+    if (!users || !searchTerm.trim()) {
+      setMatchedUsers([]);
+      return;
+    }
+
+    const matches = users.filter((user) =>
+      user.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+
+    setMatchedUsers(matches);
+  }, [searchTerm, users]);
+
+  const handleSelectUser = (user) => {
+    setSelectedUser(user);
+    setSearchTerm(user.contactInfo.email);
+    setMatchedUsers([]);
+    validation.setFieldValue("userId", user._id);
+  };
+
+  const filteredAccts =
+    validation.values.type === "deposit" ||
+    validation.values.type === "withdraw"
+      ? userAccounts?.filter((acct) => acct.slug === "cash")
+      : userAccounts;
+
   return (
     <React.Fragment>
       <form action="">
         <div className="mb-3 mt-3">
           <Row className="mb-3">
             <Col>
-              <Label>Select User</Label>
+              <Label>Type</Label>
               <Input
-                type="select"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.userId}
-                name="userId"
-              >
-                <option value="">Select User</option>
-                {users &&
-                  users.length > 0 &&
-                  users.map((usr) => {
-                    return (
-                      <option key={usr._id} value={usr._id}>
-                        {usr.personalInfo.firstName} {usr.personalInfo.lastName}
-                      </option>
-                    );
-                  })}
-              </Input>
+                type="text"
+                value={validation.values.type}
+                name="type"
+                readOnly
+                className="text-capitalize bg-light"
+              ></Input>
             </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col>
+              <Label>User</Label>
+              <Input
+                type="text"
+                placeholder="Search by email..."
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setSelectedUser(null);
+                }}
+              />
+
+              {matchedUsers.length > 0 && (
+                <div className="border rounded mt-1 bg-white shadow-sm">
+                  {matchedUsers.map((user) => (
+                    <div
+                      key={user._id}
+                      className="p-2 border-bottom"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => handleSelectUser(user)}
+                    >
+                      <strong>
+                        {user.personalInfo.firstName}{" "}
+                        {user.personalInfo.lastName}
+                      </strong>
+
+                      <br />
+
+                      <small>{user.contactInfo.email}</small>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {selectedUser && (
+                <div className="alert alert-success mt-2 py-2">
+                  Selected:
+                  <strong>
+                    {" "}
+                    {selectedUser.personalInfo.firstName}{" "}
+                    {selectedUser.personalInfo.lastName}
+                  </strong>
+                </div>
+              )}
+            </Col>
+          </Row>
+          <Row className="mb-3">
             <Col
               style={{
                 display: validation.values.userId !== "" ? "block" : "none",
               }}
             >
-              <Label>Select Account</Label>
+              <Label>
+                Select {validation.values.type === "transfer" && "from"} Account
+              </Label>
               <Input
                 type="select"
                 onChange={validation.handleChange}
@@ -190,15 +223,50 @@ const TransactionForm = ({ mutation, onClose }) => {
                 name="accountId"
               >
                 <option value="">Select Account</option>
-                {userAccounts &&
-                  userAccounts.length > 0 &&
-                  userAccounts.map((acct) => {
+                {filteredAccts &&
+                  filteredAccts.length > 0 &&
+                  filteredAccts.map((acct) => {
                     return (
                       <option key={acct._id} value={acct._id}>
-                        {acct.name}
+                        {acct.name}:{" "}
+                        {numeral(acct.balance.available).format("$0,00.00")}
                       </option>
                     );
                   })}
+              </Input>
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col
+              style={{
+                display:
+                  validation.values.type === "transfer" &&
+                  validation.values.userId !== ""
+                    ? "block"
+                    : "none",
+              }}
+            >
+              <Label>Select To Account</Label>
+              <Input
+                type="select"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.toAccountId}
+                name="toAccountId"
+              >
+                <option value="">Select Account</option>
+                {filteredAccts &&
+                  filteredAccts.length > 0 &&
+                  filteredAccts
+                    .filter((acct) => acct._id !== validation.values.accountId)
+                    .map((acct) => {
+                      return (
+                        <option key={acct._id} value={acct._id}>
+                          {acct.name}:{" "}
+                          {numeral(acct.balance.available).format("$0,00.00")}
+                        </option>
+                      );
+                    })}
               </Input>
             </Col>
           </Row>
@@ -245,21 +313,7 @@ const TransactionForm = ({ mutation, onClose }) => {
             )}
           </Row>
 
-          <Row className="mb-3">
-            <Col>
-              <Label>Type</Label>
-              <Input
-                type="select"
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                value={validation.values.type}
-                name="type"
-              >
-                <option value="">Select Type</option>
-                <option value="deposit">Deposit</option>
-                <option value="withdrawal">Withdrawal</option>
-              </Input>
-            </Col>
+          {/* <Row className="mb-3">
             <Col>
               <Label>Memo (Optional)</Label>
               <Input
@@ -271,7 +325,7 @@ const TransactionForm = ({ mutation, onClose }) => {
                 autoComplete="off"
               />
             </Col>
-          </Row>
+          </Row> */}
           <Row className="mb-3">
             <Col>
               <Label>Amount</Label>
@@ -283,6 +337,41 @@ const TransactionForm = ({ mutation, onClose }) => {
                 name="amount"
                 autoComplete="off"
               />
+            </Col>
+          </Row>
+
+          <Row className="mb-3">
+            <Col>
+              <Label>Custom Date</Label>
+              <Input
+                type="date"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.customDate}
+                name="customDate"
+                autoComplete="off"
+              />
+            </Col>
+          </Row>
+          <Row className="mb-3">
+            <Col className="d-flex align-items-center justify-content-between">
+              <Label>Notify User</Label>
+              <span
+                onClick={() =>
+                  validation.setFieldValue(
+                    "notifyUser",
+                    !validation.values.notifyUser,
+                  )
+                }
+                className={`fs-22 ${validation.values.notifyUser ? "text-success" : "text-muted"}`}
+              >
+                {" "}
+                {validation.values.notifyUser ? (
+                  <MdToggleOn size={30} />
+                ) : (
+                  <MdToggleOff size={30} />
+                )}
+              </span>
             </Col>
           </Row>
           <Row>

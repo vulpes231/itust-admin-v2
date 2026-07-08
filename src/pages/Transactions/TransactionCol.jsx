@@ -7,8 +7,12 @@ const Type = (cell) => {
     <React.Fragment>
       {cell.getValue() === "deposit" ? (
         <span className="type text-success">{capitalize(cell.getValue())}</span>
-      ) : (
+      ) : cell.getValue() === "withdraw" ? (
         <span className="type text-danger">{capitalize(cell.getValue())}</span>
+      ) : cell.getValue() === "transfer" ? (
+        <span className="type text-warning">{capitalize(cell.getValue())}</span>
+      ) : (
+        <span className="type text-info">{capitalize(cell.getValue())}</span>
       )}
     </React.Fragment>
   );
@@ -51,10 +55,10 @@ const Status = (cell) => {
           status === "pending"
             ? "bg-warning-subtle text-warning badge text-capitalize"
             : status === "processed"
-            ? "bg-success-subtle text-success badge text-capitalize"
-            : status === "cancelled"
-            ? "bg-danger-subtle text-danger badge text-capitalize"
-            : ""
+              ? "bg-success-subtle text-success badge text-capitalize"
+              : status === "cancelled"
+                ? "bg-danger-subtle text-danger badge text-capitalize"
+                : ""
         }`}
       >
         <span className="d-flex items-center gap-1 p-1 rounded-4">

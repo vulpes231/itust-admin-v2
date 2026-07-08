@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardBody, CardHeader, Col } from "reactstrap";
+import {
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Input,
+  Button,
+  Row,
+} from "reactstrap";
 import { Type, Account, Email, Memo, Price, Status } from "./TransactionCol";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
@@ -14,6 +22,11 @@ const AllTransactions = ({ transactionList }) => {
   const [rowData, setRowData] = useState("");
   const [showModal, setShowModal] = useState(false);
 
+  const [searchUser, setSearchUser] = useState("");
+  const [currentTab, setCurrentTab] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [acctFilter, setAcctFilter] = useState("all");
+
   const [createTransactionModal, setCreateTransactionModal] = useState(false);
 
   const openCreateTransactionModal = () => {
@@ -22,6 +35,28 @@ const AllTransactions = ({ transactionList }) => {
   const closeCreateTransactionModal = () => {
     setCreateTransactionModal(false);
   };
+
+  const filteredTransactions = useMemo(() => {
+    if (!transactionList) return [];
+
+    let transactions = transactionList;
+
+    if (currentTab !== "all") {
+      transactions = transactions.filter((trnx) => trnx.type === currentTab);
+    }
+
+    if (statusFilter !== "all" && statusFilter !== "") {
+      transactions = transactions.filter(
+        (trnx) => trnx.status === statusFilter,
+      );
+    }
+
+    if (acctFilter !== "all" && acctFilter !== "") {
+      transactions = transactions.filter((trnx) => trnx.account === acctFilter);
+    }
+
+    return transactions;
+  }, [transactionList, currentTab, statusFilter, acctFilter]);
 
   const handleAction = (e, id, transaction) => {
     setRowId(id);
@@ -99,14 +134,14 @@ const AllTransactions = ({ transactionList }) => {
           return <Email {...cell} />;
         },
       },
-      {
-        header: "Memo",
-        accessorKey: "memo",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Memo {...cell} />;
-        },
-      },
+      // {
+      //   header: "Memo",
+      //   accessorKey: "memo",
+      //   enableColumnFilter: false,
+      //   cell: (cell) => {
+      //     return <Memo {...cell} />;
+      //   },
+      // },
       {
         header: "Amount",
         accessorKey: "amount",
@@ -146,32 +181,104 @@ const AllTransactions = ({ transactionList }) => {
         },
       },
     ],
-    []
+    [],
   );
+
+  const handleTabChange = (tab) => {
+    setCurrentTab(tab);
+  };
+
+  const showButton =
+    currentTab === "deposit" ||
+    currentTab === "withdraw" ||
+    currentTab === "transfer";
+
+  // console.log(filteredTransactions);
   return (
     <React.Fragment>
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
-            <h5 className="card-title mb-0 flex-grow-1">All Transactions</h5>
+            <h5 className="card-title mb-0 flex-grow-1 text-capitalize">
+              {currentTab} Transactions
+            </h5>
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
-                <button
-                  className="btn btn-primary"
-                  type="button"
-                  onClick={openCreateTransactionModal}
-                >
-                  Create Transaction
-                </button>
-                {/* <button className="btn btn-soft-info">Past Orders</button> */}
+                {showButton && (
+                  <button
+                    className="btn btn-secondary text-capitalize"
+                    type="button"
+                    onClick={openCreateTransactionModal}
+                  >
+                    Create {currentTab}
+                  </button>
+                )}
               </div>
             </div>
           </CardHeader>
           <CardBody>
+            {/* Tabs */}
+            <div className="d-flex flex-wrap gap-2 mb-4">
+              {["all", "deposit", "withdraw", "transfer", "savings"].map(
+                (tab) => (
+                  <Button
+                    key={tab}
+                    // outline={currentTab === tab}
+                    onClick={() => handleTabChange(tab)}
+                    className={`text-capitalize p-2 ${currentTab === tab ? "text-white bg-secondary" : "bg-light text-muted "}`}
+                    style={{ width: "90px" }}
+                  >
+                    {tab === "all" ? "All" : tab}
+                  </Button>
+                ),
+              )}
+            </div>
+            {/* Filters */}
+            <Row className="g-3 align-items-center pb-4">
+              <Col lg={4} md={12}>
+                <Input type="text" placeholder="Search by name, email..." />
+              </Col>
+
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="processed">Processed</option>
+                  <option value="cancelled">Cancelled</option>
+                </Input>
+              </Col>
+
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={acctFilter}
+                  onChange={(e) => setAcctFilter(e.target.value)}
+                >
+                  <option value="">All Accounts</option>
+                  <option value="cash account">Cash</option>
+                  <option value="traditional ira">Traditional IRA</option>
+                  <option value="automated investing">
+                    Automated Investing
+                  </option>
+                  <option value="individual brokerage">Brokerage</option>
+                  <option value="hsa">Health Savings</option>
+                </Input>
+              </Col>
+
+              <Col lg={2} md={4}>
+                <Button color="primary" className="w-100">
+                  Filter
+                </Button>
+              </Col>
+            </Row>
             <TableContainer
               columns={columns}
-              data={transactionList || []}
-              isGlobalFilter={true}
+              data={filteredTransactions || []}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"
@@ -202,6 +309,7 @@ const AllTransactions = ({ transactionList }) => {
         <CreateTransaction
           isOpen={createTransactionModal}
           onClose={closeCreateTransactionModal}
+          currentTab={currentTab}
         />
       )}
     </React.Fragment>

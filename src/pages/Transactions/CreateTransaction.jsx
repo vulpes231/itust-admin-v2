@@ -6,7 +6,7 @@ import { ErrorToast, SuccessToast } from "../../Components";
 import TransactionForm from "./TransactionForm";
 import { createTransaction } from "../../services/transactions";
 
-const CreateTransaction = ({ isOpen, onClose }) => {
+const CreateTransaction = ({ isOpen, onClose, currentTab }) => {
   const [error, setError] = useState("");
 
   const mutation = useMutation({
@@ -39,9 +39,15 @@ const CreateTransaction = ({ isOpen, onClose }) => {
     <React.Fragment>
       <Card>
         <Modal toggle={onClose} isOpen={isOpen}>
-          <ModalHeader toggle={onClose}>Create Transaction</ModalHeader>
+          <ModalHeader toggle={onClose}>
+            {capitalize(currentTab)} Form
+          </ModalHeader>
           <ModalBody className="d-flex flex-column gap-4">
-            <TransactionForm mutation={mutation} onClose={onClose} />
+            <TransactionForm
+              mutation={mutation}
+              onClose={onClose}
+              currentTab={currentTab}
+            />
           </ModalBody>
         </Modal>
       </Card>
