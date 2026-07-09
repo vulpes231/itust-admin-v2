@@ -14,6 +14,7 @@ const Navdata = () => {
   const [isAdmins, setIsAdmins] = useState(false);
   const [isPlan, setIsPlan] = useState(false);
   const [isSavings, setIsSavings] = useState(false);
+  const [isAssets, setIsAssets] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -54,6 +55,9 @@ const Navdata = () => {
     if (iscurrentState !== "Admins") {
       setIsAdmins(false);
     }
+    if (iscurrentState !== "Assets") {
+      setIsAssets(false);
+    }
     if (iscurrentState !== "Savings") {
       setIsSavings(false);
     }
@@ -71,6 +75,7 @@ const Navdata = () => {
     isSavings,
     isPlan,
     isPositions,
+    isAssets,
   ]);
 
   const menuItems = [
@@ -180,6 +185,19 @@ const Navdata = () => {
         e.preventDefault();
         setIsAdmins(!isAdmins);
         setIscurrentState("Admins");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "assets",
+      label: "Assets",
+      icon: "ri-nft-line",
+      link: "/assets",
+      stateVariables: isAdmins,
+      click: function (e) {
+        e.preventDefault();
+        setIsAssets(!isAssets);
+        setIscurrentState("Assets");
         updateIconSidebar(e);
       },
     },

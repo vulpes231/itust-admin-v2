@@ -9,6 +9,7 @@ import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
 import {
   Admins,
+  Assets,
   EditUser,
   ManageSettings,
   Plans,
@@ -24,6 +25,7 @@ const authProtectedRoutes = [
   { path: "/profile", component: <UserProfile /> },
   { path: "/users", component: <Users /> },
   { path: "/trades", component: <Trades /> },
+  { path: "/assets", component: <Assets /> },
   { path: "/transactions", component: <Transactions /> },
   { path: "/savings-accounts", component: <SavingsAccount /> },
   { path: "/investment-plans", component: <Plans /> },

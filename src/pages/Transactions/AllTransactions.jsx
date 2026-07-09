@@ -65,6 +65,8 @@ const AllTransactions = ({ transactionList }) => {
     setShowModal(true);
   };
 
+  // console.log(filteredTransactions);
+
   const columns = useMemo(
     () => [
       {
@@ -164,6 +166,7 @@ const AllTransactions = ({ transactionList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           const method = cell.row.original.method.mode;
+          const status = cell.row.original.status;
           const data = cell.row.original;
           return (
             <div>
@@ -172,9 +175,15 @@ const AllTransactions = ({ transactionList }) => {
                 onChange={(e) => handleAction(e, cell.getValue(), data)}
               >
                 <option value="">Select Option</option>
-                <option value="approve">Approve</option>
-                <option value="reject">Reject</option>
-                {method === "bank" && <option value="view">View</option>}
+                {status !== "processed" && (
+                  <option value="approve">Approve</option>
+                )}
+                {status !== "processed" && (
+                  <option value="reject">Reject</option>
+                )}
+                <option value="edit">Edit</option>
+                <option value="view">View</option>
+                {/* {method === "bank" && } */}
               </select>
             </div>
           );

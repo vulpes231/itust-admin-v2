@@ -65,10 +65,23 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
       notifyUser: false,
       customDate: "",
       toAccountId: "",
+      address: "",
+      bankName: "",
+      accountNumber: "",
+      bankAddress: "",
+      routing: "",
+      accountName: "",
+      swiftCode: "",
     },
     onSubmit: (values) => {
+      const parsedAmt = parseFloat(values.amount);
+
+      if (isNaN(parsedAmt)) {
+        setError("Please enter a valid amount");
+        return;
+      }
+
       console.log(values);
-      handleSubmit(values);
     },
   });
 
@@ -98,20 +111,6 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
   //   queryKey: ["defaultSettings"],
   //   enabled: !!tk,
   // });
-
-  function handleSubmit(values) {
-    if (!values) return;
-
-    const parsedAmt = parseFloat(values.amount);
-
-    if (isNaN(parsedAmt)) {
-      setError("Please enter a valid amount");
-      return;
-    }
-
-    // console.log(values);
-    mutation.mutate(values);
-  }
 
   const getNetworks = (method) => {
     return methods.find((mtd) => mtd.id === method)?.network || [];
@@ -236,16 +235,17 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
               </Input>
             </Col>
           </Row>
-          <Row className="mb-3">
-            <Col
-              style={{
-                display:
-                  validation.values.type === "transfer" &&
-                  validation.values.userId !== ""
-                    ? "block"
-                    : "none",
-              }}
-            >
+          <Row
+            className="mb-3"
+            style={{
+              display:
+                validation.values.type === "transfer" &&
+                validation.values.userId !== ""
+                  ? "block"
+                  : "none",
+            }}
+          >
+            <Col>
               <Label>Select To Account</Label>
               <Input
                 type="select"
@@ -312,6 +312,94 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
               </Col>
             )}
           </Row>
+          {validation.values.type === "withdraw" &&
+            validation.values.method !== "bank" &&
+            validation.values.method !== "" && (
+              <Row className="mb-3">
+                <Col>
+                  <Label>Address</Label>
+                  <Input
+                    type="text"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.address}
+                    name="address"
+                  />
+                </Col>
+              </Row>
+            )}
+
+          {validation.values.type === "withdraw" &&
+            validation.values.method === "bank" && (
+              <Col>
+                <Row className="mb-3">
+                  <Col>
+                    <Label>Bank Name</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bankName}
+                      name="bankName"
+                    />
+                  </Col>
+                  <Col>
+                    <Label>Account Number</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.accountNumber}
+                      name="accountNumber"
+                    />
+                  </Col>
+                </Row>
+                <Row className="mb-3">
+                  <Col>
+                    <Label>Account Name</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.accountName}
+                      name="accountName"
+                    />
+                  </Col>
+                  <Col>
+                    <Label>Routing Number</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.routing}
+                      name="routing"
+                    />
+                  </Col>
+                </Row>
+                <Row className="mb-3">
+                  <Col>
+                    <Label>Bank Address</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.bankAddress}
+                      name="bankAddress"
+                    />
+                  </Col>
+                  <Col>
+                    <Label>Swift Code</Label>
+                    <Input
+                      type="text"
+                      onChange={validation.handleChange}
+                      onBlur={validation.handleBlur}
+                      value={validation.values.swiftCode}
+                      name="swiftCode"
+                    />
+                  </Col>
+                </Row>
+              </Col>
+            )}
 
           {/* <Row className="mb-3">
             <Col>

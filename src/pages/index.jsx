@@ -1,4 +1,5 @@
 import Admins from "./Admins";
+import Assets from "./Assets";
 import EditUser from "./EditUser";
 import Plans from "./Plans";
 import Positions from "./Positions";
@@ -21,4 +22,5 @@ export {
   ManageSettings,
   Positions,
   UserSavingsAccounts,
+  Assets,
 };
