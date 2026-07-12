@@ -25,7 +25,7 @@ const DeleteAssetModal = ({ isOpen, handleClose, asset }) => {
             onClick={() => {
               if (!asset) return;
               console.log(asset._id);
-              //   deleteAssetMutation.mutate(asset._id);
+              deleteAssetMutation.mutate(asset._id);
             }}
             className="btn btn-danger d-flex align-items-center justify-content-center gap-2"
           >

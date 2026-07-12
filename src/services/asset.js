@@ -26,7 +26,18 @@ export async function searchAsset(query) {
 
 export async function removeAsset(assetId) {
   try {
-    const res = await api.delete(`/asset/${assetId}`);
+    const res = await api.delete(`/manageasset/${assetId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
+
+export async function addNewAsset(formData) {
+  try {
+    const res = await api.create(`/manageasset/`, formData);
     // console.log(res.data);
     return res.data;
   } catch (error) {

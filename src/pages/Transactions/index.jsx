@@ -21,7 +21,7 @@ const Transactions = () => {
 
   useEffect(() => {
     if (transactions && transactions.length > 0) {
-      // console.log(transactions);
+      console.log(transactions);
       setTransactionList(transactions);
     }
   }, [transactions]);

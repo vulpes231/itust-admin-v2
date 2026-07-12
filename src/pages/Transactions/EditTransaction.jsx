@@ -2,11 +2,11 @@ import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
 import React, { useState } from "react";
 import { Input, Label, Spinner } from "reactstrap";
-import { updateTransaction } from "../../services/transactions";
+import { updateTransactionInfo } from "../../services/transactions";
 
 const EditTransaction = ({ transaction, handleClose, setError }) => {
   const editTransaction = useMutation({
-    mutationFn: updateTransaction,
+    mutationFn: updateTransactionInfo,
     onError: (err) => setError(err.message),
     onSuccess: () => {
       setTimeout(() => {
@@ -16,19 +16,51 @@ const EditTransaction = ({ transaction, handleClose, setError }) => {
     },
   });
 
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+
+    return now.toISOString().slice(0, 16);
+  };
+
+  const formatDateTime = (date) => {
+    if (!date) return getCurrentDateTime();
+    return new Date(date).toISOString().slice(0, 16);
+  };
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       type: transaction?.type || "",
       method: transaction?.method?.mode || "",
-      customDate: transaction?.createdAt || "",
+      customDate: formatDateTime(transaction?.createdAt) || "",
       amount: transaction?.amount || "",
       status: transaction?.status || "",
       transactionId: transaction?._id || "",
     },
     onSubmit: (values) => {
-      console.log(values);
-      //   editTransaction.mutate(values);
+      const changes = {
+        transactionId: values.transactionId,
+      };
+
+      Object.entries(values).forEach(([key, value]) => {
+        if (key === "transactionId") return;
+
+        if (value !== validation.initialValues[key]) {
+          changes[key] =
+            key === "amount"
+              ? Number(value)
+              : key === "customDate"
+                ? new Date(value)
+                : value;
+        }
+      });
+
+      if (Object.keys(changes).length === 1) {
+        setError("No changes were made.");
+        return;
+      }
+
+      editTransaction.mutate(changes);
     },
   });
 
@@ -73,10 +105,9 @@ const EditTransaction = ({ transaction, handleClose, setError }) => {
         <div className="mb-3">
           <Label>Date</Label>
           <Input
-            type="date"
+            type="datetime-local"
             name="customDate"
             value={validation.values.customDate}
-            className="text-capitalize"
             onChange={validation.handleChange}
           />
         </div>

@@ -5,7 +5,7 @@ import { searchAsset } from "../../services/asset";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ErrorToast, SuccessToast } from "../../Components";
 import { addNewTrade } from "../../services/trades";
-import { Col, Input, Label, Row, Spinner } from "reactstrap";
+import { Button, Col, Input, Label, Row, Spinner } from "reactstrap";
 import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 import { capitalize } from "lodash";
@@ -30,6 +30,14 @@ const BuyForm = ({ order, token, users, onClose }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [error, setError] = useState("");
   const hasAutoSelectedRef = useRef(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+
+    return now.toISOString().slice(0, 16);
+  };
 
   const mutation = useMutation({
     mutationFn: addNewTrade,
@@ -45,8 +53,6 @@ const BuyForm = ({ order, token, users, onClose }) => {
     },
   });
 
-  const debouncedSearch = useDebounce(assetSearch, 500);
-
   let selectedAcct, selectedPlan;
 
   const validation = useFormik({
@@ -59,7 +65,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
       amount: "",
       executionType: "market",
       orderType: order || "",
-      customDate: "",
+      customDate: getCurrentDateTime() || "",
       takeProfit: "",
       stopLoss: "",
       leverage: "",
@@ -67,18 +73,20 @@ const BuyForm = ({ order, token, users, onClose }) => {
       notifyUser: false,
     },
     onSubmit: (values) => {
-      if (values.customDate) {
-        values.customDate = new Date(values.customDate);
-      }
+      const payload = {
+        ...values,
+        customDate: values.customDate ? new Date(values.customDate) : null,
+      };
+
       if (
         selectedAcct?.slug === "auto" &&
-        parseFloat(values.amount) > selectedPlan?.balance?.available
+        parseFloat(payload.amount) > selectedPlan?.balance?.available
       ) {
         setError("Insufficient funds!");
         return;
       }
-      console.log(values);
-      mutation.mutate(values);
+
+      mutation.mutate(payload);
     },
   });
 
@@ -112,9 +120,9 @@ const BuyForm = ({ order, token, users, onClose }) => {
     userAccounts.filter((acct) => acct.slug !== "cash");
 
   const { data: searchResult = [] } = useQuery({
-    queryKey: ["searchAsset", debouncedSearch],
-    queryFn: () => searchAsset(debouncedSearch),
-    enabled: !!token && debouncedSearch.length >= 1,
+    queryKey: ["searchAsset", searchQuery],
+    queryFn: () => searchAsset(searchQuery),
+    enabled: !!token && searchQuery.length >= 1,
   });
 
   useEffect(() => {
@@ -248,19 +256,37 @@ const BuyForm = ({ order, token, users, onClose }) => {
       <Row className="mb-3 position-relative">
         <Col>
           <Label>Search Asset</Label>
-          <Input
-            type="text"
-            value={assetSearch}
-            onChange={(e) => {
-              setAssetSearch(e.target.value);
-              setShowDropdown(true);
-            }}
-            onBlur={() => {
-              setTimeout(() => setShowDropdown(false), 150);
-            }}
-            placeholder="Search asset..."
-            disabled={!validation.values.walletId}
-          />
+
+          <div className="d-flex gap-2">
+            <Input
+              type="text"
+              value={assetSearch}
+              onChange={(e) => setAssetSearch(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  setSearchQuery(assetSearch.trim());
+                  setShowDropdown(true);
+                }
+              }}
+              onBlur={() => {
+                setTimeout(() => setShowDropdown(false), 150);
+              }}
+              placeholder="Search asset... (Press Enter)"
+              disabled={!validation.values.walletId}
+            />
+
+            <Button
+              color="secondary"
+              disabled={!assetSearch.trim()}
+              onClick={() => {
+                setSearchQuery(assetSearch.trim());
+                setShowDropdown(true);
+              }}
+            >
+              Search
+            </Button>
+          </div>
 
           {showDropdown && searchResult.length > 0 && (
             <div
@@ -279,12 +305,13 @@ const BuyForm = ({ order, token, users, onClose }) => {
                   onMouseDown={() => {
                     validation.setFieldValue("assetId", asset._id);
                     setAssetSearch(asset.name);
+                    setSearchQuery(asset.name);
                     setShowDropdown(false);
                   }}
                 >
                   <span className="d-flex align-items-center gap-2">
                     <img src={asset.imageUrl} alt="" width={20} />
-                    <span> {asset.name}</span>
+                    <span>{asset.name}</span>
                   </span>
                 </div>
               ))}
@@ -306,8 +333,8 @@ const BuyForm = ({ order, token, users, onClose }) => {
             <option value="">Select Order Type</option>
             <option value="market">Market Order</option>
             <option value="leverage">Leverage Order</option>
-            <option value="stoploss">Stop Loss Order</option>
-            <option value="takeprofit">Take Profit Order</option>
+            {/* <option value="stoploss">Stop Loss Order</option> */}
+            {/* <option value="takeprofit">Take Profit Order</option> */}
           </Input>
         </Col>
         {validation.values.orderType === "leverage" && (

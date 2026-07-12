@@ -71,7 +71,6 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
       bankAddress: "",
       routing: "",
       accountName: "",
-      swiftCode: "",
     },
     onSubmit: (values) => {
       const parsedAmt = parseFloat(values.amount);
@@ -82,6 +81,7 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
       }
 
       console.log(values);
+      mutation.mutate(values);
     },
   });
 

@@ -152,6 +152,20 @@ const TableContainer = ({
     customPageSize && setPageSize(customPageSize);
   }, [customPageSize, setPageSize]);
 
+  const { pageIndex, pageSize } = getState().pagination;
+
+  const totalPages = getPageOptions().length;
+
+  const visiblePages = [];
+
+  for (
+    let i = Math.max(0, pageIndex - 2);
+    i <= Math.min(totalPages - 1, pageIndex + 2);
+    i++
+  ) {
+    visiblePages.push(i);
+  }
+
   return (
     <Fragment>
       {isGlobalFilter && (
@@ -203,7 +217,7 @@ const TableContainer = ({
                       <React.Fragment>
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                         {{
                           asc: " ",
@@ -231,7 +245,7 @@ const TableContainer = ({
                       <td key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </td>
                     );
@@ -245,12 +259,10 @@ const TableContainer = ({
 
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
         <div className="col-sm">
-          <div className="text-muted">
-            Showing
-            <span className="fw-semibold ms-1">
-              {getState().pagination.pageSize}
-            </span>{" "}
-            of <span className="fw-semibold">{data.length}</span> Results
+          <div className="text-muted d-flex align-items-center gap-1">
+            <span>Showing</span> {pageIndex * pageSize + 1} -
+            {Math.min((pageIndex + 1) * pageSize, data.length)}
+            <span>of</span> {data.length} <span>results</span>
           </div>
         </div>
         <div className="col-sm-auto">
@@ -264,7 +276,7 @@ const TableContainer = ({
                 Previous
               </Link>
             </li>
-            {getPageOptions().map((item, key) => (
+            {/* {getPageOptions().map((item, key) => (
               <React.Fragment key={key}>
                 <li className="page-item">
                   <Link
@@ -280,7 +292,56 @@ const TableContainer = ({
                   </Link>
                 </li>
               </React.Fragment>
+            ))} */}
+
+            <li className="page-item">
+              <Link
+                className={pageIndex === 0 ? "page-link active" : "page-link"}
+                onClick={() => setPageIndex(0)}
+              >
+                1
+              </Link>
+            </li>
+
+            {pageIndex > 3 && (
+              <li className="page-item disabled">
+                <span className="page-link">...</span>
+              </li>
+            )}
+
+            {visiblePages.map((page) => (
+              <li className="page-item" key={page}>
+                <Link
+                  className={
+                    pageIndex === page ? "page-link active" : "page-link"
+                  }
+                  onClick={() => setPageIndex(page)}
+                >
+                  {page + 1}
+                </Link>
+              </li>
             ))}
+
+            {pageIndex < totalPages - 4 && (
+              <li className="page-item disabled">
+                <span className="page-link">...</span>
+              </li>
+            )}
+
+            {totalPages > 1 && (
+              <li className="page-item">
+                <Link
+                  className={
+                    pageIndex === totalPages - 1
+                      ? "page-link active"
+                      : "page-link"
+                  }
+                  onClick={() => setPageIndex(totalPages - 1)}
+                >
+                  {totalPages}
+                </Link>
+              </li>
+            )}
             <li
               className={!getCanNextPage() ? "page-item disabled" : "page-item"}
             >

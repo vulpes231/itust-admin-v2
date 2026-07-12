@@ -24,6 +24,20 @@ export async function updateTransaction(transactionData) {
     throw Error(errMsg);
   }
 }
+export async function updateTransactionInfo(transactionData) {
+  const { transactionId } = transactionData;
+  try {
+    const res = await api.create(
+      `/managetrans/${transactionId}`,
+      transactionData,
+    );
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
 
 export async function createTransaction(formData) {
   try {
