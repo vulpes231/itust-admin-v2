@@ -23,9 +23,15 @@ const AllTransactions = ({ transactionList }) => {
   const [showModal, setShowModal] = useState(false);
 
   const [searchUser, setSearchUser] = useState("");
-  const [currentTab, setCurrentTab] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [acctFilter, setAcctFilter] = useState("all");
+  const [currentTab, setCurrentTab] = useState(() => {
+    return sessionStorage.getItem("currentTransactionTab") || "all";
+  });
+  const [statusFilter, setStatusFilter] = useState(() => {
+    return sessionStorage.getItem("currentTransactionStatusFilter") || "all";
+  });
+  const [acctFilter, setAcctFilter] = useState(() => {
+    return sessionStorage.getItem("currentTransactionAccountFilter") || "all";
+  });
 
   const [createTransactionModal, setCreateTransactionModal] = useState(false);
 
@@ -64,8 +70,6 @@ const AllTransactions = ({ transactionList }) => {
     setAction(e.target.value);
     setShowModal(true);
   };
-
-  // console.log(filteredTransactions);
 
   const columns = useMemo(
     () => [
@@ -136,14 +140,7 @@ const AllTransactions = ({ transactionList }) => {
           return <Email {...cell} />;
         },
       },
-      // {
-      //   header: "Memo",
-      //   accessorKey: "memo",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Memo {...cell} />;
-      //   },
-      // },
+
       {
         header: "Amount",
         accessorKey: "amount",
@@ -202,7 +199,12 @@ const AllTransactions = ({ transactionList }) => {
     currentTab === "withdraw" ||
     currentTab === "transfer";
 
-  // console.log(filteredTransactions);
+  useEffect(() => {
+    sessionStorage.setItem("currentTransactionTab", currentTab);
+    sessionStorage.setItem("currentTransactionStatusFilter", statusFilter);
+    sessionStorage.setItem("currentTransactionAccountFilter", acctFilter);
+  }, [currentTab, statusFilter, acctFilter]);
+
   return (
     <React.Fragment>
       <Col lg={12}>
@@ -232,7 +234,6 @@ const AllTransactions = ({ transactionList }) => {
                 (tab) => (
                   <Button
                     key={tab}
-                    // outline={currentTab === tab}
                     onClick={() => handleTabChange(tab)}
                     className={`text-capitalize p-2 ${currentTab === tab ? "text-white bg-secondary" : "bg-light text-muted "}`}
                     style={{ width: "90px" }}

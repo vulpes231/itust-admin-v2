@@ -79,7 +79,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.27.0",
     "react-scrollspy": "^3.4.3",
-    "react-select": "^5.8.1",
+    "react-select": "^5.10.2",
     "react-switch": "^7.0.0",
     "react-toastify": "^10.0.6",
     "reactstrap": "^9.2.3",

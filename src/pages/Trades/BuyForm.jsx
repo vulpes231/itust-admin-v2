@@ -10,6 +10,7 @@ import numeral from "numeral";
 import { BsToggle2Off, BsToggle2On } from "react-icons/bs";
 import { capitalize } from "lodash";
 import { getUserInfo } from "../../services/users";
+import Select from "react-select";
 
 function useDebounce(value, delay = 500) {
   const [debouncedValue, setDebouncedValue] = React.useState(value);
@@ -53,6 +54,13 @@ const BuyForm = ({ order, token, users, onClose }) => {
     },
   });
 
+  const userOptions =
+    users?.map((user) => ({
+      value: user._id,
+      label: `${user.personalInfo.firstName} ${user.personalInfo.lastName} (${user.contactInfo.email})`,
+      user,
+    })) || [];
+
   let selectedAcct, selectedPlan;
 
   const validation = useFormik({
@@ -85,6 +93,8 @@ const BuyForm = ({ order, token, users, onClose }) => {
         setError("Insufficient funds!");
         return;
       }
+
+      // console.log(payload);
 
       mutation.mutate(payload);
     },
@@ -176,25 +186,21 @@ const BuyForm = ({ order, token, users, onClose }) => {
     <div className="mb-3 mt-3">
       <Row className="mb-3">
         <Col>
-          <Label>Select User</Label>
-          <Input
-            type="select"
-            onChange={handleUserChange}
-            onBlur={validation.handleBlur}
-            value={validation.values.userId}
-            name="userId"
-          >
-            <option value="">Select User</option>
-            {users &&
-              users.length > 0 &&
-              users.map((usr) => {
-                return (
-                  <option key={usr._id} value={usr._id}>
-                    {`${capitalize(usr.personalInfo.firstName)} ${capitalize(usr.personalInfo.lastName)}`}
-                  </option>
-                );
-              })}
-          </Input>
+          <Label>User</Label>
+
+          <Select
+            options={userOptions}
+            isClearable
+            placeholder="Search user..."
+            value={
+              userOptions.find(
+                (option) => option.value === validation.values.userId,
+              ) || null
+            }
+            onChange={(option) =>
+              validation.setFieldValue("userId", option?.value || "")
+            }
+          />
         </Col>
       </Row>
 

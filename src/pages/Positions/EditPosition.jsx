@@ -18,6 +18,16 @@ import SuccessToast from "../../Components/Common/SuccessToast";
 const EditPosition = ({ rowData, handleClose, isOpen }) => {
   const [error, setError] = useState("");
 
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+
+    return local.toISOString().slice(0, 16);
+  };
+
   const mutation = useMutation({
     mutationFn: updatePosition,
     onError: (err) => setError(err.message),
@@ -33,7 +43,9 @@ const EditPosition = ({ rowData, handleClose, isOpen }) => {
     initialValues: {
       positionId: rowData?._id || "",
       extra: rowData?.performance?.extra || 0,
-      customDate: rowData?.customDate || "",
+      customDate: rowData?.createdAt
+        ? rowData.createdAt.slice(0, 16)
+        : getCurrentDateTime(),
     },
     onSubmit: (values) => {
       const updatedData = {};

@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardBody, CardHeader, Col } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Input,
+  Row,
+} from "reactstrap";
 import {
   Type,
   Quantity,
@@ -25,6 +33,29 @@ const AllTrades = ({ tradeList }) => {
   const [rowData, setRowData] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [createTradeModal, setCreateTradeModal] = useState(false);
+
+  const [statusFilter, setStatusFilter] = useState(() => {
+    return sessionStorage.getItem("currentTradeStatusFilter") || "all";
+  });
+  const [acctFilter, setAcctFilter] = useState(() => {
+    return sessionStorage.getItem("currentTradeAccountFilter") || "all";
+  });
+
+  const filteredTrades = useMemo(() => {
+    if (!tradeList) return [];
+
+    let trades = tradeList;
+
+    if (statusFilter !== "all" && statusFilter !== "") {
+      trades = trades.filter((trd) => trd.status === statusFilter);
+    }
+
+    if (acctFilter !== "all" && acctFilter !== "") {
+      trades = trades.filter((trd) => trd.wallet.name === acctFilter);
+    }
+
+    return trades;
+  }, [tradeList, statusFilter, acctFilter]);
 
   const openCreateTradeModal = () => {
     setCreateTradeModal(true);
@@ -139,14 +170,14 @@ const AllTrades = ({ tradeList }) => {
       //     return <Extra {...cell} />;
       //   },
       // },
-      {
-        header: "Leverage",
-        accessorKey: "execution.leverage",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Leverage {...cell} />;
-        },
-      },
+      // {
+      //   header: "Leverage",
+      //   accessorKey: "execution.leverage",
+      //   enableColumnFilter: false,
+      //   cell: (cell) => {
+      //     return <Leverage {...cell} />;
+      //   },
+      // },
       {
         header: "Today Return (%)",
         accessorKey: "performance.totalReturnPercent",
@@ -198,9 +229,10 @@ const AllTrades = ({ tradeList }) => {
     [],
   );
 
-  // useEffect(() => {
-  //   if (tradeList) console.log(tradeList);
-  // }, [tradeList]);
+  useEffect(() => {
+    sessionStorage.setItem("currentTradeStatusFilter", statusFilter);
+    sessionStorage.setItem("currentTradeAccountFilter", acctFilter);
+  }, [statusFilter, acctFilter]);
   return (
     <React.Fragment>
       <Col lg={12}>
@@ -221,10 +253,51 @@ const AllTrades = ({ tradeList }) => {
             </div>
           </CardHeader>
           <CardBody>
+            {/* Filters */}
+            <Row className="g-3 align-items-center pb-4">
+              <Col lg={4} md={12}>
+                <Input type="text" placeholder="Search by name, email..." />
+              </Col>
+
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+                  <option value="open">Open</option>
+                  <option value="closed">Closed</option>
+                </Input>
+              </Col>
+
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={acctFilter}
+                  onChange={(e) => setAcctFilter(e.target.value)}
+                >
+                  <option value="">All Accounts</option>
+                  <option value="cash account">Cash</option>
+                  <option value="traditional ira">Traditional IRA</option>
+                  <option value="automated investing">
+                    Automated Investing
+                  </option>
+                  <option value="individual brokerage">Brokerage</option>
+                  <option value="hsa">Health Savings</option>
+                </Input>
+              </Col>
+
+              <Col lg={2} md={4}>
+                <Button color="primary" className="w-100">
+                  Filter
+                </Button>
+              </Col>
+            </Row>
             <TableContainer
               columns={columns}
-              data={tradeList || []}
-              isGlobalFilter={true}
+              data={filteredTrades || []}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"

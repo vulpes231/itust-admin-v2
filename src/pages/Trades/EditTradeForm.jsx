@@ -4,13 +4,24 @@ import { useFormik } from "formik";
 import numeral from "numeral";
 
 const EditTradeForm = ({ tradeData, mutation, onClose }) => {
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+
+    const offset = now.getTimezoneOffset();
+    const local = new Date(now.getTime() - offset * 60000);
+
+    return local.toISOString().slice(0, 16);
+  };
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
       tradeId: tradeData?._id,
-      customDate: tradeData?.customDate
-        ? tradeData.customDate.slice(0, 16)
-        : "",
+      leverage: tradeData?.execution?.leverage,
+      customDate: tradeData?.createdAt
+        ? tradeData.createdAt.slice(0, 16)
+        : getCurrentDateTime(),
     },
     onSubmit: (values) => {
       console.log(values);
@@ -55,6 +66,24 @@ const EditTradeForm = ({ tradeData, mutation, onClose }) => {
             readOnly
             className="bg-light"
           />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <Label>Leverage</Label>
+          <Input
+            type="select"
+            value={validation.values.leverage}
+            name="leverage"
+            onChange={validation.handleChange}
+          >
+            <option value="">Select Leverage</option>
+            <option value="1">1x</option>
+            <option value="10">10x</option>
+            <option value="20">20x</option>
+            <option value="50">50x</option>
+            <option value="100">100x</option>
+          </Input>
         </Col>
       </Row>
       <Row>

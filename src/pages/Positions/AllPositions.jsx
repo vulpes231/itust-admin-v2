@@ -221,7 +221,7 @@ const AllPositions = ({ positions }) => {
             <TableContainer
               columns={columns}
               data={positions || []}
-              isGlobalFilter={true}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"

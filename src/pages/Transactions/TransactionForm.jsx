@@ -8,7 +8,7 @@ import { getUserAccounts } from "../../services/account";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import { getSettings } from "../../services/generalSettings";
 import numeral from "numeral";
-
+import Select from "react-select";
 import { MdToggleOff, MdToggleOn } from "react-icons/md";
 
 const methods = [
@@ -42,15 +42,24 @@ const methods = [
 const TransactionForm = ({ mutation, onClose, currentTab }) => {
   const tk = getAccessToken();
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [matchedUsers, setMatchedUsers] = useState([]);
 
   const { data: users } = useQuery({
     queryFn: getAllUsers,
     queryKey: ["users"],
     enabled: !!tk,
   });
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+
+    return now.toISOString().slice(0, 16);
+  };
+
+  const formatDateTime = (date) => {
+    if (!date) return getCurrentDateTime();
+    return new Date(date).toISOString().slice(0, 16);
+  };
 
   const validation = useFormik({
     enableReinitialize: true,
@@ -63,7 +72,7 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
       network: "",
       type: currentTab || "",
       notifyUser: false,
-      customDate: "",
+      customDate: formatDateTime(Date.now()) || "",
       toAccountId: "",
       address: "",
       bankName: "",
@@ -106,34 +115,19 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
     enabled: !!tk && !!validation.values.userId,
   });
 
-  // const { data: defaultSettings } = useQuery({
-  //   queryFn: () => getSettings(),
-  //   queryKey: ["defaultSettings"],
-  //   enabled: !!tk,
-  // });
+  const userOptions =
+    users?.map((user) => ({
+      value: user._id,
+      label: `${user.personalInfo.firstName} ${user.personalInfo.lastName} (${user.contactInfo.email})`,
+      user,
+    })) || [];
+
+  const selectedUser = users?.find(
+    (user) => user._id === validation.values.userId,
+  );
 
   const getNetworks = (method) => {
     return methods.find((mtd) => mtd.id === method)?.network || [];
-  };
-
-  useEffect(() => {
-    if (!users || !searchTerm.trim()) {
-      setMatchedUsers([]);
-      return;
-    }
-
-    const matches = users.filter((user) =>
-      user.contactInfo?.email?.toLowerCase().includes(searchTerm.toLowerCase()),
-    );
-
-    setMatchedUsers(matches);
-  }, [searchTerm, users]);
-
-  const handleSelectUser = (user) => {
-    setSelectedUser(user);
-    setSearchTerm(user.contactInfo.email);
-    setMatchedUsers([]);
-    validation.setFieldValue("userId", user._id);
   };
 
   const filteredAccts =
@@ -161,48 +155,20 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
           <Row className="mb-3">
             <Col>
               <Label>User</Label>
-              <Input
-                type="text"
-                placeholder="Search by email..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setSelectedUser(null);
-                }}
+
+              <Select
+                options={userOptions}
+                isClearable
+                placeholder="Search user..."
+                value={
+                  userOptions.find(
+                    (option) => option.value === validation.values.userId,
+                  ) || null
+                }
+                onChange={(option) =>
+                  validation.setFieldValue("userId", option?.value || "")
+                }
               />
-
-              {matchedUsers.length > 0 && (
-                <div className="border rounded mt-1 bg-white shadow-sm">
-                  {matchedUsers.map((user) => (
-                    <div
-                      key={user._id}
-                      className="p-2 border-bottom"
-                      style={{ cursor: "pointer" }}
-                      onClick={() => handleSelectUser(user)}
-                    >
-                      <strong>
-                        {user.personalInfo.firstName}{" "}
-                        {user.personalInfo.lastName}
-                      </strong>
-
-                      <br />
-
-                      <small>{user.contactInfo.email}</small>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {selectedUser && (
-                <div className="alert alert-success mt-2 py-2">
-                  Selected:
-                  <strong>
-                    {" "}
-                    {selectedUser.personalInfo.firstName}{" "}
-                    {selectedUser.personalInfo.lastName}
-                  </strong>
-                </div>
-              )}
             </Col>
           </Row>
           <Row className="mb-3">
@@ -432,12 +398,11 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
             <Col>
               <Label>Custom Date</Label>
               <Input
-                type="date"
+                type="datetime-local"
+                name="customDate"
+                value={validation.values.customDate}
                 onChange={validation.handleChange}
                 onBlur={validation.handleBlur}
-                value={validation.values.customDate}
-                name="customDate"
-                autoComplete="off"
               />
             </Col>
           </Row>

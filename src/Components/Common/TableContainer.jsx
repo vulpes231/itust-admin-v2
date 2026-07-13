@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { CardBody, Col, Row, Table } from "reactstrap";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 
 import {
   // Table as ReactTable,
@@ -116,19 +116,36 @@ const TableContainer = ({
     return itemRank.passed;
   };
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const initialPage = Number(searchParams.get("page")) || 0;
+
+  const [pagination, setPagination] = useState({
+    pageIndex: initialPage,
+    pageSize: customPageSize || 10,
+  });
+
   const table = useReactTable({
     columns,
     data,
+    autoResetPageIndex: false,
+
     filterFns: {
       fuzzy: fuzzyFilter,
     },
+
     state: {
+      pagination,
       columnFilters,
       globalFilter,
     },
+
+    onPaginationChange: setPagination,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
+
     globalFilterFn: fuzzyFilter,
+
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -149,23 +166,38 @@ const TableContainer = ({
   } = table;
 
   useEffect(() => {
-    customPageSize && setPageSize(customPageSize);
-  }, [customPageSize, setPageSize]);
+    if (customPageSize) {
+      setPagination((prev) => ({
+        ...prev,
+        pageSize: customPageSize,
+      }));
+    }
+  }, [customPageSize]);
 
-  const { pageIndex, pageSize } = getState().pagination;
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    params.set("page", pagination.pageIndex);
+
+    setSearchParams(params, { replace: true });
+  }, [pagination.pageIndex]);
+
+  const { pageIndex, pageSize } = pagination;
 
   const totalPages = getPageOptions().length;
 
   const visiblePages = [];
 
   for (
-    let i = Math.max(0, pageIndex - 2);
-    i <= Math.min(totalPages - 1, pageIndex + 2);
+    let i = Math.max(1, pageIndex - 2);
+    i <= Math.min(totalPages - 2, pageIndex + 2);
     i++
   ) {
     visiblePages.push(i);
   }
 
+  // console.log(searchParams.get("page"));
+  // console.log(initialPage);
+  // console.log(pagination.pageIndex);
   return (
     <Fragment>
       {isGlobalFilter && (

@@ -142,6 +142,35 @@ const TransactionModal = ({ dataId, action, isOpen, onClose, data }) => {
                 setError={setError}
               />
             )}
+            {action === "approve" && (
+              <div>
+                Approve {data._id}
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    className="btn btn-info"
+                    type="button"
+                    onClick={handleSubmit}
+                    disabled={
+                      mutation.isPending || data?.status === "processed"
+                    }
+                  >
+                    {mutation.isPending ? (
+                      <Spinner size="sm" className="me-2">
+                        Loading...
+                      </Spinner>
+                    ) : null}
+                    {action === "view" ? "Approve" : capitalize(action)}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="btn btn-danger"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
           </ModalBody>
         </Modal>
       </Card>
