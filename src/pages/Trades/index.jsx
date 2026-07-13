@@ -21,7 +21,6 @@ const Trades = () => {
 
   useEffect(() => {
     if (trades && trades.length > 0) {
-      // console.log(trades);
       setTradeList(trades);
     }
   }, [trades]);

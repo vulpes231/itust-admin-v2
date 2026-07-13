@@ -15,11 +15,12 @@ import DeleteAssetModal from "./DeleteAssetModal";
 
 const AllAssets = ({ assetList }) => {
   const [createAssetModal, setCreateAssetModal] = useState(false);
-  const [currentTab, setCurrentTab] = useState("all");
+  const [currentTab, setCurrentTab] = useState(() => {
+    return sessionStorage.getItem("currentAssetTab") || "all";
+  });
   const [deleteModal, setDeleteModal] = useState(false);
 
   const [action, setAction] = useState("");
-  //   const [rowId, setRowId] = useState("");
   const [data, setData] = useState("");
   const [showModal, setShowModal] = useState(false);
 
@@ -30,12 +31,12 @@ const AllAssets = ({ assetList }) => {
   };
 
   const filteredAssets = useMemo(() => {
-    if (!assetList || assetList?.length === 0) return [];
+    if (!assetList?.length) return [];
 
-    const sortedAssets = assetList.filter((asset) => asset.type === currentTab);
-
-    return currentTab === "all" ? assetList : sortedAssets;
-  }, [currentTab]);
+    return currentTab === "all"
+      ? assetList
+      : assetList.filter((asset) => asset.type === currentTab);
+  }, [assetList, currentTab]);
 
   const columns = useMemo(
     () => [
@@ -101,11 +102,15 @@ const AllAssets = ({ assetList }) => {
     [],
   );
 
-  //   useEffect(() => {
-  //     if () {
-  //       setDeleteModal(true);
-  //     }
-  //   }, [action]);
+  useEffect(() => {
+    console.log("currentTab:", currentTab);
+  }, [currentTab]);
+
+  useEffect(() => {
+    sessionStorage.setItem("currentAssetTab", currentTab);
+  }, [currentTab]);
+
+  // console.log(currentTab);
   return (
     <React.Fragment>
       <Col lg={12}>
