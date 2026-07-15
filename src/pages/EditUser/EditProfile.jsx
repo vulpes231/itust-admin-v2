@@ -17,23 +17,23 @@ const EditProfile = ({
   const [error, setError] = useState("");
   const initialValues = useMemo(
     () => ({
-      firstName: user?.personalInfo?.firstName || "",
-      lastName: user?.personalInfo?.lastName || "",
-      email: user?.contactInfo?.email || "",
-      address: user?.contactInfo?.street || "",
-      city: user?.contactInfo?.city || "",
-      zip: user?.contactInfo?.zipCode || "",
+      firstName: user?.personalInfo?.firstName ?? "",
+      lastName: user?.personalInfo?.lastName ?? "",
+      email: user?.contactInfo?.email ?? "",
+      address: user?.contactInfo?.street ?? "",
+      city: user?.contactInfo?.city ?? "",
+      zip: user?.contactInfo?.zipCode ?? "",
       dob: user?.personalInfo?.dob
         ? new Date(user.personalInfo.dob).toISOString()
         : "",
-      experience: user?.investmentInfo?.experience || "",
-      employment: user?.employmentInfo?.status || "",
-      countryId: user?.contactInfo?.country?.countryId || "",
-      stateId: user?.contactInfo?.state?.stateId || "",
-      currencyId: user?.currency?.id || "",
-      nationalityId: user?.personalInfo?.nationality?.id || "",
+      experience: user?.investmentInfo?.experience ?? "",
+      employment: user?.employmentInfo?.status ?? "",
+      countryId: user?.contactInfo?.country?.countryId ?? "",
+      stateId: user?.contactInfo?.state?.stateId ?? "",
+      currencyId: user?.currency?.id ?? "",
+      nationalityId: user?.personalInfo?.nationality?.id ?? "",
     }),
-    [user]
+    [user],
   );
 
   const mutation = useMutation({
@@ -70,7 +70,7 @@ const EditProfile = ({
   const countryStates =
     states && states.length > 0
       ? states.filter(
-          (state) => state.countryId === validation.values.countryId
+          (state) => state.countryId === validation.values.countryId,
         )
       : [];
 
@@ -107,7 +107,7 @@ const EditProfile = ({
               <Label>First Name</Label>
               <Input
                 name="firstName"
-                value={validation.values.firstName}
+                value={validation.values.firstName ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />
@@ -117,7 +117,7 @@ const EditProfile = ({
               <Label>Last Name</Label>
               <Input
                 name="lastName"
-                value={validation.values.lastName}
+                value={validation.values.lastName ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />
@@ -129,7 +129,7 @@ const EditProfile = ({
               <Label>Email</Label>
               <Input
                 name="email"
-                value={validation.values.email}
+                value={validation.values.email ?? ""}
                 onChange={validation.handleChange}
                 // className="text-capitalize"
               />
@@ -142,7 +142,7 @@ const EditProfile = ({
               <Input
                 type="select"
                 name="countryId"
-                value={validation.values.countryId}
+                value={validation.values.countryId ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               >
@@ -160,7 +160,7 @@ const EditProfile = ({
               <Input
                 type="select"
                 name="stateId"
-                value={validation.values.stateId}
+                value={validation.values.stateId ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               >
@@ -180,7 +180,7 @@ const EditProfile = ({
               <Input
                 type="select"
                 name="currencyId"
-                value={validation.values.currencyId}
+                value={validation.values.currencyId ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               >
@@ -198,7 +198,7 @@ const EditProfile = ({
               <Input
                 type="select"
                 name="nationalityId"
-                value={validation.values.nationalityId}
+                value={validation.values.nationalityId ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               >
@@ -217,7 +217,7 @@ const EditProfile = ({
               <Label>City</Label>
               <Input
                 name="city"
-                value={validation.values.city}
+                value={validation.values.city ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />
@@ -227,7 +227,7 @@ const EditProfile = ({
               <Label>Zip</Label>
               <Input
                 name="zip"
-                value={validation.values.zip}
+                value={validation.values.zip ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />
@@ -239,7 +239,7 @@ const EditProfile = ({
               <Label>Employment</Label>
               <Input
                 name="employment"
-                value={validation.values.employment}
+                value={validation.values.employment ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />
@@ -249,7 +249,7 @@ const EditProfile = ({
               <Label>Experience</Label>
               <Input
                 name="experience"
-                value={validation.values.experience}
+                value={validation.values.experience ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
               />

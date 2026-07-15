@@ -25,6 +25,7 @@ const Profile = ({ user, accounts }) => {
   const { data: verifyInfo } = useQuery({
     queryKey: ["verifyData"],
     queryFn: () => getUserVerifyInfo(user?._id),
+    enabled: !!user,
   });
 
   const approveVerification = useMutation({
@@ -174,12 +175,12 @@ const Profile = ({ user, accounts }) => {
             />
           </Col>
           <Col sm={5} className="d-flex flex-column">
-            <spa
+            <span
               style={{ textTransform: "uppercase" }}
               className="fw-light fs-14 mt-4"
             >
               Auto Balance
-            </spa>
+            </span>
             <span className="fw-bold fs-20">
               {numeral(auto?.balance?.available).format("$0,0.00")}
             </span>

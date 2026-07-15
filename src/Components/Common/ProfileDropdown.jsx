@@ -109,18 +109,11 @@ const ProfileDropdown = () => {
             </Link>
           </DropdownItem>
 
-          <DropdownItem className="p-0">
-            <button
-              onClick={handleLogout}
-              type="button"
-              className="dropdown-item"
-              disabled={mutation.isPending}
-            >
-              <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>{" "}
-              <span className="align-middle" data-key="t-logout">
-                {"Logout"}
-              </span>
-            </button>
+          <DropdownItem onClick={handleLogout} disabled={mutation.isPending}>
+            <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+            <span className="align-middle" data-key="t-logout">
+              Logout
+            </span>
           </DropdownItem>
         </DropdownMenu>
       </Dropdown>

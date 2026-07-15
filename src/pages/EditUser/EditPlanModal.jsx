@@ -37,10 +37,21 @@ const EditPlanModal = ({ plan, isOpen, onClose }) => {
     },
   });
 
+  // const formatDateForInput = (dateString) => {
+  //   if (!dateString) return "";
+  //   const date = new Date(dateString);
+  //   return date.toISOString().split("T")[0];
+  // };
+
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
+
     const date = new Date(dateString);
-    return date.toISOString().split("T")[0];
+
+    // Adjust for the local timezone offset
+    const timezoneOffset = date.getTimezoneOffset() * 60000;
+
+    return new Date(date - timezoneOffset).toISOString().slice(0, 16);
   };
 
   const validation = useFormik({
@@ -89,7 +100,7 @@ const EditPlanModal = ({ plan, isOpen, onClose }) => {
       console.log("Changed fields to update:", changedFields);
 
       const data = { ...changedFields, planId: plan._id, userId };
-      console.log(data);
+      // console.log(data);
       mutation.mutate(data);
     },
   });
@@ -184,7 +195,7 @@ const EditPlanModal = ({ plan, isOpen, onClose }) => {
               <Col md={6}>
                 <Label>Start Date</Label>
                 <Input
-                  type="date"
+                  type="datetime-local"
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                   value={validation.values.start}
@@ -194,7 +205,7 @@ const EditPlanModal = ({ plan, isOpen, onClose }) => {
               <Col md={6}>
                 <Label>End Date</Label>
                 <Input
-                  type="date"
+                  type="datetime-local"
                   onChange={validation.handleChange}
                   onBlur={validation.handleBlur}
                   value={validation.values.end}

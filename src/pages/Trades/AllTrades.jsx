@@ -79,6 +79,8 @@ const AllTrades = ({ tradeList }) => {
     setShowModal(false);
   };
 
+  // console.log(filteredTrades);
+
   const columns = useMemo(
     () => [
       {
@@ -162,22 +164,26 @@ const AllTrades = ({ tradeList }) => {
           return <OrderValue {...cell} />;
         },
       },
-      // {
-      //   header: "Extra Profit",
-      //   accessorKey: "extra",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Extra {...cell} />;
-      //   },
-      // },
-      // {
-      //   header: "Leverage",
-      //   accessorKey: "execution.leverage",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Leverage {...cell} />;
-      //   },
-      // },
+      {
+        header: "Account",
+        accessorKey: "wallet.slug",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return;
+          <div>{cell.getValue()}</div>;
+        },
+      },
+
+      {
+        header: "Plan",
+        accessorKey: "plan.name",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return;
+          <div>{cell.getValue()}</div>;
+        },
+      },
+
       {
         header: "Today Return (%)",
         accessorKey: "performance.totalReturnPercent",
@@ -186,14 +192,14 @@ const AllTrades = ({ tradeList }) => {
           return <Roi {...cell} />;
         },
       },
-      {
-        header: "Price",
-        accessorKey: "performance.currentPrice",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Price {...cell} />;
-        },
-      },
+      // {
+      //   header: "Price",
+      //   accessorKey: "performance.currentPrice",
+      //   enableColumnFilter: false,
+      //   cell: (cell) => {
+      //     return <Price {...cell} />;
+      //   },
+      // },
       // {
       //   header: "Status",
       //   accessorKey: "status",

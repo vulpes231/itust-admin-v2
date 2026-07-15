@@ -32,9 +32,9 @@ const EditUser = () => {
   });
 
   const { data: userAccounts } = useQuery({
-    queryFn: () => getUserAccounts(userId),
-    queryKey: ["userAccounts"],
-    enabled: !!tk,
+    queryKey: ["userAccounts", userId],
+    queryFn: () => getUserAccounts({ userId }),
+    enabled: !!tk && !!userId,
   });
 
   const { data: countries } = useQuery({

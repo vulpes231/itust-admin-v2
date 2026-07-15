@@ -1,6 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useFormik } from "formik";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Alert,
   Button,
@@ -10,9 +10,12 @@ import {
   Modal,
   ModalBody,
   ModalHeader,
+  Spinner,
 } from "reactstrap";
 import { addNewAsset } from "../../services/asset";
 import * as Yup from "yup";
+import ErrorToast from "../../Components/Common/ErrorToast";
+import SuccessToast from "../../Components/Common/SuccessToast";
 
 const CreateAsset = ({ isOpen, onClose }) => {
   const [error, setError] = useState("");
@@ -32,6 +35,7 @@ const CreateAsset = ({ isOpen, onClose }) => {
   const validation = useFormik({
     initialValues: {
       ticker: "",
+      type: "",
     },
 
     validationSchema: Yup.object({
@@ -39,9 +43,19 @@ const CreateAsset = ({ isOpen, onClose }) => {
     }),
 
     onSubmit: (values) => {
+      console.log(values);
       createAsset.mutate(values);
     },
   });
+
+  useEffect(() => {
+    if (error) {
+      const tmt = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(tmt);
+    }
+  }, [error]);
 
   return (
     <Modal toggle={onClose} centered isOpen={isOpen}>
@@ -61,6 +75,25 @@ const CreateAsset = ({ isOpen, onClose }) => {
           }}
         >
           <div className="mb-3">
+            <Label>Asset Type</Label>
+
+            <Input
+              type="select"
+              name="type"
+              value={validation.values.type}
+              onChange={validation.handleChange}
+              onBlur={validation.handleBlur}
+              invalid={validation.touched.type && !!validation.errors.type}
+            >
+              <option value="">Select Asset Type</option>
+              <option value="stock">Stock</option>
+              <option value="crypto">Crypto</option>
+              <option value="etf">ETF</option>
+            </Input>
+
+            <FormFeedback>{validation.errors.type}</FormFeedback>
+          </div>
+          <div className="mb-3">
             <Label>Asset Ticker</Label>
 
             <Input
@@ -77,13 +110,27 @@ const CreateAsset = ({ isOpen, onClose }) => {
 
           <Button
             color="primary"
-            className="w-100"
+            className="w-100 d-flex align-items-center justify-content-center gap-2"
             disabled={createAsset.isPending}
           >
-            {createAsset.isPending ? "Creating..." : "Create Asset"}
+            {createAsset.isPending && <Spinner size={"sm"} />} Create Asset
           </Button>
         </form>
       </ModalBody>
+      {error && (
+        <ErrorToast
+          errMsg={error}
+          onClose={() => setError("")}
+          isOpen={error}
+        />
+      )}
+      {createAsset.isSuccess && (
+        <SuccessToast
+          msg={"Asset Added."}
+          onClose={() => createAsset.reset()}
+          isOpen={createAsset.isSuccess}
+        />
+      )}
     </Modal>
   );
 };

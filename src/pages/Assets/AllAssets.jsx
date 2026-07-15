@@ -159,6 +159,7 @@ const AllAssets = ({ assetList }) => {
               theadClass="table-light text-muted"
               isCryptoOrdersFilter={true}
               SearchPlaceholder="Search Admins..."
+              // isLoa
             />
           </CardBody>
         </Card>
