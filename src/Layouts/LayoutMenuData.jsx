@@ -15,6 +15,7 @@ const Navdata = () => {
   const [isPlan, setIsPlan] = useState(false);
   const [isSavings, setIsSavings] = useState(false);
   const [isAssets, setIsAssets] = useState(false);
+  const [isArticles, setIsArticles] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -58,6 +59,9 @@ const Navdata = () => {
     if (iscurrentState !== "Assets") {
       setIsAssets(false);
     }
+    if (iscurrentState !== "Articles") {
+      setIsArticles(false);
+    }
     if (iscurrentState !== "Savings") {
       setIsSavings(false);
     }
@@ -76,6 +80,7 @@ const Navdata = () => {
     isPlan,
     isPositions,
     isAssets,
+    isArticles,
   ]);
 
   const menuItems = [
@@ -198,6 +203,19 @@ const Navdata = () => {
         e.preventDefault();
         setIsAssets(!isAssets);
         setIscurrentState("Assets");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "articles",
+      label: "Articles",
+      icon: "ri-article-line",
+      link: "/articles",
+      stateVariables: isAdmins,
+      click: function (e) {
+        e.preventDefault();
+        setIsArticles(!isArticles);
+        setIscurrentState("Articles");
         updateIconSidebar(e);
       },
     },

@@ -9,6 +9,7 @@ import UserProfile from "../pages/Authentication/user-profile";
 import DashboardAnalytics from "../pages/DashboardAnalytics";
 import {
   Admins,
+  Articles,
   Assets,
   EditUser,
   ManageSettings,
@@ -32,7 +33,7 @@ const authProtectedRoutes = [
   { path: "/admins", component: <Admins /> },
   { path: "/settings", component: <ManageSettings /> },
   { path: "/positions", component: <Positions /> },
-  // { path: "/settings", component: <ManageSettings /> },
+  { path: "/articles", component: <Articles /> },
   { path: "/edituser/:userId", component: <EditUser /> },
 ];
 

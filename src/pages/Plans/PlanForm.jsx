@@ -36,32 +36,27 @@ const PlanForm = () => {
       duration: "",
     },
     onSubmit: async (values) => {
-      // Create FormData for file upload
       const formData = new FormData();
 
-      // Append all text fields
       Object.keys(values).forEach((key) => {
         if (values[key]) {
           formData.append(key, values[key]);
         }
       });
 
-      // Append the image file with the correct field name "planImg" (matches backend)
       if (planImg) {
         formData.append("planImg", planImg);
       }
 
-      // Call mutation with FormData
       mutation.mutate(formData);
     },
   });
 
-  // Setup dropzone
   const onDrop = (acceptedFiles) => {
     const file = acceptedFiles[0];
     if (file) {
       setPlanImg(file);
-      // Create preview URL
+
       const previewUrl = URL.createObjectURL(file);
       setPreviewUrl(previewUrl);
     }
@@ -81,11 +76,10 @@ const PlanForm = () => {
       "image/webp": [".webp"],
     },
     maxFiles: 1,
-    maxSize: 5242880, // 5MB
+    maxSize: 5242880,
     multiple: false,
   });
 
-  // Clean up preview URL on unmount
   useEffect(() => {
     return () => {
       if (previewUrl) {

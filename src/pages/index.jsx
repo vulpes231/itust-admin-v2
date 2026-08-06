@@ -1,4 +1,5 @@
 import Admins from "./Admins";
+import Articles from "./Articles";
 import Assets from "./Assets";
 import EditUser from "./EditUser";
 import Plans from "./Plans";
@@ -13,6 +14,7 @@ import UserSavingsAccounts from "./UserSavingsAccounts";
 
 export {
   Trades,
+  Articles,
   Transactions,
   Users,
   Admins,
