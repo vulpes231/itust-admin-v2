@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { liveServer, devServer } from "../config";
 
-axios.defaults.baseURL = devServer;
+axios.defaults.baseURL = liveServer;
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
@@ -24,7 +24,7 @@ axios.interceptors.response.use(
         message = "Invalid credentials";
         break;
       case 404:
-        message = "Sorry! the data you are looking for could not be found";
+        message = error.response?.data?.message;
         break;
       case 403:
         message = "Sorry! the data you are looking for could not be found";

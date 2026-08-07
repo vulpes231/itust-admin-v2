@@ -89,8 +89,12 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
         return;
       }
 
+      if (values.method === "bank") {
+        values.network = "bank";
+      }
+
       console.log(values);
-      mutation.mutate(values);
+      // mutation.mutate(values);
     },
   });
 
@@ -256,27 +260,28 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
                 })}
               </Input>
             </Col>
-            {validation.values.method && (
-              <Col>
-                <Label>Network</Label>
-                <Input
-                  type="select"
-                  onChange={validation.handleChange}
-                  onBlur={validation.handleBlur}
-                  value={validation.values.network}
-                  name="network"
-                >
-                  <option value="">Select Network</option>
-                  {getNetworks(validation.values.method)?.map((ntw, idx) => {
-                    return (
-                      <option key={idx} value={ntw}>
-                        {ntw}
-                      </option>
-                    );
-                  })}
-                </Input>
-              </Col>
-            )}
+            {validation.values.method &&
+              validation.values.method !== "bank" && (
+                <Col>
+                  <Label>Network</Label>
+                  <Input
+                    type="select"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.network}
+                    name="network"
+                  >
+                    <option value="">Select Network</option>
+                    {getNetworks(validation.values.method)?.map((ntw, idx) => {
+                      return (
+                        <option key={idx} value={ntw}>
+                          {ntw}
+                        </option>
+                      );
+                    })}
+                  </Input>
+                </Col>
+              )}
           </Row>
           {validation.values.type === "withdraw" &&
             validation.values.method !== "bank" &&

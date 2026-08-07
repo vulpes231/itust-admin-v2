@@ -7,12 +7,14 @@ const RichTextEditor = ({
   onChange,
   height = 500,
   disabled = false,
+  onDirty,
 }) => {
   return (
     <Editor
       apiKey={EDITOR_API_KEY}
       value={value}
       disabled={disabled}
+      onDirty={onDirty}
       onEditorChange={(content) => onChange(content)}
       init={{
         height,

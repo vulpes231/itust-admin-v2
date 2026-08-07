@@ -331,8 +331,8 @@ const EditPlan = ({ onClose, isOpen, data }) => {
                 <Col md={6}>
                   <Label htmlFor="aum">AUM</Label>
                   <Input
-                    type="number"
-                    step="0.01"
+                    type="text"
+                    // step="0.01"
                     onChange={validation.handleChange}
                     onBlur={validation.handleBlur}
                     name="aum"

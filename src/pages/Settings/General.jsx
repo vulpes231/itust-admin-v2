@@ -65,20 +65,64 @@ const General = ({ settings }) => {
   const limitValidation = useFormik({
     enableReinitialize: true,
     initialValues: {
-      minCryptoDeposit: settings?.depositLimits?.crypto?.min || "",
-      minBankDeposit: settings?.depositLimits?.bank?.min || "",
-      maxCryptoDeposit: settings?.depositLimits?.crypto?.max || "",
-      maxBankDeposit: settings?.depositLimits?.bank?.max || "",
-      minCryptoWithdrawal: settings?.withdrawalLimits?.crypto?.min || "",
-      minBankWithdrawal: settings?.withdrawalLimits?.bank?.min || "",
-      maxCryptoWithdrawal: settings?.withdrawalLimits?.crypto?.max || "",
-      maxBankWithdrawal: settings?.withdrawalLimits?.bank?.max || "",
+      minCryptoDeposit:
+        settings?.depositLimits.crypto?.min === null
+          ? "unlimited"
+          : (settings?.depositLimits.crypto?.min ?? ""),
+      minBankDeposit:
+        settings?.depositLimits.bank?.min === null
+          ? "unlimited"
+          : (settings?.depositLimits.bank?.min ?? ""),
+      maxCryptoDeposit:
+        settings?.depositLimits.crypto?.max === null
+          ? "unlimited"
+          : (settings?.depositLimits.crypto?.max ?? ""),
+      maxBankDeposit:
+        settings?.depositLimits.bank?.max === null
+          ? "unlimited"
+          : (settings?.depositLimits.bank?.max ?? ""),
+      minCryptoWithdrawal:
+        settings?.withdrawalLimits.crypto?.min === null
+          ? "unlimited"
+          : (settings?.withdrawalLimits.crypto?.min ?? ""),
+      minBankWithdrawal:
+        settings?.withdrawalLimits.bank?.min === null
+          ? "unlimited"
+          : (settings?.withdrawalLimits.bank?.min ?? ""),
+      maxCryptoWithdrawal:
+        settings?.withdrawalLimits.crypto?.max === null
+          ? "unlimited"
+          : (settings?.withdrawalLimits.crypto?.max ?? ""),
+      maxBankWithdrawal:
+        settings?.withdrawalLimits.bank?.max === null
+          ? "unlimited"
+          : (settings?.withdrawalLimits.bank?.max ?? ""),
     },
     onSubmit: (values) => {
-      console.log(values);
-      limitMutation.mutate(values);
+      const changedFields = Object.keys(values).reduce((acc, key) => {
+        if (values[key] !== limitValidation.initialValues[key]) {
+          acc[key] = values[key];
+        }
+        return acc;
+      }, {});
+
+      if (Object.keys(changedFields).length === 0) {
+        return;
+      }
+
+      console.log(changedFields);
+      limitMutation.mutate(changedFields);
     },
   });
+
+  const toggleUnlimited = (field) => {
+    const current = limitValidation.values[field];
+
+    limitValidation.setFieldValue(
+      field,
+      current === "unlimited" ? "" : "unlimited",
+    );
+  };
 
   useEffect(() => {
     if (error) {
@@ -162,7 +206,10 @@ const General = ({ settings }) => {
           </Col>
 
           <Col className="mt-5">
-            <Limits validation={limitValidation} />
+            <Limits
+              validation={limitValidation}
+              toggleUnlimited={toggleUnlimited}
+            />
             <button
               type="button"
               onClick={(e) => {

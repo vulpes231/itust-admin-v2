@@ -1,12 +1,24 @@
 import React from "react";
+import { MdToggleOff, MdToggleOn } from "react-icons/md";
 import { Col, Input, Label, Row } from "reactstrap";
 
-const Limits = ({ validation }) => {
+const Limits = ({ validation, toggleUnlimited }) => {
   return (
     <React.Fragment>
       <Row>
         <Col md={6}>
-          <Label>Minimum Crypto Deposit</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Minimum Crypto Deposit</Label>
+            <span onClick={() => toggleUnlimited("minCryptoDeposit")}>
+              Unlimited:
+              {validation.values.minCryptoDeposit === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.minCryptoDeposit}
@@ -16,7 +28,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Minimum Bank Deposit</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Minimum Bank Deposit</Label>
+            <span onClick={() => toggleUnlimited("minBankDeposit")}>
+              Unlimited:
+              {validation.values.minBankDeposit === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.minBankDeposit}
@@ -26,7 +49,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Maximum Crypto Deposit</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Maximum Crypto Deposit</Label>
+            <span onClick={() => toggleUnlimited("maxCryptoDeposit")}>
+              Unlimited:
+              {validation.values.maxCryptoDeposit === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.maxCryptoDeposit}
@@ -36,7 +70,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Maximum Bank Deposit</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Maximum Bank Deposit</Label>
+            <span onClick={() => toggleUnlimited("maxBankDeposit")}>
+              Unlimited:
+              {validation.values.maxBankDeposit === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.maxBankDeposit}
@@ -46,7 +91,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Minimum Crypto Withdrawal</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Minimum Crypto Withdrawal</Label>
+            <span onClick={() => toggleUnlimited("minCryptoWithdrawal")}>
+              Unlimited:
+              {validation.values.minCryptoWithdrawal === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.minCryptoWithdrawal}
@@ -56,7 +112,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Minimum Bank Withdrawal</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Minimum Bank Withdrawal</Label>
+            <span onClick={() => toggleUnlimited("minBankWithdrawal")}>
+              Unlimited:
+              {validation.values.minBankWithdrawal === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.minBankWithdrawal}
@@ -66,7 +133,17 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Maximum Crypto Withdrawal</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Maximum Crypto Withdrawal</Label>
+            <span onClick={() => toggleUnlimited("maxCryptoWithdrawal")}>
+              Unlimited:
+              {validation.values.maxCryptoWithdrawal === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
           <Input
             type="text"
             value={validation.values.maxCryptoWithdrawal}
@@ -76,7 +153,18 @@ const Limits = ({ validation }) => {
           />
         </Col>
         <Col md={6}>
-          <Label>Maximum Bank Withdrawal</Label>
+          <div className="d-flex justify-content-between">
+            <Label>Maximum Bank Withdrawal</Label>
+            <span onClick={() => toggleUnlimited("maxBankWithdrawal")}>
+              Unlimited:
+              {validation.values.maxBankWithdrawal === "unlimited" ? (
+                <MdToggleOn size={30} className="text-success" />
+              ) : (
+                <MdToggleOff size={30} className="text-muted" />
+              )}
+            </span>
+          </div>
+
           <Input
             type="text"
             value={validation.values.maxBankWithdrawal}

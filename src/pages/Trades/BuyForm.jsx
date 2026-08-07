@@ -83,6 +83,8 @@ const BuyForm = ({ order, token, users, onClose }) => {
     onSubmit: (values) => {
       const payload = {
         ...values,
+        leverage:
+          values.executionType === "leverage" && !values.leverage ? 1 : "",
         customDate: values.customDate ? new Date(values.customDate) : null,
       };
 
@@ -94,9 +96,9 @@ const BuyForm = ({ order, token, users, onClose }) => {
         return;
       }
 
-      // console.log(payload);
+      console.log(payload);
 
-      mutation.mutate(payload);
+      // mutation.mutate(payload);
     },
   });
 

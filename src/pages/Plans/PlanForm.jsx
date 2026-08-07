@@ -218,7 +218,7 @@ const PlanForm = () => {
               />
             </Col>
             <Col>
-              <Label htmlFor="aum">AU</Label>
+              <Label htmlFor="aum">AUM</Label>
               <Input
                 type="text"
                 onChange={validation.handleChange}

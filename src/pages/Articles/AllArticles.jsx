@@ -39,7 +39,7 @@ const AllArticles = ({ articles }) => {
     () => [
       {
         header: "ID",
-        accessorKey: "_v",
+        accessorKey: "img",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Identity {...cell} />;
@@ -80,7 +80,7 @@ const AllArticles = ({ articles }) => {
             <div>
               <select name="action" onChange={(e) => handleAction(e, data)}>
                 <option value="">Select Action</option>
-                <option value="view">View</option>
+                {/* <option value="view">View</option> */}
                 <option value="edit">Edit</option>
                 <option value="delete">Delete</option>
               </select>
@@ -93,14 +93,9 @@ const AllArticles = ({ articles }) => {
   );
 
   useEffect(() => {
-    console.log("currentTab:", currentTab);
-  }, [currentTab]);
-
-  useEffect(() => {
     sessionStorage.setItem("currentArticleTab", currentTab);
   }, [currentTab]);
 
-  // console.log(currentTab);
   return (
     <React.Fragment>
       <Col lg={12}>
@@ -124,20 +119,27 @@ const AllArticles = ({ articles }) => {
           </CardHeader>
           <CardBody>
             <div className="pb-4 d-flex align-items-center gap-2">
-              {["all", "business", "investment", "savings", "retirement"].map(
-                (asset, index) => {
-                  return (
-                    <button
-                      onClick={() => setCurrentTab(asset)}
-                      key={index}
-                      className={`btn text-capitalize ${asset === currentTab ? "bg-secondary text-white" : "bg-light"} `}
-                      style={{ width: "110px" }}
-                    >
-                      {asset}
-                    </button>
-                  );
-                },
-              )}
+              {[
+                "all",
+                "business",
+                "investment",
+                "savings",
+                "retirement",
+                "trends",
+                "technology",
+                "news",
+              ].map((asset, index) => {
+                return (
+                  <button
+                    onClick={() => setCurrentTab(asset)}
+                    key={index}
+                    className={`btn text-capitalize ${asset === currentTab ? "bg-secondary text-white" : "bg-light"} `}
+                    style={{ width: "110px" }}
+                  >
+                    {asset}
+                  </button>
+                );
+              })}
             </div>
             <TableContainer
               columns={columns}
@@ -177,8 +179,8 @@ const AllArticles = ({ articles }) => {
       {action === "edit" && (
         <EditArticleForm
           isOpen={action === "edit"}
-          handleClose={() => setAction("")}
-          article={``}
+          onClose={() => setAction("")}
+          articleData={data}
         />
       )}
     </React.Fragment>

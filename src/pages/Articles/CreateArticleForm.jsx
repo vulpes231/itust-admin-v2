@@ -48,7 +48,7 @@ const CreateArticleForm = ({ isOpen, onClose }) => {
       topic: "",
       title: "",
       content: "",
-      image: null,
+      iskAsk: false,
     },
     onSubmit: (values) => {
       const formData = new FormData();
