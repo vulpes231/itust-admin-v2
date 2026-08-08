@@ -94,7 +94,7 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
       }
 
       console.log(values);
-      // mutation.mutate(values);
+      mutation.mutate(values);
     },
   });
 
