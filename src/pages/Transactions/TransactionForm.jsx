@@ -93,7 +93,7 @@ const TransactionForm = ({ mutation, onClose, currentTab }) => {
         values.network = "bank";
       }
 
-      console.log(values);
+      // console.log(values);
       mutation.mutate(values);
     },
   });

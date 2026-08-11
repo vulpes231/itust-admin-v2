@@ -169,8 +169,7 @@ const AllTrades = ({ tradeList }) => {
         accessorKey: "wallet.slug",
         enableColumnFilter: false,
         cell: (cell) => {
-          return;
-          <div>{cell.getValue()}</div>;
+          return <div className="text-capitalize">{cell.getValue()}</div>;
         },
       },
 
@@ -178,9 +177,10 @@ const AllTrades = ({ tradeList }) => {
         header: "Plan",
         accessorKey: "plan.name",
         enableColumnFilter: false,
-        cell: (cell) => {
-          return;
-          <div>{cell.getValue()}</div>;
+        cell: ({ row }) => {
+          return (
+            <div className="text-capitalize">{row.original?.plan?.name}</div>
+          );
         },
       },
 
