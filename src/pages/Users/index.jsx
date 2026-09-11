@@ -21,7 +21,7 @@ const Users = () => {
 
   useEffect(() => {
     if (users && users.length > 0) {
-      // console.log(users);
+      // console.log(users.length);
       setUserList(users);
     }
   }, [users]);

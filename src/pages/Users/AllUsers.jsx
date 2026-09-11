@@ -151,7 +151,7 @@ const AllUsers = ({ userList }) => {
               data={userList || []}
               isGlobalFilter={true}
               isAddUserList={false}
-              customPageSize={8}
+              customPageSize={25}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"
