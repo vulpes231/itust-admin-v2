@@ -16,7 +16,7 @@ import { TiEdit } from "react-icons/ti";
 import { GrOverview } from "react-icons/gr";
 import DeletePlan from "./DeletePlan";
 import CreatePlan from "./CreatePlan";
-import { devServer } from "../../config";
+import { devServer, liveServer } from "../../config";
 import EditPlan from "./EditPlan";
 
 const AllPlans = ({ planList }) => {
@@ -55,11 +55,11 @@ const AllPlans = ({ planList }) => {
         accessorKey: "name",
         enableColumnFilter: false,
         cell: (cell) => {
-          // const
+          //  const imageUrl= `${devServer}$`
           return (
             <div className="d-flex align-items-center">
               <img
-                src={`${devServer}${cell.row.original?.img}`}
+                src={`${liveServer}${cell.row.original?.img}`}
                 alt="ppic"
                 style={{ width: "30px" }}
                 className="bg-light p-1 rounded-circle"
