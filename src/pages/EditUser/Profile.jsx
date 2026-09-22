@@ -14,6 +14,9 @@ import SuccessToast from "../../Components/Common/SuccessToast";
 import ErrorToast from "../../Components/Common/ErrorToast";
 import ApproveOptions from "./ApproveOptions";
 import ApproveAddressOptions from "./ApproveAddressOptions";
+import EditBalanceModal from "./EditBalanceModal";
+
+import { FiEdit } from "react-icons/fi";
 
 const Profile = ({ user, accounts }) => {
   // useEffect(() => {
@@ -91,6 +94,9 @@ const Profile = ({ user, accounts }) => {
     cancelMutation.mutate(data);
   };
 
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [selectedAcct, setSelectedAcct] = useState("");
+
   const brokerage =
     accounts && accounts.find((acct) => acct.slug === "brokerage");
   const auto = accounts && accounts.find((acct) => acct.slug === "auto");
@@ -107,6 +113,17 @@ const Profile = ({ user, accounts }) => {
       return () => clearTimeout(tmt);
     }
   }, [error]);
+
+  const handleAccountClick = (acct) => {
+    setSelectedAcct(acct);
+    setShowBalanceModal(true);
+  };
+
+  const closeBalanceModal = () => {
+    setSelectedAcct("");
+    setShowBalanceModal(false);
+  };
+
   return (
     <Card>
       <Col>
@@ -133,9 +150,12 @@ const Profile = ({ user, accounts }) => {
           <Col sm={5} className="d-flex flex-column">
             <span
               style={{ textTransform: "uppercase" }}
-              className="fw-light fs-14 mt-4"
+              className="fw-light fs-14 mt-4 d-flex align-items-center gap-2"
             >
-              Cash Balance
+              Cash{" "}
+              <span onClick={() => handleAccountClick(cash)}>
+                <FiEdit />{" "}
+              </span>
             </span>
             <span className="fw-bold fs-20">
               {numeral(cash?.balance.available).format("$0,0.00")}
@@ -155,9 +175,12 @@ const Profile = ({ user, accounts }) => {
           <Col sm={5} className="d-flex flex-column">
             <span
               style={{ textTransform: "uppercase" }}
-              className="fw-light fs-14 mt-4"
+              className="fw-light fs-14 mt-4 d-flex align-items-center gap-2"
             >
-              Brokerage Balance
+              Brokerage{" "}
+              <span onClick={() => handleAccountClick(brokerage)}>
+                <FiEdit />{" "}
+              </span>
             </span>
             <span className="fw-bold fs-20">
               {numeral(brokerage?.balance?.available).format("$0,0.00")}
@@ -177,9 +200,12 @@ const Profile = ({ user, accounts }) => {
           <Col sm={5} className="d-flex flex-column">
             <span
               style={{ textTransform: "uppercase" }}
-              className="fw-light fs-14 mt-4"
+              className="fw-light fs-14 mt-4 d-flex align-items-center gap-2"
             >
-              Auto Balance
+              Auto
+              <span onClick={() => handleAccountClick(auto)}>
+                <FiEdit />{" "}
+              </span>
             </span>
             <span className="fw-bold fs-20">
               {numeral(auto?.balance?.available).format("$0,0.00")}
@@ -196,7 +222,7 @@ const Profile = ({ user, accounts }) => {
               className="fs-16"
             />
           </Col>
-          <Col sm={5} className="d-flex flex-column">
+          {/* <Col sm={5} className="d-flex flex-column">
             <span
               style={{ textTransform: "uppercase" }}
               className="fw-light fs-14 mt-4"
@@ -204,7 +230,7 @@ const Profile = ({ user, accounts }) => {
               Savings Balance
             </span>
             <span className="fw-bold fs-20">$0.00</span>
-          </Col>
+          </Col> */}
         </Row>
       </Col>
       <Col className="px-3 mb-3 d-flex flex-column gap-3">
@@ -286,6 +312,13 @@ const Profile = ({ user, accounts }) => {
         />
       )}
       {error && <ErrorToast errMsg={error} onClose={() => setError("")} />}
+      {showBalanceModal && (
+        <EditBalanceModal
+          isOpen={showBalanceModal}
+          handleToggle={closeBalanceModal}
+          walletData={selectedAcct}
+        />
+      )}
     </Card>
   );
 };
