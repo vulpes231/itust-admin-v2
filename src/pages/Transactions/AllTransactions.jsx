@@ -162,7 +162,7 @@ const AllTransactions = ({ transactionList }) => {
         accessorKey: "_id",
         enableColumnFilter: false,
         cell: (cell) => {
-          const method = cell.row.original.method.mode;
+          // const method = cell.row.original.method.mode;
           const status = cell.row.original.status;
           const data = cell.row.original;
           return (
@@ -290,7 +290,7 @@ const AllTransactions = ({ transactionList }) => {
               data={filteredTransactions || []}
               isGlobalFilter={false}
               isAddUserList={false}
-              customPageSize={8}
+              customPageSize={50}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"

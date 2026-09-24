@@ -32,6 +32,8 @@ const AllAccounts = ({ accountList }) => {
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState("");
 
+  // console.log(accountList);
+
   const openCreateSavingsModal = () => {
     setCreateSavingsModal(true);
   };

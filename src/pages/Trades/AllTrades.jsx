@@ -305,7 +305,7 @@ const AllTrades = ({ tradeList }) => {
               data={filteredTrades || []}
               isGlobalFilter={false}
               isAddUserList={false}
-              customPageSize={8}
+              customPageSize={50}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"

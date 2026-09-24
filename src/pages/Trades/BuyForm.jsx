@@ -62,7 +62,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
     })) || [];
 
   let selectedAcct, selectedPlan;
-
+  // console.log(order);
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -345,7 +345,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
             {/* <option value="takeprofit">Take Profit Order</option> */}
           </Input>
         </Col>
-        {validation.values.orderType === "leverage" && (
+        {validation.values.executionType === "leverage" && (
           <Col>
             <Label>Leverage</Label>
             <Input
