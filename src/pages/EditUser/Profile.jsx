@@ -61,6 +61,9 @@ const Profile = ({ user, accounts }) => {
     },
   });
 
+  // console.log(verifyInfo);
+  // console.log(user);
+
   const acceptVerfication = () => {
     if (!verifyInfo || !user) {
       setError("Verification Info required!");
