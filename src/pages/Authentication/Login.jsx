@@ -14,7 +14,7 @@ import {
   Spinner,
 } from "reactstrap";
 import ParticlesAuth from "../AuthenticationInner/ParticlesAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import withRouter from "../../Components/Common/withRouter";
 
 import * as Yup from "yup";
@@ -28,6 +28,7 @@ import ErrorToast from "../../Components/Common/ErrorToast";
 const Login = () => {
   const [passwordShow, setPasswordShow] = useState(false);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
 
   const mutation = useMutation({
     mutationFn: loginAdmin,
@@ -74,11 +75,11 @@ const Login = () => {
 
         mutation.reset();
 
-        window.location.href = "/dashboard";
+        navigate("/dashboard");
       }, 3000);
       return () => clearTimeout(tmt);
     }
-  }, [mutation.isSuccess]);
+  }, [mutation.isSuccess, navigate]);
 
   document.title = "Login Admin - Itrust Investment";
   return (
