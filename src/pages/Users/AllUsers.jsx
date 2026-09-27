@@ -10,7 +10,7 @@ import BanUserModal from "./BanUserModal";
 import DeleteUser from "./DeleteUser";
 
 const AllUsers = ({ userList }) => {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [banModal, setBanModal] = useState(false);
@@ -55,7 +55,7 @@ const AllUsers = ({ userList }) => {
               <Link
                 // to={}
                 onClick={() => {
-                  window.location.href = `/edituser/${userId}`;
+                  navigate(`/edituser/${userId}`);
                 }}
                 className="currency_name flex-grow-1 ms-2"
               >

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -28,6 +28,7 @@ import TradeModal from "./TradeModal";
 import DeleteTradeModal from "./DeleteTradeModal";
 
 const AllTrades = ({ tradeList }) => {
+  const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState("");
@@ -101,7 +102,7 @@ const AllTrades = ({ tradeList }) => {
                 to="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = `/edituser/${userId}`;
+                  navigate(`/edituser/${userId}`);
                 }}
                 className="currency_name flex-grow-1 ms-2 text-capitalize"
               >

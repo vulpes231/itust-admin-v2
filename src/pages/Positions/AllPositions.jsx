@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
 import {
   Type,
@@ -19,6 +19,7 @@ import EditPosition from "./EditPosition";
 import DeletePositionModal from "./DeletePositionModal";
 
 const AllPositions = ({ positions }) => {
+  const navigate = useNavigate();
   const [selectedAction, setSelectedAction] = useState(null);
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState(null);
@@ -79,7 +80,7 @@ const AllPositions = ({ positions }) => {
                 to="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  window.location.href = `/edituser/${userId}`;
+                  navigate(`/edituser/${userId}`);
                 }}
                 className="currency_name flex-grow-1 ms-2 text-capitalize"
               >
