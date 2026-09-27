@@ -55,6 +55,7 @@ const AllUsers = ({ userList }) => {
               <Link
                 // to={}
                 onClick={() => {
+                  e.preventDefault();
                   navigate(`/edituser/${userId}`);
                 }}
                 className="currency_name flex-grow-1 ms-2"
