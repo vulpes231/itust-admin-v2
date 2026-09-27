@@ -8,7 +8,7 @@ import {
 
 //import images
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { getAccessToken } from "../../helpers/api_helper";
 import { getAdminInfo } from "../../services/settings";
@@ -39,6 +39,8 @@ const ProfileDropdown = () => {
     mutation.mutate();
   };
 
+  const navigate = useNavigate();
+
   //Dropdown Toggle
   const [isProfileDropdown, setIsProfileDropdown] = useState(false);
   const toggleProfileDropdown = () => {
@@ -50,7 +52,7 @@ const ProfileDropdown = () => {
       const tmt = setTimeout(() => {
         sessionStorage.removeItem("token");
         sessionStorage.clear();
-        window.location.href = "/";
+        navigate("/");
       }, 3000);
       return () => clearTimeout(tmt);
     }
