@@ -17,7 +17,7 @@ root.render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <React.Fragment>
-        <BrowserRouter>
+        <BrowserRouter basename="/admin">
           <App />
         </BrowserRouter>
       </React.Fragment>
