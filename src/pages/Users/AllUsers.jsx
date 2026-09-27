@@ -54,7 +54,7 @@ const AllUsers = ({ userList }) => {
             <div className="d-flex align-items-center">
               <Link
                 // to={}
-                onClick={() => {
+                onClick={(e) => {
                   e.preventDefault();
                   navigate(`/edituser/${userId}`);
                 }}
