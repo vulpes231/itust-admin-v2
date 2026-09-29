@@ -38,7 +38,7 @@ const CreateAdmin = ({ isOpen, onClose }) => {
     <React.Fragment>
       <Card>
         <Modal toggle={onClose} isOpen={isOpen}>
-          <ModalHeader toggle={onClose}>Add New Admin</ModalHeader>
+          <ModalHeader toggle={onClose}>New User</ModalHeader>
           <ModalBody className="d-flex flex-column gap-4">
             <AdminForm
               mutation={mutation}

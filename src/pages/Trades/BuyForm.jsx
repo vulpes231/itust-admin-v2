@@ -63,8 +63,9 @@ const BuyForm = ({ order, token, users, onClose }) => {
 
   let selectedAcct, selectedPlan;
   // console.log(order);
+  const initialDateRef = useRef(getCurrentDateTime());
+
   const validation = useFormik({
-    enableReinitialize: true,
     initialValues: {
       userId: "",
       walletId: "",
@@ -73,30 +74,32 @@ const BuyForm = ({ order, token, users, onClose }) => {
       amount: "",
       executionType: "market",
       orderType: order || "",
-      customDate: getCurrentDateTime() || "",
+      customDate: initialDateRef.current,
       takeProfit: "",
       stopLoss: "",
-      leverage: "",
+      leverage: "1",
       extra: "",
       notifyUser: false,
     },
+
     onSubmit: (values) => {
       const payload = {
         ...values,
+
         leverage:
-          values.executionType === "leverage" && !values.leverage ? 1 : "",
+          values.executionType === "leverage" ? values.leverage || 1 : "",
+
         customDate: values.customDate ? new Date(values.customDate) : null,
       };
 
       if (
         selectedAcct?.slug === "auto" &&
-        parseFloat(payload.amount) > selectedPlan?.balance?.available
+        parseFloat(payload.amount) >
+          Number(selectedPlan?.balance?.available || 0)
       ) {
         setError("Insufficient funds!");
         return;
       }
-
-      console.log(payload);
 
       mutation.mutate(payload);
     },
@@ -349,17 +352,17 @@ const BuyForm = ({ order, token, users, onClose }) => {
           <Col>
             <Label>Leverage</Label>
             <Input
-              type="select"
+              type="text"
               onChange={validation.handleChange}
               onBlur={validation.handleBlur}
               value={validation.values.leverage}
               name="leverage"
             >
-              <option value="">Select Leverage</option>
+              {/* <option value="">Select Leverage</option>
               <option value="1">1x</option>
               <option value="10">10x</option>
               <option value="20">20x</option>
-              <option value="50">50x</option>
+              <option value="50">50x</option> */}
             </Input>
           </Col>
         )}
