@@ -1,20 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Card, CardBody, CardHeader, Col } from "reactstrap";
-import { Email, Status, Experience, Kyc, Phone, Nationality } from "./UserCol";
 import TableContainer from "../../Components/Common/TableContainer";
-
 import { format } from "date-fns";
 import { capitalize } from "lodash";
-import BanUserModal from "./BanUserModal";
-import DeleteUser from "./DeleteUser";
+import PathTierModal from "./PatchTierModal";
+import NewTierModal from "./NewTierModal";
+import numeral from "numeral";
 
-const AllUsers = ({ userList }) => {
+const AllTiers = ({ tiers }) => {
   const navigate = useNavigate();
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
-  const [banModal, setBanModal] = useState(false);
-  const [deleteUserModal, setDeleteUserModal] = useState(false);
+  const [viewTierModal, setViewTierModal] = useState(false);
+  const [addTierModal, setAddTierModal] = useState(false);
+  const [editTierModal, setEditTierModal] = useState(false);
   const [data, setData] = useState("");
 
   const handleAction = (e, id, userData) => {
@@ -23,16 +23,20 @@ const AllUsers = ({ userList }) => {
     setData(userData);
   };
 
+  const resetState = () => {
+    setRowId("");
+    setAction("");
+    setData("");
+  };
+
   useEffect(() => {
     if (action === "edit" && rowId) {
-      const userId = rowId;
-      navigate(`edituser/${userId}`);
-    } else if (action === "ban" && rowId) {
-      const userId = rowId;
-      setBanModal(true);
+      setEditTierModal(true);
+    } else if (action === "view" && rowId) {
+      setViewTierModal(true);
     } else if (action === "delete" && rowId) {
-      const userId = rowId;
-      setDeleteUserModal(true);
+      //   const userId = rowId;
+      //   setDeleteUserModal(true);
     }
   }, [action, rowId]);
 
@@ -46,74 +50,61 @@ const AllUsers = ({ userList }) => {
       },
       {
         header: "Name",
-        accessorKey: "personalInfo.username",
+        accessorKey: "title",
         enableColumnFilter: false,
         cell: (cell) => {
-          const userId = cell.row.original._id;
           return (
             <div className="d-flex align-items-center">
-              <Link
-                // to={}
-                onClick={(e) => {
-                  e.preventDefault();
-                  navigate(`/edituser/${userId}`);
-                }}
-                className="currency_name flex-grow-1 ms-2"
-              >
+              <span className="currency_name flex-grow-1 ms-2">
                 {capitalize(cell.getValue())}
-              </Link>
+              </span>
             </div>
           );
         },
       },
       {
-        header: "Experience",
-        accessorKey: "investmentInfo.experience",
+        header: "Treshhold",
+        accessorKey: "threshold",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Experience {...cell} />;
+          return (
+            <div className="d-flex align-items-center">
+              <span className="currency_name flex-grow-1 ms-2">
+                {numeral(cell.getValue()).format("$0,0.00")}
+              </span>
+            </div>
+          );
         },
       },
       {
-        header: "KYC",
-        accessorKey: "identityVerification.kycStatus",
+        header: "Minimum Deposit",
+        accessorKey: "minDeposit",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Kyc {...cell} />;
+          return (
+            <div className="d-flex align-items-center">
+              <span className="currency_name flex-grow-1 ms-2">
+                {"<"} {numeral(cell.getValue()).format("$0,0.00")}
+              </span>
+            </div>
+          );
         },
       },
       {
-        header: "Email",
-        accessorKey: "contactInfo.email",
+        header: "Tag",
+        accessorKey: "tag",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Email {...cell} />;
+          return (
+            <div className="d-flex align-items-center">
+              <span className="currency_name flex-grow-1 ms-2">
+                {capitalize(cell.getValue())}
+              </span>
+            </div>
+          );
         },
       },
-      {
-        header: "Phone",
-        accessorKey: "contactInfo.phone",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Phone {...cell} />;
-        },
-      },
-      {
-        header: "Nationality",
-        accessorKey: "personalInfo.nationality.name",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Nationality {...cell} />;
-        },
-      },
-      {
-        header: "Status",
-        accessorKey: "accountStatus.status",
-        enableColumnFilter: false,
-        cell: (cell) => {
-          return <Status {...cell} />;
-        },
-      },
+
       {
         header: "Action",
         accessorKey: "_id",
@@ -127,9 +118,9 @@ const AllUsers = ({ userList }) => {
                 onChange={(e) => handleAction(e, cell.getValue(), rowData)}
               >
                 <option value="">Select Option</option>
-                <option value="edit">View</option>
-                <option value="ban">Ban</option>
-                <option value="delete">Delete</option>
+                {/* <option value="view">View</option> */}
+                <option value="edit">Edit</option>
+                {/* <option value="delete">Delete</option> */}
               </select>
             </div>
           );
@@ -144,13 +135,22 @@ const AllUsers = ({ userList }) => {
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
-            <h5 className="card-title mb-0 flex-grow-1">All Users</h5>
+            <h5 className="card-title mb-0 flex-grow-1">All Tiers</h5>
+            <span>
+              <button
+                className="btn btn-secondary"
+                type="button"
+                onClick={() => setAddTierModal(true)}
+              >
+                Create Tier
+              </button>
+            </span>
           </CardHeader>
           <CardBody>
             <TableContainer
               columns={columns}
-              data={userList || []}
-              isGlobalFilter={true}
+              data={tiers || []}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={50}
               className="custom-header-css"
@@ -163,24 +163,27 @@ const AllUsers = ({ userList }) => {
           </CardBody>
         </Card>
       </Col>
-      {banModal && (
-        <BanUserModal
-          dataId={rowId}
-          isOpen={banModal}
-          onClose={() => setBanModal(false)}
+      {editTierModal && (
+        <PathTierModal
+          isOpen={editTierModal}
           data={data}
+          handleToggle={() => {
+            resetState();
+            setEditTierModal(false);
+          }}
         />
       )}
-      {deleteUserModal && (
-        <DeleteUser
-          dataId={rowId}
-          isOpen={deleteUserModal}
-          onClose={() => setDeleteUserModal(false)}
-          data={data}
+      {addTierModal && (
+        <NewTierModal
+          isOpen={addTierModal}
+          handleToggle={() => {
+            resetState();
+            setAddTierModal(false);
+          }}
         />
       )}
     </React.Fragment>
   );
 };
 
-export default AllUsers;
+export default AllTiers;

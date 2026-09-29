@@ -19,6 +19,7 @@ import {
   getStates,
 } from "../../services/generic";
 import UserPlans from "./UserPlans";
+import AccountTier from "./AccountTier";
 
 const EditUser = () => {
   document.title = "Edit User | Admin";
@@ -92,6 +93,16 @@ const EditUser = () => {
           <Row>
             <Col>
               <WithdrawDetails />
+            </Col>
+          </Row>
+
+          <Row>
+            <Col>
+              <AccountTier
+                tierInfo={userInfo?.accountTier}
+                userId={userInfo?._id}
+                // handleToggle={()}
+              />
             </Col>
           </Row>
 

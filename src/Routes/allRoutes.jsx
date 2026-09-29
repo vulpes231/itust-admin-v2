@@ -16,6 +16,7 @@ import {
   Plans,
   Positions,
   SavingsAccount,
+  Tier,
   Trades,
   Transactions,
   Users,
@@ -34,6 +35,7 @@ const authProtectedRoutes = [
   { path: "/settings", component: <ManageSettings /> },
   { path: "/positions", component: <Positions /> },
   { path: "/articles", component: <Articles /> },
+  { path: "/tiers", component: <Tier /> },
   { path: "/edituser/:userId", component: <EditUser /> },
 ];
 

@@ -16,6 +16,7 @@ const Navdata = () => {
   const [isSavings, setIsSavings] = useState(false);
   const [isAssets, setIsAssets] = useState(false);
   const [isArticles, setIsArticles] = useState(false);
+  const [isTiers, setIsTiers] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -56,6 +57,9 @@ const Navdata = () => {
     if (iscurrentState !== "Admins") {
       setIsAdmins(false);
     }
+    if (iscurrentState !== "Tiers") {
+      setIsTiers(false);
+    }
     if (iscurrentState !== "Assets") {
       setIsAssets(false);
     }
@@ -81,6 +85,7 @@ const Navdata = () => {
     isPositions,
     isAssets,
     isArticles,
+    isTiers,
   ]);
 
   const menuItems = [
@@ -216,6 +221,19 @@ const Navdata = () => {
         e.preventDefault();
         setIsArticles(!isArticles);
         setIscurrentState("Articles");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "tiers",
+      label: "Tiers",
+      icon: "ri-article-line",
+      link: "/tiers",
+      stateVariables: isAdmins,
+      click: function (e) {
+        e.preventDefault();
+        setIsTiers(!isTiers);
+        setIscurrentState("Tiers");
         updateIconSidebar(e);
       },
     },
