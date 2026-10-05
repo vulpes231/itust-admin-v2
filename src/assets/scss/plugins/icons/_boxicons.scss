@@ -1,15 +1,16 @@
-@font-face
-{
-    font-family: 'boxicons';
-    font-weight: normal;
-    font-style: normal;
+@font-face {
+  font-family: 'boxicons';
+  font-style: normal;
+  font-weight: 400;
+  font-display: auto;
 
-    src: url('../../../fonts/boxicons.eot');
-    src: url('../../../fonts/boxicons.eot') format('embedded-opentype'),
-    url('../../../fonts/boxicons.woff2') format('woff2'),
-    url('../../../fonts/boxicons.woff') format('woff'),
-    url('../../../fonts/boxicons.ttf') format('truetype'),
-    url('../../../fonts/boxicons.svg?#boxicons') format('svg');
+  src: url("/admin/fonts/boxicons.eot");
+  src:
+    url("/admin/fonts/boxicons.eot") format("embedded-opentype"),
+    url("/admin/fonts/boxicons.woff2") format("woff2"),
+    url("/admin/fonts/boxicons.woff") format("woff"),
+    url("/admin/fonts/boxicons.ttf") format("truetype"),
+    url("/admin/fonts/boxicons.svg?#boxicons") format("svg");
 }
 .bx
 {

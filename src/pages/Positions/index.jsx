@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Container, Row } from "reactstrap";
 import BreadCrumb from "../../Components/Common/BreadCrumb";
 import { useQuery } from "@tanstack/react-query";
@@ -9,9 +9,12 @@ import AllPositions from "./AllPositions";
 const Positions = () => {
   document.title = "Positions | Itrust Investment";
   const token = getAccessToken();
+
+  const [sort, setSort] = useState("createdAt");
+
   const { data: myPositions = [] } = useQuery({
-    queryKey: ["positions"],
-    queryFn: getAllPositions,
+    queryKey: ["positions", sort],
+    queryFn: () => getAllPositions({ sortBy: sort }),
     enabled: !!token,
   });
 

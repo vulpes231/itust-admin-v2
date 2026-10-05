@@ -3,189 +3,100 @@ import { useFormik } from "formik";
 import { useMutation } from "@tanstack/react-query";
 import { MdToggleOff, MdToggleOn } from "react-icons/md";
 import { Card, Col, Input, Label, Row, Spinner } from "reactstrap";
-
-import ErrorToast from "../../Components/Common/ErrorToast";
-import SuccessToast from "../../Components/Common/SuccessToast";
+import { FiEdit } from "react-icons/fi";
 import { updateUserTier } from "../../services/tier";
+import UpdateTier from "./UpdateTier";
 
-const AccountTier = ({ tierInfo, userId }) => {
-  const [error, setError] = useState("");
-
-  const updateUserTierMutation = useMutation({
-    mutationFn: updateUserTier,
-
-    onError: (err) => {
-      setError(err.message);
-    },
-
-    onSuccess: () => {
-      setTimeout(() => {
-        updateUserTierMutation.reset();
-        // handleToggle();
-        window.location.reload();
-      }, 2000);
-    },
-  });
-
-  const validation = useFormik({
-    enableReinitialize: true,
-
-    initialValues: {
-      threshold: tierInfo?.threshold ?? "",
-      minDeposit: tierInfo?.minDeposit ?? "",
-      isCodeActivated: tierInfo?.isCodeActivated ?? false,
-      withdrawalCode: "",
-    },
-
-    onSubmit: (values) => {
-      const payload = {
-        userId,
-      };
-
-      // Threshold changed
-      if (Number(values.threshold) !== Number(tierInfo?.threshold)) {
-        payload.threshold = Number(values.threshold);
-      }
-
-      // Minimum deposit changed
-      if (Number(values.minDeposit) !== Number(tierInfo?.minDeposit)) {
-        payload.minDeposit = Number(values.minDeposit);
-      }
-
-      // Withdrawal code activation changed
-      if (values.isCodeActivated !== Boolean(tierInfo?.isCodeActivated)) {
-        payload.isCodeActivated = values.isCodeActivated;
-      }
-
-      // Withdrawal code was entered/changed
-      if (values.withdrawalCode.trim() !== "") {
-        payload.code = values.withdrawalCode.trim();
-      }
-
-      // Nothing changed
-      if (Object.keys(payload).length === 1) {
-        return;
-      }
-
-      console.log("Update payload:", payload);
-
-      updateUserTierMutation.mutate(payload);
-    },
-  });
-
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => {
-        setError("");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [error]);
+const AccountTier = ({ tiers, tierInfo }) => {
+  const [selectedTier, setSelectedTier] = useState("");
+  const [editTierModal, setEditTierModal] = useState(false);
 
   return (
     <Card className="p-4">
-      <h4>Account Tier</h4>
+      <h4>User Account Tiers</h4>
 
-      <form onSubmit={validation.handleSubmit} className="mt-4">
-        {/* Withdrawal Code Toggle */}
-        <Row>
-          <Col className="d-flex justify-content-between align-items-center">
-            <Label className="mb-0">Enable Withdrawal Code</Label>
+      <Col>
+        <div className="table-responsive">
+          <table className="table table-hover align-middle mb-0">
+            <thead className="table-light">
+              <tr>
+                <th className="px-4 py-3">Name</th>
+                <th className="px-4 py-3">Threshold</th>
+                <th className="px-4 py-3">Minimum Deposit</th>
+                <th className="px-4 py-3 text-end">Actions</th>
+              </tr>
+            </thead>
 
-            <button
-              type="button"
-              className="btn p-0"
-              onClick={() =>
-                validation.setFieldValue(
-                  "isCodeActivated",
-                  !validation.values.isCodeActivated,
-                )
-              }
-            >
-              {validation.values.isCodeActivated ? (
-                <MdToggleOn size={30} className="text-success" />
+            <tbody>
+              {tiers && tiers.length > 0 ? (
+                tiers.map((tier) => (
+                  <tr key={tier._id}>
+                    <td className="px-4 py-3">
+                      <div className="d-flex align-items-center gap-2">
+                        <div
+                          className="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center"
+                          style={{
+                            width: "36px",
+                            height: "36px",
+                            fontSize: "14px",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {tier.title?.charAt(0)?.toUpperCase()}
+                        </div>
+
+                        <div>
+                          <div className="fw-semibold text-dark text-capitalize">
+                            {tier.title}
+                          </div>
+
+                          <small className="text-muted">{tier.tag}</small>
+                        </div>
+                      </div>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span className="fw-medium">{tier.threshold}</span>
+                    </td>
+
+                    <td className="px-4 py-3">
+                      <span className="fw-medium">{tier.minDeposit}</span>
+                    </td>
+
+                    <td className="px-4 py-3 text-end">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          console.log(tier);
+                          setSelectedTier(tier);
+                          setEditTierModal(true);
+                        }}
+                        className="btn btn-sm bg-secondary-subtle text-secondary border-0"
+                        title="Edit tier"
+                      >
+                        <FiEdit size={15} />
+                      </button>
+                    </td>
+                  </tr>
+                ))
               ) : (
-                <MdToggleOff size={30} />
+                <tr>
+                  <td colSpan="4" className="text-center py-5 text-muted">
+                    No tiers found
+                  </td>
+                </tr>
               )}
-            </button>
-          </Col>
-        </Row>
-
-        {/* Withdrawal Code */}
-        {validation.values.isCodeActivated && (
-          <Row className="mt-3">
-            <Col>
-              <Label>Withdrawal Code</Label>
-
-              <Input
-                type="password"
-                name="withdrawalCode"
-                value={validation.values.withdrawalCode}
-                onChange={validation.handleChange}
-                onBlur={validation.handleBlur}
-                autoComplete="new-password"
-                placeholder="Enter withdrawal code"
-              />
-            </Col>
-          </Row>
-        )}
-
-        {/* Tier Values */}
-        <Row className="mt-3">
-          <Col>
-            <Label>Threshold</Label>
-
-            <Input
-              type="number"
-              name="threshold"
-              value={validation.values.threshold}
-              onChange={validation.handleChange}
-              onBlur={validation.handleBlur}
-              placeholder="0"
-            />
-          </Col>
-
-          <Col>
-            <Label>Minimum Deposit</Label>
-
-            <Input
-              type="number"
-              name="minDeposit"
-              value={validation.values.minDeposit}
-              onChange={validation.handleChange}
-              onBlur={validation.handleBlur}
-              placeholder="0"
-            />
-          </Col>
-        </Row>
-
-        {/* Submit */}
-        <div className="mt-4">
-          <button
-            type="submit"
-            className="btn btn-secondary d-flex justify-content-center align-items-center gap-2"
-            disabled={updateUserTierMutation.isPending}
-          >
-            {updateUserTierMutation.isPending && <Spinner size="sm" />}
-            Submit
-          </button>
+            </tbody>
+          </table>
         </div>
-      </form>
+      </Col>
 
-      {error && (
-        <ErrorToast
-          isOpen={!!error}
-          onClose={() => setError("")}
-          errMsg={error}
-        />
-      )}
-
-      {updateUserTierMutation.isSuccess && (
-        <SuccessToast
-          msg="Tier info updated."
-          onClose={() => updateUserTierMutation.reset()}
-          isOpen={updateUserTierMutation.isSuccess}
+      {editTierModal && (
+        <UpdateTier
+          isOpen={editTierModal}
+          handleToggle={() => setEditTierModal(false)}
+          tier={selectedTier}
+          tierInfo={tierInfo}
         />
       )}
     </Card>

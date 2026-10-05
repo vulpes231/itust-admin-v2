@@ -19,6 +19,7 @@ import {
   Tier,
   Trades,
   Transactions,
+  UserPlans,
   Users,
 } from "../pages";
 
@@ -36,6 +37,7 @@ const authProtectedRoutes = [
   { path: "/positions", component: <Positions /> },
   { path: "/articles", component: <Articles /> },
   { path: "/tiers", component: <Tier /> },
+  { path: "/user-plans", component: <UserPlans /> },
   { path: "/edituser/:userId", component: <EditUser /> },
 ];
 

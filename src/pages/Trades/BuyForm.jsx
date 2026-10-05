@@ -101,6 +101,8 @@ const BuyForm = ({ order, token, users, onClose }) => {
         return;
       }
 
+      // console.log(payload);
+
       mutation.mutate(payload);
     },
   });

@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
+
 import { Link, useNavigate } from "react-router-dom";
+import Select from "react-select";
 import {
   Button,
   Card,
@@ -9,62 +11,106 @@ import {
   Input,
   Row,
 } from "reactstrap";
-import {
-  Type,
-  Quantity,
-  OrderValue,
-  Roi,
-  Price,
-  Status,
-  Amount,
-  Leverage,
-  Extra,
-} from "./TradeCol";
+
+import { Type, Quantity, OrderValue, Roi, Amount } from "./TradeCol";
+
 import TableContainer from "../../Components/Common/TableContainer";
+
 import { format } from "date-fns";
+
 import CreateTrade from "./CreateTrade";
-import CloseTradeModal from "./CloseTradeModal";
 import TradeModal from "./TradeModal";
 import DeleteTradeModal from "./DeleteTradeModal";
 
+import { useQuery } from "@tanstack/react-query";
+import { getAllUsers } from "../../services/users";
+
 const AllTrades = ({ tradeList }) => {
   const navigate = useNavigate();
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: getAllUsers,
+  });
+
+  const userOptions = useMemo(() => {
+    if (!users?.length) {
+      return [];
+    }
+
+    return users.map((user) => ({
+      value: user._id,
+      label: `${user?.personalInfo?.username || "Unknown User"}${
+        user?.contactInfo?.email ? ` - ${user.contactInfo.email}` : ""
+      }`,
+    }));
+  }, [users]);
+
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [createTradeModal, setCreateTradeModal] = useState(false);
 
+  // const [selectedUserId, setSelectedUserId] = useState("");
+
   const [statusFilter, setStatusFilter] = useState(() => {
     return sessionStorage.getItem("currentTradeStatusFilter") || "all";
   });
+
   const [acctFilter, setAcctFilter] = useState(() => {
     return sessionStorage.getItem("currentTradeAccountFilter") || "all";
   });
 
+  const [userFilter, setUserFilter] = useState(() => {
+    return sessionStorage.getItem("currentUserFilter") || "";
+  });
+  /**
+   * Filter trades
+   */
   const filteredTrades = useMemo(() => {
-    if (!tradeList) return [];
+    if (!tradeList) {
+      return [];
+    }
 
-    let trades = tradeList;
+    let trades = [...tradeList];
 
+    // Status filter
     if (statusFilter !== "all" && statusFilter !== "") {
       trades = trades.filter((trd) => trd.status === statusFilter);
     }
 
+    // Account filter
     if (acctFilter !== "all" && acctFilter !== "") {
-      trades = trades.filter((trd) => trd.wallet.name === acctFilter);
+      trades = trades.filter((trd) => trd.wallet?.name === acctFilter);
+    }
+
+    // User filter
+    if (userFilter) {
+      trades = trades.filter((trd) => trd.userId === userFilter);
     }
 
     return trades;
-  }, [tradeList, statusFilter, acctFilter]);
+  }, [tradeList, statusFilter, acctFilter, userFilter]);
 
+  // console.log(filteredTrades);
+  /**
+   * Open create trade modal
+   */
   const openCreateTradeModal = () => {
     setCreateTradeModal(true);
   };
+
+  /**
+   * Close create trade modal
+   */
   const closeCreateTradeModal = () => {
     setCreateTradeModal(false);
   };
 
+  /**
+   * Handle table action
+   */
   const handleAction = (e, id, data) => {
     setRowId(id);
     setRowData(data);
@@ -72,30 +118,80 @@ const AllTrades = ({ tradeList }) => {
     setShowModal(true);
   };
 
+  /**
+   * Close action modal
+   */
   const handleClose = () => {
     setAction("");
     setRowId("");
     setRowData("");
-
     setShowModal(false);
   };
 
-  // console.log(filteredTrades);
+  // /**
+  //  * Find selected user
+  //  */
+  // useEffect(() => {
+  //   if (!userFIlter) {
+  //     setSelectedUserId("");
+  //     return;
+  //   }
 
+  //   if (!users || users.length === 0) {
+  //     return;
+  //   }
+
+  //   const searchValue = userFIlter.trim().toLowerCase();
+
+  //   const user = users.find((usr) => {
+  //     const email = usr?.contactInfo?.email?.toLowerCase() || "";
+
+  //     const username = usr?.personalInfo?.username?.toLowerCase() || "";
+
+  //     return email === searchValue || username === searchValue;
+  //   });
+
+  //   if (!user) {
+  //     setSelectedUserId("");
+  //     return;
+  //   }
+
+  //   setSelectedUserId(user._id);
+  // }, [userFIlter, users]);
+
+  /**
+   * Persist filters
+   */
+  useEffect(() => {
+    sessionStorage.setItem("currentTradeStatusFilter", statusFilter);
+
+    sessionStorage.setItem("currentTradeAccountFilter", acctFilter);
+
+    sessionStorage.setItem("currentUserFilter", userFilter);
+  }, [statusFilter, acctFilter, userFilter]);
+  /**
+   * Table columns
+   */
   const columns = useMemo(
     () => [
       {
         header: "Date",
         accessorKey: "createdAt",
         enableColumnFilter: false,
-        cell: (cell) => <>{format(cell.getValue(), "MMM dd, yyyy")}</>,
+        cell: (cell) => {
+          const value = cell.getValue();
+
+          return <>{value ? format(new Date(value), "MMM dd, yyyy") : "-"}</>;
+        },
       },
+
       {
         header: "Name",
         accessorKey: "fullname",
         enableColumnFilter: false,
         cell: (cell) => {
           const userId = cell.row.original.userId;
+
           return (
             <div className="d-flex align-items-center">
               <Link
@@ -106,33 +202,36 @@ const AllTrades = ({ tradeList }) => {
                 }}
                 className="currency_name flex-grow-1 ms-2 text-capitalize"
               >
-                {cell.getValue()}
+                {cell.getValue() || "-"}
               </Link>
             </div>
           );
         },
       },
+
       {
         header: "Asset",
         accessorKey: "asset.name",
         enableColumnFilter: false,
         cell: (cell) => (
-          <>
-            <div className="d-flex align-items-center">
-              <div className="flex-shrink-0">
+          <div className="d-flex align-items-center">
+            <div className="flex-shrink-0">
+              {cell.row.original?.asset?.img && (
                 <img
                   src={cell.row.original.asset.img}
                   alt=""
                   className="avatar-xxs"
                 />
-              </div>
-              <Link to="#" className="currency_name flex-grow-1 ms-2">
-                {cell.getValue()}
-              </Link>
+              )}
             </div>
-          </>
+
+            <Link to="#" className="currency_name flex-grow-1 ms-2">
+              {cell.getValue() || "-"}
+            </Link>
+          </div>
         ),
       },
+
       {
         header: "Type",
         accessorKey: "orderType",
@@ -141,6 +240,7 @@ const AllTrades = ({ tradeList }) => {
           return <Type {...cell} />;
         },
       },
+
       {
         header: "Cost",
         accessorKey: "execution.amount",
@@ -149,6 +249,7 @@ const AllTrades = ({ tradeList }) => {
           return <Amount {...cell} />;
         },
       },
+
       {
         header: "Quantity",
         accessorKey: "execution.quantity",
@@ -157,6 +258,7 @@ const AllTrades = ({ tradeList }) => {
           return <Quantity {...cell} />;
         },
       },
+
       {
         header: "Current Value",
         accessorKey: "performance.currentValue",
@@ -165,12 +267,15 @@ const AllTrades = ({ tradeList }) => {
           return <OrderValue {...cell} />;
         },
       },
+
       {
         header: "Account",
-        accessorKey: "wallet.slug",
+        accessorKey: "wallet.name",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <div className="text-capitalize">{cell.getValue()}</div>;
+          return (
+            <div className="text-capitalize">{cell.getValue() || "-"}</div>
+          );
         },
       },
 
@@ -180,7 +285,9 @@ const AllTrades = ({ tradeList }) => {
         enableColumnFilter: false,
         cell: ({ row }) => {
           return (
-            <div className="text-capitalize">{row.original?.plan?.name}</div>
+            <div className="text-capitalize">
+              {row.original?.plan?.name || "-"}
+            </div>
           );
         },
       },
@@ -193,22 +300,7 @@ const AllTrades = ({ tradeList }) => {
           return <Roi {...cell} />;
         },
       },
-      // {
-      //   header: "Price",
-      //   accessorKey: "performance.currentPrice",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Price {...cell} />;
-      //   },
-      // },
-      // {
-      //   header: "Status",
-      //   accessorKey: "status",
-      //   enableColumnFilter: false,
-      //   cell: (cell) => {
-      //     return <Status {...cell} />;
-      //   },
-      // },
+
       {
         header: "Action",
         accessorKey: "_id",
@@ -221,11 +313,16 @@ const AllTrades = ({ tradeList }) => {
             <div>
               <select
                 name="action"
+                className="form-select"
+                defaultValue=""
                 onChange={(e) => handleAction(e, id, rowData)}
               >
                 <option value="">Select Option</option>
+
                 <option value="edit">Edit</option>
+
                 <option value="delete">Delete</option>
+
                 <option value="close">Close</option>
               </select>
             </div>
@@ -233,19 +330,16 @@ const AllTrades = ({ tradeList }) => {
         },
       },
     ],
-    [],
+    [navigate],
   );
 
-  useEffect(() => {
-    sessionStorage.setItem("currentTradeStatusFilter", statusFilter);
-    sessionStorage.setItem("currentTradeAccountFilter", acctFilter);
-  }, [statusFilter, acctFilter]);
   return (
     <React.Fragment>
       <Col lg={12}>
         <Card>
           <CardHeader className="d-flex align-items-center border-0">
             <h5 className="card-title mb-0 flex-grow-1">All Trades</h5>
+
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
                 <button
@@ -255,17 +349,28 @@ const AllTrades = ({ tradeList }) => {
                 >
                   Create Trade
                 </button>
-                {/* <button className="btn btn-soft-info">Past Orders</button> */}
               </div>
             </div>
           </CardHeader>
+
           <CardBody>
             {/* Filters */}
             <Row className="g-3 align-items-center pb-4">
               <Col lg={4} md={12}>
-                <Input type="text" placeholder="Search by name, email..." />
+                <Select
+                  options={userOptions}
+                  isClearable
+                  isSearchable
+                  placeholder="Search user..."
+                  value={
+                    userOptions.find((option) => option.value === userFilter) ||
+                    null
+                  }
+                  onChange={(option) => setUserFilter(option?.value || "")}
+                />
               </Col>
 
+              {/* Status filter */}
               <Col lg={3} md={4}>
                 <Input
                   type="select"
@@ -273,24 +378,32 @@ const AllTrades = ({ tradeList }) => {
                   onChange={(e) => setStatusFilter(e.target.value)}
                 >
                   <option value="all">All Status</option>
+
                   <option value="open">Open</option>
+
                   <option value="closed">Closed</option>
                 </Input>
               </Col>
 
+              {/* Account filter */}
               <Col lg={3} md={4}>
                 <Input
                   type="select"
                   value={acctFilter}
                   onChange={(e) => setAcctFilter(e.target.value)}
                 >
-                  <option value="">All Accounts</option>
+                  <option value="all">All Accounts</option>
+
                   <option value="cash account">Cash</option>
+
                   <option value="traditional ira">Traditional IRA</option>
+
                   <option value="automated investing">
                     Automated Investing
                   </option>
+
                   <option value="individual brokerage">Brokerage</option>
+
                   <option value="hsa">Health Savings</option>
                 </Input>
               </Col>
@@ -301,6 +414,7 @@ const AllTrades = ({ tradeList }) => {
                 </Button>
               </Col>
             </Row>
+
             <TableContainer
               columns={columns}
               data={filteredTrades || []}
@@ -317,6 +431,8 @@ const AllTrades = ({ tradeList }) => {
           </CardBody>
         </Card>
       </Col>
+
+      {/* Edit trade */}
       {action === "edit" && showModal && (
         <TradeModal
           dataId={rowId}
@@ -326,6 +442,8 @@ const AllTrades = ({ tradeList }) => {
           rowData={rowData}
         />
       )}
+
+      {/* Delete trade */}
       {action === "delete" && (
         <DeleteTradeModal
           tradeId={rowId}
@@ -333,12 +451,16 @@ const AllTrades = ({ tradeList }) => {
           onClose={handleClose}
         />
       )}
+
+      {/* Create trade */}
       {createTradeModal && (
         <CreateTrade
           isOpen={createTradeModal}
           onClose={closeCreateTradeModal}
         />
       )}
+
+      {/* Close trade */}
       {action === "close" && (
         <CreateTrade
           orderData={rowData}

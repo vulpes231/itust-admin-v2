@@ -17,6 +17,7 @@ const Navdata = () => {
   const [isAssets, setIsAssets] = useState(false);
   const [isArticles, setIsArticles] = useState(false);
   const [isTiers, setIsTiers] = useState(false);
+  const [isUserPlans, setIsUserPlans] = useState(false);
 
   const [iscurrentState, setIscurrentState] = useState("Dashboard");
 
@@ -68,6 +69,9 @@ const Navdata = () => {
     }
     if (iscurrentState !== "Savings") {
       setIsSavings(false);
+    }
+    if (isUserPlans !== "UserPlans") {
+      setIsUserPlans(false);
     }
     if (iscurrentState !== "Investments") {
       setIsPlan(false);
@@ -234,6 +238,19 @@ const Navdata = () => {
         e.preventDefault();
         setIsTiers(!isTiers);
         setIscurrentState("Tiers");
+        updateIconSidebar(e);
+      },
+    },
+    {
+      id: "userplans",
+      label: "User Plans",
+      icon: "ri-article-line",
+      link: "/user-plans",
+      stateVariables: isAdmins,
+      click: function (e) {
+        e.preventDefault();
+        setIsUserPlans(!isUserPlans);
+        setIscurrentState("UserPlans");
         updateIconSidebar(e);
       },
     },

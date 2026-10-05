@@ -2,14 +2,17 @@ import { APIClient } from "../helpers/api_helper";
 
 const api = new APIClient();
 
-export async function getAllPositions() {
+export async function getAllPositions(queryData) {
+  const { sortBy } = queryData;
+
   try {
-    const res = await api.get("/manageposition");
-    // console.log(res.data);
+    const res = await api.get("/manageposition/", {
+      params: { sortBy },
+    });
+
     return res.data;
   } catch (error) {
-    const errMsg = error;
-    throw Error(errMsg);
+    throw error;
   }
 }
 

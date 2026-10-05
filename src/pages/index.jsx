@@ -10,6 +10,7 @@ import Tier from "./Tier";
 import Trades from "./Trades";
 import Transactions from "./Transactions";
 import AutoInvestments from "./UserInvestments";
+import UserPlans from "./UserPlans";
 import Users from "./Users";
 import UserSavingsAccounts from "./UserSavingsAccounts";
 
@@ -27,4 +28,5 @@ export {
   UserSavingsAccounts,
   Assets,
   Tier,
+  UserPlans,
 };

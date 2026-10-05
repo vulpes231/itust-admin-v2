@@ -22,7 +22,7 @@ const Tier = () => {
     <React.Fragment>
       <div className="page-content">
         <Container fluid>
-          <BreadCrumb title="Tiers" pageTitle="Manage Tiers" />
+          <BreadCrumb title="Account Tier" pageTitle="Manage Tiers" />
           <Row>
             <AllTiers tiers={tiers} />
           </Row>

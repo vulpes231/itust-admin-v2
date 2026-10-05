@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardBody, CardHeader, Col } from "reactstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Row,
+  Input,
+} from "reactstrap";
+
 import {
   Type,
   Quantity,
@@ -12,14 +21,39 @@ import {
   Leverage,
   Extra,
 } from "./PositionCol";
+
+import Select from "react-select";
 import TableContainer from "../../Components/Common/TableContainer";
 import { format } from "date-fns";
 import ClosePositionForm from "./ClosePositionForm";
 import EditPosition from "./EditPosition";
 import DeletePositionModal from "./DeletePositionModal";
+import { useQuery } from "@tanstack/react-query";
+import { getAllUsers } from "../../services/users";
 
 const AllPositions = ({ positions }) => {
   const navigate = useNavigate();
+
+  // console.log(positions);
+
+  const { data: users = [] } = useQuery({
+    queryKey: ["users"],
+    queryFn: getAllUsers,
+  });
+
+  const userOptions = useMemo(() => {
+    if (!users?.length) {
+      return [];
+    }
+
+    return users.map((user) => ({
+      value: user._id,
+      label: `${user?.personalInfo?.username || "Unknown User"}${
+        user?.contactInfo?.email ? ` - ${user.contactInfo.email}` : ""
+      }`,
+    }));
+  }, [users]);
+
   const [selectedAction, setSelectedAction] = useState(null);
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState(null);
@@ -27,6 +61,43 @@ const AllPositions = ({ positions }) => {
   const [closePositionModal, setClosePositionModal] = useState(false);
   const [editPositionModal, setEditPositionModal] = useState(false);
   const [deletePositionModal, setDeletePositionModal] = useState(false);
+
+  const [statusFilter, setStatusFilter] = useState(() => {
+    return sessionStorage.getItem("currentPositionStatusFilter") || "all";
+  });
+
+  const [acctFilter, setAcctFilter] = useState(() => {
+    return sessionStorage.getItem("currentPositionAccountFilter") || "all";
+  });
+
+  const [userFilter, setUserFilter] = useState(() => {
+    return sessionStorage.getItem("currentPositionUserFilter") || "";
+  });
+
+  const filteredPositions = useMemo(() => {
+    if (!positions) {
+      return [];
+    }
+
+    let trades = [...positions];
+
+    // Status filter
+    if (statusFilter !== "all" && statusFilter !== "") {
+      trades = trades.filter((trd) => trd.status === statusFilter);
+    }
+
+    // Account filter
+    if (acctFilter !== "all" && acctFilter !== "") {
+      trades = trades.filter((trd) => trd.wallet?.name === acctFilter);
+    }
+
+    // User filter
+    if (userFilter) {
+      trades = trades.filter((trd) => trd.userId === userFilter);
+    }
+
+    return trades;
+  }, [positions, statusFilter, acctFilter, userFilter]);
 
   const handleAction = (e, id, data) => {
     e.preventDefault();
@@ -208,7 +279,13 @@ const AllPositions = ({ positions }) => {
     [], // Remove action from dependencies
   );
 
-  // Remove useEffect since we're handling modals directly in handleAction
+  useEffect(() => {
+    sessionStorage.setItem("currentPositionStatusFilter", statusFilter);
+
+    sessionStorage.setItem("currentPositionAccountFilter", acctFilter);
+
+    sessionStorage.setItem("currentPositionUserFilter", userFilter);
+  }, [statusFilter, acctFilter, userFilter]);
 
   return (
     <React.Fragment>
@@ -219,9 +296,68 @@ const AllPositions = ({ positions }) => {
             <div className="flex-shrink-0"></div>
           </CardHeader>
           <CardBody>
+            <Row className="g-3 align-items-center pb-4">
+              <Col lg={4} md={12}>
+                <Select
+                  options={userOptions}
+                  isClearable
+                  isSearchable
+                  placeholder="Search user..."
+                  value={
+                    userOptions.find((option) => option.value === userFilter) ||
+                    null
+                  }
+                  onChange={(option) => setUserFilter(option?.value || "")}
+                />
+              </Col>
+
+              {/* Status filter */}
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                  <option value="all">All Status</option>
+
+                  <option value="open">Open</option>
+
+                  <option value="closed">Closed</option>
+                </Input>
+              </Col>
+
+              {/* Account filter */}
+              <Col lg={3} md={4}>
+                <Input
+                  type="select"
+                  value={acctFilter}
+                  onChange={(e) => setAcctFilter(e.target.value)}
+                >
+                  <option value="all">All Accounts</option>
+
+                  <option value="cash account">Cash</option>
+
+                  <option value="traditional ira">Traditional IRA</option>
+
+                  <option value="automated investing">
+                    Automated Investing
+                  </option>
+
+                  <option value="individual brokerage">Brokerage</option>
+
+                  <option value="hsa">Health Savings</option>
+                </Input>
+              </Col>
+
+              <Col lg={2} md={4}>
+                <Button color="primary" className="w-100">
+                  Filter
+                </Button>
+              </Col>
+            </Row>
             <TableContainer
               columns={columns}
-              data={positions || []}
+              data={filteredPositions || []}
               isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={50}

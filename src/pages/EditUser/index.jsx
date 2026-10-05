@@ -101,6 +101,8 @@ const EditUser = () => {
               <AccountTier
                 tierInfo={userInfo?.accountTier}
                 userId={userInfo?._id}
+                tiers={userInfo?.tiers}
+
                 // handleToggle={()}
               />
             </Col>

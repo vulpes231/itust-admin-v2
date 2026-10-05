@@ -5,9 +5,9 @@ import numeral from "numeral";
 import { Link } from "react-router-dom";
 
 const RecentActivities = ({ activities }) => {
-  if (activities) {
-    console.log(activities);
-  }
+  // if (activities) {
+  //   console.log(activities);
+  // }
   return (
     <React.Fragment>
       <Col>
@@ -44,12 +44,12 @@ const RecentActivities = ({ activities }) => {
                           history.type === "deposit"
                             ? "text-success bg-success-subtle"
                             : history.type === "transfer"
-                            ? "text-warning bg-warning-subtle"
-                            : history.type === "withdrawal"
-                            ? "text-danger bg-danger-subtle"
-                            : history.orderType === "buy"
-                            ? "text-success bg-success-subtle"
-                            : "text-danger bg-danger-subtle"
+                              ? "text-warning bg-warning-subtle"
+                              : history.type === "withdrawal"
+                                ? "text-danger bg-danger-subtle"
+                                : history.orderType === "buy"
+                                  ? "text-success bg-success-subtle"
+                                  : "text-danger bg-danger-subtle"
                         }`}
                       >
                         {history.type || history?.orderType}
