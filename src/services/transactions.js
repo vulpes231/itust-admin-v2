@@ -49,3 +49,14 @@ export async function createTransaction(formData) {
     throw Error(errMsg);
   }
 }
+
+export async function removeTransaction(transactionId) {
+  try {
+    const res = await api.delete(`/managetrans/${transactionId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}

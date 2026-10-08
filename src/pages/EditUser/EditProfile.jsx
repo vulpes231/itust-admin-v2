@@ -24,7 +24,7 @@ const EditProfile = ({
       city: user?.contactInfo?.city ?? "",
       zip: user?.contactInfo?.zipCode ?? "",
       dob: user?.personalInfo?.dob
-        ? new Date(user.personalInfo.dob).toISOString()
+        ? new Date(user.personalInfo.dob).toISOString().split("T")[0]
         : "",
       experience: user?.investmentInfo?.experience ?? "",
       employment: user?.employmentInfo?.status ?? "",
@@ -35,6 +35,8 @@ const EditProfile = ({
     }),
     [user],
   );
+
+  // console.log(user?.personalInfo?.dob);
 
   const mutation = useMutation({
     mutationFn: configureUser,
@@ -252,6 +254,28 @@ const EditProfile = ({
                 value={validation.values.experience ?? ""}
                 onChange={validation.handleChange}
                 className="text-capitalize"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <Label>Address</Label>
+              <Input
+                name="address"
+                value={validation.values.address ?? ""}
+                onChange={validation.handleChange}
+                className="text-capitalize"
+              />
+            </Col>
+
+            <Col md={6}>
+              <Label>Date of Birth</Label>
+              <Input
+                name="dob"
+                value={validation.values.dob ?? ""}
+                onChange={validation.handleChange}
+                className="text-capitalize"
+                type="date"
               />
             </Col>
           </Row>

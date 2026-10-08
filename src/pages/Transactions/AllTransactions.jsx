@@ -15,6 +15,7 @@ import { format } from "date-fns";
 import TransactionModal from "./TransactionModal";
 import { upperCase } from "lodash";
 import CreateTransaction from "./CreateTransaction";
+import DeleteTransaction from "./DeleteTransaction";
 
 const AllTransactions = ({ transactionList }) => {
   const navigate = useNavigate();
@@ -48,22 +49,37 @@ const AllTransactions = ({ transactionList }) => {
 
     let transactions = transactionList;
 
+    // Transaction type
     if (currentTab !== "all") {
       transactions = transactions.filter((trnx) => trnx.type === currentTab);
     }
 
+    // Status
     if (statusFilter !== "all" && statusFilter !== "") {
       transactions = transactions.filter(
         (trnx) => trnx.status === statusFilter,
       );
     }
 
+    // Account
     if (acctFilter !== "all" && acctFilter !== "") {
       transactions = transactions.filter((trnx) => trnx.account === acctFilter);
     }
 
+    // User name / email
+    if (searchUser.trim() !== "") {
+      const search = searchUser.trim().toLowerCase();
+
+      transactions = transactions.filter((trnx) => {
+        const fullname = trnx.fullname?.toLowerCase() || "";
+        const email = trnx.email?.toLowerCase() || "";
+
+        return fullname.includes(search) || email.includes(search);
+      });
+    }
+
     return transactions;
-  }, [transactionList, currentTab, statusFilter, acctFilter]);
+  }, [transactionList, currentTab, statusFilter, acctFilter, searchUser]);
 
   const handleAction = (e, id, transaction) => {
     setRowId(id);
@@ -165,6 +181,7 @@ const AllTransactions = ({ transactionList }) => {
         cell: (cell) => {
           // const method = cell.row.original.method.mode;
           const status = cell.row.original.status;
+          // const transType = cell.row.original.status;
           const data = cell.row.original;
           return (
             <div>
@@ -181,6 +198,7 @@ const AllTransactions = ({ transactionList }) => {
                 )}
                 <option value="edit">Edit</option>
                 <option value="view">View</option>
+                <option value="delete">Delete</option>
                 {/* {method === "bank" && } */}
               </select>
             </div>
@@ -244,10 +262,16 @@ const AllTransactions = ({ transactionList }) => {
                 ),
               )}
             </div>
+
             {/* Filters */}
             <Row className="g-3 align-items-center pb-4">
               <Col lg={4} md={12}>
-                <Input type="text" placeholder="Search by name, email..." />
+                <Input
+                  type="text"
+                  placeholder="Search by name, email..."
+                  value={searchUser}
+                  onChange={(e) => setSearchUser(e.target.value)}
+                />
               </Col>
 
               <Col lg={3} md={4}>
@@ -270,12 +294,10 @@ const AllTransactions = ({ transactionList }) => {
                   onChange={(e) => setAcctFilter(e.target.value)}
                 >
                   <option value="">All Accounts</option>
-                  <option value="cash account">Cash</option>
-                  <option value="traditional ira">Traditional IRA</option>
-                  <option value="automated investing">
-                    Automated Investing
-                  </option>
-                  <option value="individual brokerage">Brokerage</option>
+                  <option value="cash">Cash</option>
+                  <option value="ira">Traditional IRA</option>
+                  <option value="auto">Automated Investing</option>
+                  <option value="brokerage">Brokerage</option>
                   <option value="hsa">Health Savings</option>
                 </Input>
               </Col>
@@ -302,7 +324,7 @@ const AllTransactions = ({ transactionList }) => {
           </CardBody>
         </Card>
       </Col>
-      {action && showModal && (
+      {action && action !== "delete" && showModal && (
         <TransactionModal
           dataId={rowId}
           data={rowData}
@@ -316,11 +338,24 @@ const AllTransactions = ({ transactionList }) => {
           }}
         />
       )}
+
       {createTransactionModal && (
         <CreateTransaction
           isOpen={createTransactionModal}
           onClose={closeCreateTransactionModal}
           currentTab={currentTab}
+        />
+      )}
+      {action === "delete" && (
+        <DeleteTransaction
+          isOpen={action === "delete"}
+          handleToggle={() => {
+            setRowId("");
+            setRowData("");
+            setAction("");
+          }}
+          transactionId={rowId}
+          trnx={rowData}
         />
       )}
     </React.Fragment>
