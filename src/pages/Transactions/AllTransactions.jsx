@@ -303,7 +303,7 @@ const AllTransactions = ({ transactionList }) => {
               </Col>
 
               <Col lg={2} md={4}>
-                <Button color="primary" className="w-100">
+                <Button color="secondary" className="w-100">
                   Filter
                 </Button>
               </Col>

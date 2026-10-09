@@ -81,17 +81,14 @@ const AllPositions = ({ positions }) => {
 
     let trades = [...positions];
 
-    // Status filter
     if (statusFilter !== "all" && statusFilter !== "") {
       trades = trades.filter((trd) => trd.status === statusFilter);
     }
 
-    // Account filter
     if (acctFilter !== "all" && acctFilter !== "") {
       trades = trades.filter((trd) => trd.wallet?.name === acctFilter);
     }
 
-    // User filter
     if (userFilter) {
       trades = trades.filter((trd) => trd.userId === userFilter);
     }
@@ -208,7 +205,7 @@ const AllPositions = ({ positions }) => {
       },
       {
         header: "Current Value",
-        accessorKey: "performance.currentValue",
+        accessorKey: "performance.currentBaseValue",
         enableColumnFilter: false,
         cell: (cell) => {
           return <OrderValue {...cell} />;
@@ -350,7 +347,7 @@ const AllPositions = ({ positions }) => {
               </Col>
 
               <Col lg={2} md={4}>
-                <Button color="primary" className="w-100">
+                <Button color="secondary" className="w-100">
                   Filter
                 </Button>
               </Col>

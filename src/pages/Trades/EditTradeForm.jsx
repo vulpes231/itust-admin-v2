@@ -16,27 +16,39 @@ const EditTradeForm = ({ tradeData, mutation, onClose }) => {
 
   const validation = useFormik({
     enableReinitialize: true,
+
     initialValues: {
       tradeId: tradeData?._id,
-      leverage: tradeData?.execution?.leverage,
+      leverage: tradeData?.execution?.leverage ?? "",
       customDate: tradeData?.createdAt
         ? tradeData.createdAt.slice(0, 16)
         : getCurrentDateTime(),
     },
-    onSubmit: (values) => {
-      console.log(values);
 
+    onSubmit: (values) => {
       const updatedData = {};
 
-      if (values.customDate !== tradeData?.customDate) {
+      // Compare against createdAt, which initializes customDate
+      const originalDate = tradeData?.createdAt
+        ? tradeData.createdAt.slice(0, 16)
+        : "";
+
+      if (values.customDate !== originalDate) {
         updatedData.customDate = values.customDate
           ? new Date(values.customDate)
           : null;
       }
 
+      const originalLeverage = tradeData?.execution?.leverage;
+
+      if (String(values.leverage) !== String(originalLeverage)) {
+        updatedData.leverage = values.leverage;
+      }
+
       updatedData.tradeId = values.tradeId;
 
       if (Object.keys(updatedData).length > 1) {
+        // console.log(updatedData);
         mutation.mutate(updatedData);
       } else {
         console.log("No changes detected");
@@ -72,18 +84,11 @@ const EditTradeForm = ({ tradeData, mutation, onClose }) => {
         <Col>
           <Label>Leverage</Label>
           <Input
-            type="select"
+            type="text"
             value={validation.values.leverage}
             name="leverage"
             onChange={validation.handleChange}
-          >
-            <option value="">Select Leverage</option>
-            <option value="1">1x</option>
-            <option value="10">10x</option>
-            <option value="20">20x</option>
-            <option value="50">50x</option>
-            <option value="100">100x</option>
-          </Input>
+          />
         </Col>
       </Row>
       <Row>

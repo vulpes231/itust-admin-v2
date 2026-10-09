@@ -120,7 +120,7 @@ const AllAssets = ({ assetList }) => {
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                   type="button"
                   onClick={() => {
                     console.log("button clicked");

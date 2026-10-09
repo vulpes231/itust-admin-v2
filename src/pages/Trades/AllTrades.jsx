@@ -94,23 +94,15 @@ const AllTrades = ({ tradeList }) => {
   }, [tradeList, statusFilter, acctFilter, userFilter]);
 
   // console.log(filteredTrades);
-  /**
-   * Open create trade modal
-   */
+
   const openCreateTradeModal = () => {
     setCreateTradeModal(true);
   };
 
-  /**
-   * Close create trade modal
-   */
   const closeCreateTradeModal = () => {
     setCreateTradeModal(false);
   };
 
-  /**
-   * Handle table action
-   */
   const handleAction = (e, id, data) => {
     setRowId(id);
     setRowData(data);
@@ -118,9 +110,6 @@ const AllTrades = ({ tradeList }) => {
     setShowModal(true);
   };
 
-  /**
-   * Close action modal
-   */
   const handleClose = () => {
     setAction("");
     setRowId("");
@@ -159,9 +148,6 @@ const AllTrades = ({ tradeList }) => {
   //   setSelectedUserId(user._id);
   // }, [userFIlter, users]);
 
-  /**
-   * Persist filters
-   */
   useEffect(() => {
     sessionStorage.setItem("currentTradeStatusFilter", statusFilter);
 
@@ -169,9 +155,7 @@ const AllTrades = ({ tradeList }) => {
 
     sessionStorage.setItem("currentUserFilter", userFilter);
   }, [statusFilter, acctFilter, userFilter]);
-  /**
-   * Table columns
-   */
+
   const columns = useMemo(
     () => [
       {
@@ -293,11 +277,19 @@ const AllTrades = ({ tradeList }) => {
       },
 
       {
-        header: "Today Return (%)",
-        accessorKey: "performance.totalReturnPercent",
+        header: "Today Return",
+        accessorKey: "performance.totalReturn",
         enableColumnFilter: false,
         cell: (cell) => {
           return <Roi {...cell} />;
+        },
+      },
+      {
+        header: "Leverage",
+        accessorKey: "execution.leverage",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          return <div>{cell.getValue() ? `${cell.getValue()}X` : "-"}</div>;
         },
       },
 
@@ -345,7 +337,7 @@ const AllTrades = ({ tradeList }) => {
                 <button
                   type="button"
                   onClick={openCreateTradeModal}
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                 >
                   Create Trade
                 </button>
@@ -409,7 +401,7 @@ const AllTrades = ({ tradeList }) => {
               </Col>
 
               <Col lg={2} md={4}>
-                <Button color="primary" className="w-100">
+                <Button color="secondary" className="w-100">
                   Filter
                 </Button>
               </Col>

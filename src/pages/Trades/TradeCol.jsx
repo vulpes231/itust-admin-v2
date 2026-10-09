@@ -35,7 +35,11 @@ const OrderValue = (cell) => {
 };
 
 const Roi = (cell) => {
-  return <React.Fragment>{cell.getValue()?.toFixed(2)}%</React.Fragment>;
+  return (
+    <React.Fragment>
+      {numeral(cell.getValue()).format("$0,0.00")}
+    </React.Fragment>
+  );
 };
 
 const Price = (cell) => {

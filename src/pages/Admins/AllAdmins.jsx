@@ -9,6 +9,8 @@ import CreateAdmin from "./CreateAdmin";
 const AllAdmins = ({ adminList }) => {
   const [createAdminModal, setCreateAdminModal] = useState(false);
 
+  // console.log(adminList);
+
   const [action, setAction] = useState("");
   const [rowId, setRowId] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -90,7 +92,7 @@ const AllAdmins = ({ adminList }) => {
         },
       },
     ],
-    []
+    [],
   );
   return (
     <React.Fragment>
@@ -101,7 +103,7 @@ const AllAdmins = ({ adminList }) => {
             <div className="flex-shrink-0">
               <div className="flax-shrink-0 hstack gap-2">
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                   type="button"
                   onClick={openCreateAdminModal}
                 >
@@ -114,7 +116,7 @@ const AllAdmins = ({ adminList }) => {
             <TableContainer
               columns={columns}
               data={adminList || []}
-              isGlobalFilter={true}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"

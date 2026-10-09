@@ -192,7 +192,7 @@ const AllPlans = ({ planList }) => {
                 <button
                   type="button"
                   onClick={() => setCreatePlanModal(true)}
-                  className="btn btn-primary"
+                  className="btn btn-secondary"
                 >
                   Create Plan
                 </button>
@@ -204,7 +204,7 @@ const AllPlans = ({ planList }) => {
             <TableContainer
               columns={columns}
               data={planList || []}
-              isGlobalFilter={true}
+              isGlobalFilter={false}
               isAddUserList={false}
               customPageSize={8}
               className="custom-header-css"

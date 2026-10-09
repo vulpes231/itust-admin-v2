@@ -24,7 +24,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
 
   const selectDashboardData = createSelector(
     (state) => state.Layout,
-    (sidebarVisibilitytype) => sidebarVisibilitytype.sidebarVisibilitytype
+    (sidebarVisibilitytype) => sidebarVisibilitytype.sidebarVisibilitytype,
   );
   // Inside your component
   const sidebarVisibilitytype = useSelector(selectDashboardData);
@@ -153,10 +153,10 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
               </Dropdown>
 
               {/* LanguageDropdown */}
-              <LanguageDropdown />
+              {/* <LanguageDropdown /> */}
 
               {/* FullScreenDropdown */}
-              <FullScreenDropdown />
+              {/* <FullScreenDropdown /> */}
 
               {/* Dark/Light Mode set */}
               <LightDark
@@ -165,7 +165,7 @@ const Header = ({ onChangeLayoutMode, layoutModeType, headerClass }) => {
               />
 
               {/* NotificationDropdown */}
-              <NotificationDropdown />
+              {/* <NotificationDropdown /> */}
 
               {/* ProfileDropdown */}
               <ProfileDropdown />

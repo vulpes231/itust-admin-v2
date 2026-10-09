@@ -14,7 +14,7 @@ const Admins = () => {
   const [adminList, setAdminList] = useState([]);
 
   const { data: admins } = useQuery({
-    queryKey: ["investments"],
+    queryKey: ["admins"],
     queryFn: getAllAdmins,
     enabled: !!token,
   });
