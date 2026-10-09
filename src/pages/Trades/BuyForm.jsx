@@ -83,6 +83,7 @@ const BuyForm = ({ order, token, users, onClose }) => {
     },
 
     onSubmit: (values) => {
+      console.log(selectedPlan);
       const payload = {
         ...values,
 
@@ -126,7 +127,8 @@ const BuyForm = ({ order, token, users, onClose }) => {
   );
 
   selectedPlan = plans?.find(
-    (plan) => plan.planId === validation.values.planId,
+    (plan) =>
+      plan.planId === validation.values.planId && plan.status === "active",
   );
 
   // console.log(selectedPlan);
@@ -254,13 +256,15 @@ const BuyForm = ({ order, token, users, onClose }) => {
               <option value="">Select Plan</option>
               {plans &&
                 plans.length > 0 &&
-                plans.map((pln) => {
-                  return (
-                    <option key={pln._id} value={pln.planId}>
-                      {`${pln?.name}: ${numeral(pln.balance.available).format("$0,0.00")}`}
-                    </option>
-                  );
-                })}
+                plans
+                  .filter((pl) => pl.status === "active")
+                  .map((pln) => {
+                    return (
+                      <option key={pln._id} value={pln.planId}>
+                        {`${pln?.name}: ${numeral(pln.balance.available).format("$0,0.00")}`}
+                      </option>
+                    );
+                  })}
             </Input>
           </Col>
         </Row>
