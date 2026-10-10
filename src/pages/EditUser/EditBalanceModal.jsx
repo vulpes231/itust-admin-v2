@@ -94,6 +94,7 @@ const EditBalanceModal = ({ isOpen, handleToggle, walletData }) => {
               <option value="">Select Action</option>
               <option value="add">Add</option>
               <option value="subtract">Subtract</option>
+              <option value="set">Set</option>
             </Input>
           </Row>
           <Row className="mt-3">
