@@ -35,6 +35,7 @@ const EditBalanceModal = ({ isOpen, handleToggle, walletData }) => {
       amount: "",
       action: "",
       walletId: "",
+      account: "",
     },
     onSubmit: (values) => {
       if (!walletData) {
@@ -43,7 +44,7 @@ const EditBalanceModal = ({ isOpen, handleToggle, walletData }) => {
       values.walletId = walletData._id;
 
       console.log(values);
-      mutation.mutate(values);
+      // mutation.mutate(values);
     },
   });
 
@@ -97,6 +98,22 @@ const EditBalanceModal = ({ isOpen, handleToggle, walletData }) => {
               <option value="set">Set</option>
             </Input>
           </Row>
+          {validation.values.set && (
+            <Row>
+              <Label>Account Balance</Label>
+              <Input
+                type="select"
+                name="account"
+                value={validation.values.account}
+                onChange={validation.handleChange}
+              >
+                <option value="">Select Action</option>
+                <option value="total">Total</option>
+                <option value="available">Avaialble</option>
+                {/* <option value="set">Set</option> */}
+              </Input>
+            </Row>
+          )}
           <Row className="mt-3">
             <Label>Amount</Label>
             <Input

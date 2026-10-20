@@ -34,16 +34,18 @@ const OrderValue = (cell) => {
   );
 };
 
-const Roi = (cell) => {
+const Roi = ({ total, extra }) => {
+  const parsedTotal = Number(total);
+  const parsedExtra = Number(extra);
+
+  const roi =
+    (Number.isFinite(parsedTotal) ? parsedTotal : 0) -
+    (Number.isFinite(parsedExtra) ? parsedExtra : 0);
+
   return (
-    <React.Fragment>
-      {" "}
-      <span
-        className={`${cell.getValue() < 0 ? "text-danger" : "text-success"}`}
-      >
-        {numeral(cell.getValue()).format("$0,0.00")}
-      </span>
-    </React.Fragment>
+    <span className={roi < 0 ? "text-danger" : "text-success"}>
+      {numeral(roi).format("$0,0.00")}
+    </span>
   );
 };
 

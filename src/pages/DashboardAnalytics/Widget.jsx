@@ -15,7 +15,7 @@ const Widget = ({ info }) => {
               <div className="d-flex justify-content-between">
                 <div>
                   <p className="fw-medium text-muted mb-0">Users</p>
-                  <h2 className="mt-4 ff-secondary fw-semibold">
+                  <h4 className="mt-4 ff-secondary fw-semibold">
                     <span className="counter-value">
                       <CountUp
                         start={0}
@@ -24,7 +24,7 @@ const Widget = ({ info }) => {
                         duration={4}
                       />
                     </span>
-                  </h2>
+                  </h4>
                   <p className="mb-0 text-muted">
                     <span className="badge bg-light text-success mb-0">
                       <i className="ri-arrow-up-line align-middle"></i> 16.24 %
@@ -50,7 +50,7 @@ const Widget = ({ info }) => {
               <div className="d-flex justify-content-between">
                 <div>
                   <p className="fw-medium text-muted mb-0">Transactions</p>
-                  <h2 className="mt-4 ff-secondary fw-semibold">
+                  <h4 className="mt-4 ff-secondary fw-semibold">
                     $
                     <span className="counter-value" data-target="97.66">
                       <CountUp
@@ -61,7 +61,7 @@ const Widget = ({ info }) => {
                       />
                     </span>
                     k
-                  </h2>
+                  </h4>
                   <p className="mb-0 text-muted">
                     <span className="badge bg-light text-danger mb-0">
                       <i className="ri-arrow-down-line align-middle"></i> 3.96 %
@@ -86,7 +86,7 @@ const Widget = ({ info }) => {
               <div className="d-flex justify-content-between">
                 <div>
                   <p className="fw-medium text-muted mb-0">Trades</p>
-                  <h2 className="mt-4 ff-secondary fw-semibold">
+                  <h4 className="mt-4 ff-secondary fw-semibold">
                     $
                     <span className="counter-value" data-target="97.66">
                       <CountUp
@@ -97,7 +97,7 @@ const Widget = ({ info }) => {
                       />
                       k
                     </span>
-                  </h2>
+                  </h4>
                   <p className="mb-0 text-muted">
                     <span className="badge bg-light text-danger mb-0">
                       <i className="ri-arrow-down-line align-middle"></i> 0.24 %

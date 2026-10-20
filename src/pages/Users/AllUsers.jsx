@@ -23,6 +23,8 @@ const AllUsers = ({ userList }) => {
     setData(userData);
   };
 
+  // console.log(userList);
+
   useEffect(() => {
     if (action === "edit" && rowId) {
       const userId = rowId;

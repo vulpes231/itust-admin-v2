@@ -80,9 +80,9 @@ const Planlist = ({ plans = [] }) => {
     switch (action) {
       case "view":
         // Update this route if your application uses a different URL.
-        navigate(`/plans/${plan._id}`, {
-          state: { plan },
-        });
+        // navigate(`/plans/${plan._id}`, {
+        //   state: { plan },
+        // });
         break;
 
       case "close":
@@ -241,10 +241,6 @@ const Planlist = ({ plans = [] }) => {
               isCryptoOrdersFilter={true}
               SearchPlaceholder="Search Plans..."
             />
-
-            {/* <div className="text-muted mt-2">
-              Showing {filteredPlans.length} of {(plans || []).length} plans
-            </div> */}
           </CardBody>
         </Card>
       </Col>

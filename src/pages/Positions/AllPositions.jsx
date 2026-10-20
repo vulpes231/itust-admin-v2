@@ -128,6 +128,8 @@ const AllPositions = ({ positions }) => {
     setDeletePositionModal(false);
   };
 
+  // console.log(positions);
+
   const columns = useMemo(
     () => [
       {
@@ -205,7 +207,7 @@ const AllPositions = ({ positions }) => {
       },
       {
         header: "Current Value",
-        accessorKey: "performance.currentBaseValue",
+        accessorKey: "performance.currentValue",
         enableColumnFilter: false,
         cell: (cell) => {
           return <OrderValue {...cell} />;
@@ -237,7 +239,10 @@ const AllPositions = ({ positions }) => {
         accessorKey: "performance.totalReturn",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Roi {...cell} />;
+          const totalReturn = cell.row.original.performance.totalReturn;
+          const extra = cell.row.original.performance.extra;
+
+          return <Roi total={totalReturn} extra={extra} />;
         },
       },
       {
