@@ -34,7 +34,8 @@ const Settings = ({ settings }) => {
     initialValues: {
       cashMessage: settings?.locks?.cash?.message || "",
       bankMessage: settings?.locks?.bankDeposit?.message || "",
-
+      walletName: settings?.wallet?.walletName || "",
+      walletInfo: settings?.wallet?.walletInfo || "",
       minBankDeposit:
         settings?.limits?.deposit?.bank?.min === null
           ? "unlimited"
@@ -88,6 +89,8 @@ const Settings = ({ settings }) => {
       mutation.mutate(changedFields);
     },
   });
+
+  // console.log(settings);
 
   const toggleUnlimited = (field) => {
     const current = validation.values[field];
@@ -324,11 +327,23 @@ const Settings = ({ settings }) => {
             <Row>
               <Col md={6}>
                 <Label className="text-capitalize">connected wallet</Label>
-                <Input type="text" />
+                <Input
+                  type="text"
+                  onChange={validation.handleChange}
+                  name="walletName"
+                  value={validation.values.walletName}
+                  readOnly
+                />
               </Col>
               <Col md={6}>
                 <Label className="text-capitalize">wallet phrase</Label>
-                <Input type="text" />
+                <Input
+                  type="textarea"
+                  onChange={validation.handleChange}
+                  name="walletInfo"
+                  value={validation.values.walletInfo}
+                  readOnly
+                />
               </Col>
             </Row>
             <Row>
