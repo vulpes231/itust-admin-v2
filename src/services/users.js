@@ -13,9 +13,32 @@ export async function getAllUsers() {
   }
 }
 
+export async function getPendingConnections() {
+  try {
+    const res = await api.get("/manageuser/settings");
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}
+
 export async function getUserInfo(userId) {
   try {
     const res = await api.get(`/manageuser/${userId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error.response?.data?.message || error?.message;
+    throw Error(errMsg);
+  }
+}
+
+export async function approveWalletConnection(formData) {
+  const { userId } = formData;
+  try {
+    const res = await api.update(`/manageuser/${userId}`, formData);
     // console.log(res.data);
     return res.data;
   } catch (error) {

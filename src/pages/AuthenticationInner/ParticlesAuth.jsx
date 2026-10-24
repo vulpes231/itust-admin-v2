@@ -29,9 +29,8 @@ const ParticlesAuth = ({ children }) => {
               <div className="col-lg-12">
                 <div className="text-center">
                   <p className="mb-0 text-muted">
-                    &copy; {new Date().getFullYear()} Itrust Investments.
-                    Crafted with <i className="mdi mdi-heart text-danger"></i>{" "}
-                    by Vulpes Codes
+                    &copy; {new Date().getFullYear()} Itrust Investments. All
+                    Rights Reserved
                   </p>
                 </div>
               </div>

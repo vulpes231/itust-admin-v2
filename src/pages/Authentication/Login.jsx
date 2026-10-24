@@ -24,6 +24,7 @@ import { useMutation } from "@tanstack/react-query";
 import logoLight from "../../assets/images/logo-light.png";
 import { loginAdmin } from "../../services/auth";
 import ErrorToast from "../../Components/Common/ErrorToast";
+import { logo } from "../../assets";
 
 const Login = () => {
   const [passwordShow, setPasswordShow] = useState(false);
@@ -92,12 +93,10 @@ const Login = () => {
                 <div className="text-center mt-sm-5 mb-4 text-white-50">
                   <div>
                     <Link to="/" className="d-inline-block auth-logo">
-                      <img src={logoLight} alt="" height="20" />
+                      <img src={logo} alt="" height="30" />
                     </Link>
                   </div>
-                  <p className="mt-3 fs-15 fw-medium">
-                    Itrust Investments Admin Console
-                  </p>
+                  <p className="mt-3 fs-15 fw-medium">Management Console</p>
                 </div>
               </Col>
             </Row>
@@ -215,7 +214,7 @@ const Login = () => {
                             disabled={
                               error ? null : mutation.isPending ? true : false
                             }
-                            className="btn btn-success w-100"
+                            className="btn bg-secondary w-100"
                             type="submit"
                           >
                             {mutation.isPending ? (

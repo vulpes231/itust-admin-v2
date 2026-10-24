@@ -9,6 +9,7 @@ import ErrorToast from "../../Components/Common/ErrorToast";
 import SuccessToast from "../../Components/Common/SuccessToast";
 
 import { MdToggleOff, MdToggleOn } from "react-icons/md";
+import ManageConnection from "./ManageConnection";
 
 const Settings = ({ settings }) => {
   const { userId } = useParams();
@@ -345,6 +346,8 @@ const Settings = ({ settings }) => {
                   readOnly
                 />
               </Col>
+
+              <ManageConnection settings={settings} />
             </Row>
             <Row>
               <Col md={6} className="d-flex flex-column gap-2">
