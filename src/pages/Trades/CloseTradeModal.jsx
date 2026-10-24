@@ -33,7 +33,7 @@ const CloseTradeModal = ({ dataId, action, isOpen, onClose, rowData }) => {
     const formData = {
       tradeId: dataId,
     };
-    // console.log(formData);
+    console.log(formData);
     mutation.mutate(formData);
   };
 

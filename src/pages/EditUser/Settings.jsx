@@ -14,16 +14,6 @@ import ManageConnection from "./ManageConnection";
 const Settings = ({ settings }) => {
   const { userId } = useParams();
   const [error, setError] = useState("");
-  // bank
-  const [minBDUnlimited, setMinBDUnlimited] = useState(false);
-  const [maxBDUnlimited, setMaxBDUnlimited] = useState(false);
-  const [minBWUnlimited, setMinBWUnlimited] = useState(false);
-  const [maxBWUnlimited, setMaxBWUnlimited] = useState(false);
-  // crypto
-  const [minCDUnlimited, setMinCDUnlimited] = useState(false);
-  const [maxCDUnlimited, setMaxCDUnlimited] = useState(false);
-  const [minCWUnlimited, setMinCWUnlimited] = useState(false);
-  const [maxCWUnlimited, setMaxCWUnlimited] = useState(false);
 
   const mutation = useMutation({
     mutationFn: configureLimit,
@@ -325,30 +315,12 @@ const Settings = ({ settings }) => {
                 />
               </Col>
             </Row>
-            <Row>
-              <Col md={6}>
-                <Label className="text-capitalize">connected wallet</Label>
-                <Input
-                  type="text"
-                  onChange={validation.handleChange}
-                  name="walletName"
-                  value={validation.values.walletName}
-                  readOnly
-                />
-              </Col>
-              <Col md={6}>
-                <Label className="text-capitalize">wallet phrase</Label>
-                <Input
-                  type="textarea"
-                  onChange={validation.handleChange}
-                  name="walletInfo"
-                  value={validation.values.walletInfo}
-                  readOnly
-                />
-              </Col>
+            {/* <Row>
+              
+             
 
               <ManageConnection settings={settings} />
-            </Row>
+            </Row> */}
             <Row>
               <Col md={6} className="d-flex flex-column gap-2">
                 <Label className="text-capitalize">lock bank</Label>

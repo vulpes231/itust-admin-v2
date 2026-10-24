@@ -27,6 +27,8 @@ const SellOrder = ({ token, order, users, onClose, orderData }) => {
     },
   });
 
+  // console.log(orderData);
+
   const validation = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -50,7 +52,7 @@ const SellOrder = ({ token, order, users, onClose, orderData }) => {
         amount: values.amount,
         notifyUser: values.notifyUser,
       };
-      //   console.log(formData);
+      console.log(formData);
       mutation.mutate(formData);
     },
   });
