@@ -34,8 +34,6 @@ import { getAllUsers } from "../../services/users";
 const AllPositions = ({ positions }) => {
   const navigate = useNavigate();
 
-  // console.log(positions);
-
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: getAllUsers,
@@ -63,7 +61,7 @@ const AllPositions = ({ positions }) => {
   const [deletePositionModal, setDeletePositionModal] = useState(false);
 
   const [statusFilter, setStatusFilter] = useState(() => {
-    return sessionStorage.getItem("currentPositionStatusFilter") || "all";
+    return sessionStorage.getItem("currentPositionStatusFilter") || "open";
   });
 
   const [acctFilter, setAcctFilter] = useState(() => {
@@ -288,6 +286,8 @@ const AllPositions = ({ positions }) => {
 
     sessionStorage.setItem("currentPositionUserFilter", userFilter);
   }, [statusFilter, acctFilter, userFilter]);
+
+  // console.log(statusFilter);
 
   return (
     <React.Fragment>

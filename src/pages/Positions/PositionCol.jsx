@@ -26,12 +26,11 @@ const Quantity = (cell) => {
 };
 
 const OrderValue = (cell) => {
-  return (
-    <React.Fragment>
-      {" "}
-      {numeral(cell.getValue()).format("$0,0.00")}
-    </React.Fragment>
-  );
+  const currentValue = cell?.row?.original?.performance?.currentValue;
+  const marginDebt = cell?.row?.original?.marginDebt;
+
+  const total = currentValue - marginDebt;
+  return <React.Fragment> {numeral(total).format("$0,0.00")}</React.Fragment>;
 };
 
 const Roi = ({ total, extra }) => {

@@ -55,7 +55,7 @@ const AllTrades = ({ tradeList }) => {
   // const [selectedUserId, setSelectedUserId] = useState("");
 
   const [statusFilter, setStatusFilter] = useState(() => {
-    return sessionStorage.getItem("currentTradeStatusFilter") || "all";
+    return sessionStorage.getItem("currentTradeStatusFilter") || "open";
   });
 
   const [acctFilter, setAcctFilter] = useState(() => {

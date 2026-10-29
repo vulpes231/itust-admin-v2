@@ -14,6 +14,8 @@ const EditTradeForm = ({ tradeData, mutation, onClose }) => {
     return local.toISOString().slice(0, 16);
   };
 
+  // console.log(tradeData);
+
   const validation = useFormik({
     enableReinitialize: true,
 
