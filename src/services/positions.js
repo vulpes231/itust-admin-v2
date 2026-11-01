@@ -37,3 +37,14 @@ export async function deletePosition(positionId) {
     throw Error(errMsg);
   }
 }
+
+export async function exitFullPosition(positionId) {
+  try {
+    const res = await api.create(`/manageposition/${positionId}`);
+    // console.log(res.data);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}

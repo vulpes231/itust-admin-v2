@@ -30,6 +30,7 @@ import EditPosition from "./EditPosition";
 import DeletePositionModal from "./DeletePositionModal";
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers } from "../../services/users";
+import ExitPosition from "./ExitPosition";
 
 const AllPositions = ({ positions }) => {
   const navigate = useNavigate();
@@ -56,6 +57,7 @@ const AllPositions = ({ positions }) => {
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState(null);
 
+  const [exitPositionModal, setExitPositionModal] = useState(false);
   const [closePositionModal, setClosePositionModal] = useState(false);
   const [editPositionModal, setEditPositionModal] = useState(false);
   const [deletePositionModal, setDeletePositionModal] = useState(false);
@@ -112,6 +114,8 @@ const AllPositions = ({ positions }) => {
       setEditPositionModal(true);
     } else if (actionValue === "delete") {
       setDeletePositionModal(true);
+    } else if (actionValue === "exit") {
+      setExitPositionModal(true);
     }
 
     e.target.value = "";
@@ -124,6 +128,7 @@ const AllPositions = ({ positions }) => {
     setClosePositionModal(false);
     setEditPositionModal(false);
     setDeletePositionModal(false);
+    setExitPositionModal(false);
   };
 
   // console.log(positions);
@@ -268,7 +273,8 @@ const AllPositions = ({ positions }) => {
               >
                 <option value="">Select Option</option>
                 <option value="edit">Edit</option>
-                <option value="close">Close</option>
+                <option value="close">Close Partial</option>
+                <option value="exit">Close Full</option>
                 <option value="delete">Delete</option>
               </select>
             </div>
@@ -393,6 +399,13 @@ const AllPositions = ({ positions }) => {
         <DeletePositionModal
           positionId={rowId}
           isOpen={deletePositionModal}
+          handleToggle={handleClose}
+        />
+      )}
+      {exitPositionModal && (
+        <ExitPosition
+          positionId={rowId}
+          isOpen={exitPositionModal}
           handleToggle={handleClose}
         />
       )}

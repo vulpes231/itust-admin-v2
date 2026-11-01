@@ -57,6 +57,8 @@ const EditBalanceModal = ({ isOpen, handleToggle, walletData }) => {
     }
   }, [error]);
 
+  // console.log(walletData);
+
   return (
     <Modal centered isOpen={isOpen} toggle={handleToggle}>
       <ModalHeader toggle={handleToggle}>
