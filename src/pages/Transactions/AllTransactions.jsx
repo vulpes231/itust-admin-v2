@@ -16,6 +16,7 @@ import TransactionModal from "./TransactionModal";
 import { upperCase } from "lodash";
 import CreateTransaction from "./CreateTransaction";
 import DeleteTransaction from "./DeleteTransaction";
+import UpdateStatus from "./UpdateStatus";
 
 const AllTransactions = ({ transactionList }) => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const AllTransactions = ({ transactionList }) => {
   const [rowId, setRowId] = useState("");
   const [rowData, setRowData] = useState("");
   const [showModal, setShowModal] = useState(false);
+  const [showStatusModal, setShowStatusModal] = useState(false);
 
   const [searchUser, setSearchUser] = useState("");
   const [currentTab, setCurrentTab] = useState(() => {
@@ -82,10 +84,16 @@ const AllTransactions = ({ transactionList }) => {
   }, [transactionList, currentTab, statusFilter, acctFilter, searchUser]);
 
   const handleAction = (e, id, transaction) => {
+    console.log(action);
     setRowId(id);
     setRowData(transaction);
     setAction(e.target.value);
-    setShowModal(true);
+    if (showModal) {
+      setShowModal(true);
+    }
+    if (action === "set") {
+      setShowStatusModal(true);
+    }
   };
 
   const columns = useMemo(
@@ -199,7 +207,9 @@ const AllTransactions = ({ transactionList }) => {
                 <option value="edit">Edit</option>
                 <option value="view">View</option>
                 <option value="delete">Delete</option>
-                {/* {method === "bank" && } */}
+                {status !== "processed" && (
+                  <option value="set">Update Status</option>
+                )}
               </select>
             </div>
           );
@@ -313,7 +323,7 @@ const AllTransactions = ({ transactionList }) => {
               data={filteredTransactions || []}
               isGlobalFilter={false}
               isAddUserList={false}
-              customPageSize={50}
+              customPageSize={10}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"
@@ -356,6 +366,19 @@ const AllTransactions = ({ transactionList }) => {
           }}
           transactionId={rowId}
           trnx={rowData}
+        />
+      )}
+      {action === "set" && (
+        <UpdateStatus
+          isOpen={action === "set"}
+          trx={rowData}
+          toggle={() => {
+            setAction("");
+            setRowId("");
+            setRowData("");
+            // setShowModal(false);
+            setShowStatusModal(false);
+          }}
         />
       )}
     </React.Fragment>

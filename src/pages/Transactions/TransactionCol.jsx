@@ -43,6 +43,8 @@ const Status = (cell) => {
   const icon =
     status === "pending" ? (
       <i className="ri-time-line align-bottom"></i>
+    ) : status === "in process" ? (
+      <i className="ri-time-line align-bottom"></i>
     ) : status === "processed" ? (
       <i className="ri-checkbox-circle-line align-bottom"></i>
     ) : status === "cancelled" ? (
@@ -54,11 +56,13 @@ const Status = (cell) => {
         className={`${
           status === "pending"
             ? "bg-warning-subtle text-warning badge text-capitalize"
-            : status === "processed"
-              ? "bg-success-subtle text-success badge text-capitalize"
-              : status === "cancelled"
-                ? "bg-danger-subtle text-danger badge text-capitalize"
-                : ""
+            : status === "in process"
+              ? "bg-info-subtle text-info badge text-capitalize"
+              : status === "processed"
+                ? "bg-success-subtle text-success badge text-capitalize"
+                : status === "cancelled"
+                  ? "bg-danger-subtle text-danger badge text-capitalize"
+                  : ""
         }`}
       >
         <span className="d-flex items-center gap-1 p-1 rounded-4">

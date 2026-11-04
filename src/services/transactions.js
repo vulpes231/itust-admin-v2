@@ -39,6 +39,18 @@ export async function updateTransactionInfo(transactionData) {
   }
 }
 
+export async function updateTransactionStatus(formData) {
+  const { transactionId } = formData;
+
+  console.log(transactionId, "tId");
+  try {
+    const res = await api.update(`/managetrans/${transactionId}`, formData);
+    return res.data;
+  } catch (error) {
+    const errMsg = error;
+    throw Error(errMsg);
+  }
+}
 export async function createTransaction(formData) {
   try {
     const res = await api.create(`/managetrans`, formData);
