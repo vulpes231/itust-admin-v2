@@ -25,12 +25,31 @@ const Quantity = (cell) => {
   return <React.Fragment>{cell.getValue()?.toFixed(5)}</React.Fragment>;
 };
 
-const OrderValue = (cell) => {
-  const currentValue = cell?.row?.original?.performance?.currentValue;
-  const marginDebt = cell?.row?.original?.execution?.marginDebt;
+// const OrderValue = (cell) => {
+//   const currentValue = cell?.row?.original?.performance?.currentValue;
+//   const marginDebt = cell?.row?.original?.execution?.marginDebt;
 
-  const total = currentValue - marginDebt;
-  return <React.Fragment> {numeral(total).format("$0,0.00")}</React.Fragment>;
+//   const total = currentValue - marginDebt;
+//   return <React.Fragment> {numeral(total).format("$0,0.00")}</React.Fragment>;
+// };
+
+const OrderValue = (cell) => {
+  const currentValue =
+    Number(cell?.row?.original?.performance?.currentValue) || 0;
+
+  const extra = Number(cell?.row?.original?.extra) || 0;
+
+  const leverage = Number(cell?.row?.original?.execution?.leverage) || 1;
+
+  const marginDebt = Number(cell?.row?.original?.execution?.marginDebt) || 0;
+
+  const leveragedExtra = extra * leverage;
+
+  const adjustedValue = currentValue - extra + leveragedExtra;
+
+  const total = adjustedValue - marginDebt;
+
+  return <>{numeral(total).format("$0,0.00")}</>;
 };
 
 const Roi = (cell) => {

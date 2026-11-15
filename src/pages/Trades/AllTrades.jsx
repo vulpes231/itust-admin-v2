@@ -25,13 +25,22 @@ import DeleteTradeModal from "./DeleteTradeModal";
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers } from "../../services/users";
 import numeral from "numeral";
+import { getAllTrades } from "../../services/trades";
+import { getAccessToken } from "../../helpers/api_helper";
 
 const AllTrades = ({ tradeList }) => {
   const navigate = useNavigate();
+  const token = getAccessToken();
 
   const { data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: getAllUsers,
+  });
+
+  const { data: trades } = useQuery({
+    queryKey: ["trades"],
+    queryFn: getAllTrades,
+    enabled: !!token,
   });
 
   const userOptions = useMemo(() => {
@@ -70,11 +79,9 @@ const AllTrades = ({ tradeList }) => {
    * Filter trades
    */
   const filteredTrades = useMemo(() => {
-    if (!tradeList) {
+    if (!trades) {
       return [];
     }
-
-    let trades = [...tradeList];
 
     // Status filter
     if (statusFilter !== "all" && statusFilter !== "") {
@@ -92,7 +99,7 @@ const AllTrades = ({ tradeList }) => {
     }
 
     return trades;
-  }, [tradeList, statusFilter, acctFilter, userFilter]);
+  }, [trades, statusFilter, acctFilter, userFilter]);
 
   // console.log(filteredTrades);
 
@@ -282,7 +289,17 @@ const AllTrades = ({ tradeList }) => {
         accessorKey: "performance.totalReturn",
         enableColumnFilter: false,
         cell: (cell) => {
-          return <Roi {...cell} />;
+          const totalReturn = Number(cell.getValue()) || 0;
+          const extra = Number(cell.row.original.extra) || 0;
+          const leverage = Number(cell.row.original.execution?.leverage) || 1;
+
+          const leveragedExtra = extra * leverage;
+
+          const adjustedReturn = totalReturn - extra + leveragedExtra;
+
+          // return <Roi {...cell} />;
+
+          return <div>{numeral(adjustedReturn).format("$0,0.00")}</div>;
         },
       },
       {
@@ -430,7 +447,7 @@ const AllTrades = ({ tradeList }) => {
               data={filteredTrades || []}
               isGlobalFilter={false}
               isAddUserList={false}
-              customPageSize={50}
+              customPageSize={10}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"

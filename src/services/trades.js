@@ -4,8 +4,9 @@ const api = new APIClient();
 
 export async function getAllTrades() {
   try {
+    console.log("fetching trades");
     const res = await api.get("/managetrade");
-    // console.log(res.data);
+    console.log(res.data);
     return res.data;
   } catch (error) {
     const errMsg = error;
@@ -14,7 +15,7 @@ export async function getAllTrades() {
 }
 
 export async function getUserTrades(userId) {
-  console.log(typeof userId);
+  // console.log(typeof userId);
   try {
     const res = await api.get(`/managetrade/${userId}`);
     // console.log(res.data);
