@@ -55,13 +55,18 @@ const Price = (cell) => {
     </React.Fragment>
   );
 };
+
 const Extra = (cell) => {
+  const trade = cell.row.original;
+
+  // console.log(trade);
   return (
     <React.Fragment>
       {numeral(cell.getValue()).format("$0,0.00")}
     </React.Fragment>
   );
 };
+
 const Leverage = (cell) => {
   return (
     <React.Fragment>

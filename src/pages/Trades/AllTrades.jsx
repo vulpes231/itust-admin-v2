@@ -24,6 +24,7 @@ import DeleteTradeModal from "./DeleteTradeModal";
 
 import { useQuery } from "@tanstack/react-query";
 import { getAllUsers } from "../../services/users";
+import numeral from "numeral";
 
 const AllTrades = ({ tradeList }) => {
   const navigate = useNavigate();
@@ -277,7 +278,7 @@ const AllTrades = ({ tradeList }) => {
       },
 
       {
-        header: "Today Return",
+        header: "Total Return",
         accessorKey: "performance.totalReturn",
         enableColumnFilter: false,
         cell: (cell) => {
@@ -290,6 +291,23 @@ const AllTrades = ({ tradeList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           return <div>{cell.getValue() ? `${cell.getValue()}X` : "-"}</div>;
+        },
+      },
+      {
+        header: "Extra",
+        accessorKey: "extra",
+        enableColumnFilter: false,
+        cell: (cell) => {
+          const extra = Number(cell.getValue()) || 0;
+          const leverage = Number(cell.row.original.execution?.leverage) || 1;
+
+          const totalExtra = extra * leverage;
+
+          return (
+            <div>
+              {numeral(leverage > 1 ? totalExtra : extra).format("$0,0.00")}
+            </div>
+          );
         },
       },
 

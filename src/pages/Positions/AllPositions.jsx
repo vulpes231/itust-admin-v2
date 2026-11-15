@@ -40,6 +40,8 @@ const AllPositions = ({ positions }) => {
     queryFn: getAllUsers,
   });
 
+  // console.log(positions);
+
   const userOptions = useMemo(() => {
     if (!users?.length) {
       return [];
@@ -253,6 +255,7 @@ const AllPositions = ({ positions }) => {
         accessorKey: "performance.extra",
         enableColumnFilter: false,
         cell: (cell) => {
+          const trade = cell.row.original;
           return <Extra {...cell} />;
         },
       },
