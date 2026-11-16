@@ -83,22 +83,24 @@ const AllTrades = ({ tradeList }) => {
       return [];
     }
 
+    let myTrades;
+
     // Status filter
     if (statusFilter !== "all" && statusFilter !== "") {
-      trades = trades.filter((trd) => trd.status === statusFilter);
+      myTrades = trades.filter((trd) => trd.status === statusFilter);
     }
 
     // Account filter
     if (acctFilter !== "all" && acctFilter !== "") {
-      trades = trades.filter((trd) => trd.wallet?.name === acctFilter);
+      myTrades = trades.filter((trd) => trd.wallet?.name === acctFilter);
     }
 
     // User filter
     if (userFilter) {
-      trades = trades.filter((trd) => trd.userId === userFilter);
+      myTrades = trades.filter((trd) => trd.userId === userFilter);
     }
 
-    return trades;
+    return myTrades;
   }, [trades, statusFilter, acctFilter, userFilter]);
 
   // console.log(filteredTrades);
@@ -290,8 +292,9 @@ const AllTrades = ({ tradeList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           const totalReturn = Number(cell.getValue()) || 0;
-          const extra = Number(cell.row.original.extra) || 0;
-          const leverage = Number(cell.row.original.execution?.leverage) || 1;
+          const extra = Number(cell?.row?.original?.extra) || 0;
+          const leverage =
+            Number(cell?.row?.original?.execution?.leverage) || 1;
 
           const leveragedExtra = extra * leverage;
 
@@ -316,7 +319,8 @@ const AllTrades = ({ tradeList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           const extra = Number(cell.getValue()) || 0;
-          const leverage = Number(cell.row.original.execution?.leverage) || 1;
+          const leverage =
+            Number(cell?.row?.original?.execution?.leverage) || 1;
 
           const totalExtra = extra * leverage;
 
