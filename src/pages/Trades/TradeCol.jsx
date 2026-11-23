@@ -37,15 +37,9 @@ const OrderValue = (cell) => {
   const currentValue =
     Number(cell?.row?.original?.performance?.currentValue) || 0;
 
-  const extra = Number(cell?.row?.original?.extra) || 0;
-
-  const leverage = Number(cell?.row?.original?.execution?.leverage) || 1;
-
   const marginDebt = Number(cell?.row?.original?.execution?.marginDebt) || 0;
 
-  const leveragedExtra = extra * leverage;
-
-  const adjustedValue = currentValue - extra + leveragedExtra;
+  const adjustedValue = currentValue; //- extra + leveragedExtra;
 
   const total = adjustedValue - marginDebt;
 

@@ -22,7 +22,7 @@ const EditTradeForm = ({ tradeData, mutation, onClose }) => {
     initialValues: {
       tradeId: tradeData?._id,
       leverage: tradeData?.execution?.leverage ?? "",
-      extra: tradeData?.extra ?? "",
+      extra: tradeData?.extra / tradeData?.execution?.leverage ?? "",
       customDate: tradeData?.createdAt
         ? tradeData.createdAt.slice(0, 16)
         : getCurrentDateTime(),

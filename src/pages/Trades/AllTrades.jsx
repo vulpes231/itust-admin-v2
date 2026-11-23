@@ -298,7 +298,7 @@ const AllTrades = ({ tradeList }) => {
 
           const leveragedExtra = extra * leverage;
 
-          const adjustedReturn = totalReturn - extra + leveragedExtra;
+          const adjustedReturn = totalReturn; //- extra + leveragedExtra;
 
           // return <Roi {...cell} />;
 
@@ -319,16 +319,8 @@ const AllTrades = ({ tradeList }) => {
         enableColumnFilter: false,
         cell: (cell) => {
           const extra = Number(cell.getValue()) || 0;
-          const leverage =
-            Number(cell?.row?.original?.execution?.leverage) || 1;
 
-          const totalExtra = extra * leverage;
-
-          return (
-            <div>
-              {numeral(leverage > 1 ? totalExtra : extra).format("$0,0.00")}
-            </div>
-          );
+          return <div>{numeral(extra).format("$0,0.00")}</div>;
         },
       },
 

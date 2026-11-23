@@ -371,7 +371,7 @@ const AllPositions = ({ positions }) => {
               data={filteredPositions || []}
               isGlobalFilter={false}
               isAddUserList={false}
-              customPageSize={50}
+              customPageSize={10}
               className="custom-header-css"
               divClass="table-responsive table-card mb-1"
               tableClass="align-middle table-nowrap"
