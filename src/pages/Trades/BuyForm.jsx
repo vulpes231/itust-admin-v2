@@ -259,9 +259,18 @@ const BuyForm = ({ order, token, users, onClose }) => {
                 plans
                   .filter((pl) => pl.status === "active")
                   .map((pln) => {
+                    const value =
+                      Math.abs(Number(pln.balance.available)) < 0.000001
+                        ? 0
+                        : Number(pln.balance.available);
+
+                    const formatted = numeral(value).format("$0,0.00");
+                    //numeral().format("$0,0.00")
+
+                    // console.log(pln?.name, pln?.balance?.available);
                     return (
                       <option key={pln._id} value={pln.planId}>
-                        {`${pln?.name}: ${numeral(pln.balance.available).format("$0,0.00")}`}
+                        {`${pln?.name}: ${formatted}`}
                       </option>
                     );
                   })}
